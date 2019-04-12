@@ -3,10 +3,16 @@
  * Various sources. Check out some definitions (see comments with
  * a ques).
  */
+/*
+ * 本文件含有一些 AT 硬盘控制器的定义。来自各种资料。请查证某些
+ * 定义（带有问号的注释）。
+ */
+ 
 #ifndef _HDREG_H
 #define _HDREG_H
 
 /* Hd controller regs. Ref: IBM AT Bios-listing */
+/* 硬盘控制器寄存器端口。参见：IBM AT Bios 程序 */
 #define HD_DATA		0x1f0	/* _CTL when writing */
 #define HD_ERROR	0x1f1	/* see err-bits */
 #define HD_NSECTOR	0x1f2	/* nr of sectors to read/write */
@@ -18,9 +24,10 @@
 #define HD_PRECOMP HD_ERROR	/* same io address, read=error, write=precomp */
 #define HD_COMMAND HD_STATUS	/* same io address, read=status, write=cmd */
 
-#define HD_CMD		0x3f6
+#define HD_CMD		0x3f6	// 控制寄存器端口。
 
 /* Bits of HD_STATUS */
+/* 硬盘状态寄存器各位的定义(HD_STATUS) */
 #define ERR_STAT	0x01
 #define INDEX_STAT	0x02
 #define ECC_STAT	0x04	/* Corrected error */
@@ -31,6 +38,7 @@
 #define BUSY_STAT	0x80
 
 /* Values for HD_COMMAND */
+/* 硬盘命令值（HD_CMD） */
 #define WIN_RESTORE		0x10
 #define WIN_READ		0x20
 #define WIN_WRITE		0x30
@@ -42,6 +50,20 @@
 #define WIN_SPECIFY		0x91
 
 /* Bits for HD_ERROR */
+/* 错误寄存器各比特位的含义（HD_ERROR） */
+// 执行控制器诊断命令时含义与其它命令时的不同。下面分别列出：
+// ==================================================
+// 诊断命令时 其它命令时
+// --------------------------------------------------
+// 0x01 无错误 数据标志丢失
+// 0x02 控制器出错 磁道 0 错
+// 0x03 扇区缓冲区错
+// 0x04 ECC 部件错 命令放弃
+// 0x05 控制处理器错
+// 0x10 ID 未找到
+// 0x40 ECC 错误
+// 0x80 坏扇区
+//---------------------------------------------------
 #define MARK_ERR	0x01	/* Bad address mark ? */
 #define TRK0_ERR	0x02	/* couldn't find track 0 */
 #define ABRT_ERR	0x04	/* ? */
@@ -49,6 +71,7 @@
 #define ECC_ERR		0x40	/* ? */
 #define	BBD_ERR		0x80	/* ? */
 
+// 硬盘分区表结构。参见下面列表后信息。
 struct partition {
 	unsigned char boot_ind;		/* 0x80 - active (unused) */
 	unsigned char head;		/* ? */

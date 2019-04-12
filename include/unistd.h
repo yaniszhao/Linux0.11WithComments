@@ -1,45 +1,63 @@
+/*
+标准符号常数和类型头文件。该文件中定义了很多各种各样的常数和类型，以及一些函数申明。
+如果在程序中定义了符号 __LIBRARY__ ，则还包括内核系统调用号和内嵌汇编 _syscall0() 等。
+*/
+
 #ifndef _UNISTD_H
 #define _UNISTD_H
 
 /* ok, this may be a joke, but I'm working on it */
+/* ok, 这也许是个玩笑，但我正在着手处理 */
+// 下面符号常数指出符合 IEEE 标准 1003.1 实现的版本号，是一个整数值。
 #define _POSIX_VERSION 198808L
 
+// chown()和 fchown()的使用受限于进程的权限。/* 只有超级用户可以执行 chown（我想..）*/
 #define _POSIX_CHOWN_RESTRICTED	/* only root can do a chown (I think..) */
+// 长于(NAME_MAX)的路径名将产生错误，而不会自动截断。/* 路径名不截断（但是请看内核代码）*/
 #define _POSIX_NO_TRUNC		/* no pathname truncation (but see in kernel) */
+// 下面这个符号将定义成字符值，该值将禁止终端对其的处理。/* 禁止象^C 这样的字符 */
 #define _POSIX_VDISABLE '\0'	/* character to disable things like ^C */
+// 每个进程都有一保存的 set-user-ID 和一保存的 set-group-ID。 /* 我们将着手对此进行处理 */
 /*#define _POSIX_SAVED_IDS */	/* we'll get to this yet */
+// 系统实现支持作业控制。 /* 我们还没有支持这项标准，希望很快就行 */
 /*#define _POSIX_JOB_CONTROL */	/* we aren't there quite yet. Soon hopefully */
 
-#define STDIN_FILENO	0
-#define STDOUT_FILENO	1
-#define STDERR_FILENO	2
+#define STDIN_FILENO	0	// 标准输入文件句柄（描述符）号。
+#define STDOUT_FILENO	1	// 标准输出文件句柄号。
+#define STDERR_FILENO	2	// 标准出错文件句柄号。
 
 #ifndef NULL
-#define NULL    ((void *)0)
+#define NULL    ((void *)0)	// 定义空指针。
 #endif
 
 /* access */
+// 以下定义的符号常数用于 access()函数。
 #define F_OK	0
 #define X_OK	1
 #define W_OK	2
 #define R_OK	4
 
 /* lseek */
-#define SEEK_SET	0
-#define SEEK_CUR	1
-#define SEEK_END	2
+// 以下符号常数用于 lseek()和 fcntl()函数。
+#define SEEK_SET	0	// 将文件读写指针设置为偏移值。
+#define SEEK_CUR	1	// 将文件读写指针设置为当前值加上偏移值。
+#define SEEK_END	2	// 将文件读写指针设置为文件长度加上偏移值。
 
 /* _SC stands for System Configuration. We don't use them much */
-#define _SC_ARG_MAX		1
-#define _SC_CHILD_MAX		2
-#define _SC_CLOCKS_PER_SEC	3
-#define _SC_NGROUPS_MAX		4
-#define _SC_OPEN_MAX		5
-#define _SC_JOB_CONTROL		6
-#define _SC_SAVED_IDS		7
-#define _SC_VERSION		8
+/* _SC 表示系统配置。我们很少使用 */
+// 下面的符号常数用于 sysconf()函数。
+#define _SC_ARG_MAX		1			// 最大变量数。
+#define _SC_CHILD_MAX		2		// 子进程最大数。
+#define _SC_CLOCKS_PER_SEC	3		// 每秒滴答数。
+#define _SC_NGROUPS_MAX		4		// 最大组数。
+#define _SC_OPEN_MAX		5		// 最大打开文件数。
+#define _SC_JOB_CONTROL		6		// 作业控制。
+#define _SC_SAVED_IDS		7		// 保存的标识符。
+#define _SC_VERSION		8			// 版本。
 
 /* more (possibly) configurable things - now pathnames */
+/* 更多的（可能的）可配置参数 - 现在用于路径名 */
+// 下面的符号常数用于 pathconf()函数。
 #define _PC_LINK_MAX		1
 #define _PC_MAX_CANON		2
 #define _PC_MAX_INPUT		3
@@ -56,8 +74,9 @@
 #include <utime.h>
 
 #ifdef __LIBRARY__
-
+// 以下是内核实现的系统调用符号常数，用作系统调用函数表中的索引值。
 #define __NR_setup	0	/* used only by init, to get system going */
+						/* __NR_setup 仅用于初始化，以启动系统 */
 #define __NR_exit	1
 #define __NR_fork	2
 #define __NR_read	3
@@ -130,6 +149,11 @@
 #define __NR_setreuid	70
 #define __NR_setregid	71
 
+// 以下定义系统调用嵌入式汇编宏函数。
+// 不带参数的系统调用宏函数。type name(void)。
+// %0 - eax(__res)，%1 - eax(__NR_##name)。其中 name 是系统调用的名称，与 __NR_ 组合形成上面
+// 的系统调用符号常数，从而用来对系统调用表中函数指针寻址。
+// 返回：如果返回值大于等于 0，则返回该值，否则置出错号 errno，并返回-1。
 #define _syscall0(type,name) \
 type name(void) \
 { \
@@ -143,6 +167,8 @@ errno = -__res; \
 return -1; \
 }
 
+// 有 1 个参数的系统调用宏函数。type name(atype a)
+// %0 - eax(__res)，%1 - eax(__NR_name)，%2 - ebx(a)。
 #define _syscall1(type,name,atype,a) \
 type name(atype a) \
 { \
@@ -156,6 +182,8 @@ errno = -__res; \
 return -1; \
 }
 
+// 有 2 个参数的系统调用宏函数。type name(atype a, btype b)
+// %0 - eax(__res)，%1 - eax(__NR_name)，%2 - ebx(a)，%3 - ecx(b)。
 #define _syscall2(type,name,atype,a,btype,b) \
 type name(atype a,btype b) \
 { \
@@ -169,6 +197,8 @@ errno = -__res; \
 return -1; \
 }
 
+// 有 3 个参数的系统调用宏函数。type name(atype a, btype b, ctype c)
+// %0 - eax(__res)，%1 - eax(__NR_name)，%2 - ebx(a)，%3 - ecx(b)，%4 - edx(c)。
 #define _syscall3(type,name,atype,a,btype,b,ctype,c) \
 type name(atype a,btype b,ctype c) \
 { \
@@ -182,9 +212,11 @@ errno=-__res; \
 return -1; \
 }
 
-#endif /* __LIBRARY__ */
+#endif /* __LIBRARY__ */	// 出错号，全局变量。
 
 extern int errno;
+
+// 对应各系统调用的函数原型定义。(详细说明参见 include/linux/sys.h )
 
 int access(const char * filename, mode_t mode);
 int acct(const char * filename);

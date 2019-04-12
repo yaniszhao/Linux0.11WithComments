@@ -11,40 +11,40 @@
  * the fpu must be properly saved/resored. This hasnt been tested.
  */
 /*
-* asm.s ³ÌĞòÖĞ°üÀ¨´ó²¿·ÖµÄÓ²¼ş¹ÊÕÏ(»ò³ö´í)´¦ÀíµÄµ×²ã´Î´úÂë¡£Ò³Òì³£ÊÇÓÉÄÚ´æ¹ÜÀí³ÌĞò
-* mm ´¦ÀíµÄ£¬ËùÒÔ²»ÔÚÕâÀï¡£´Ë³ÌĞò»¹´¦Àí(Ï£ÍûÊÇÕâÑù)ÓÉÓÚ TS-Î»¶øÔì³ÉµÄ fpu Òì³££¬
-* ÒòÎª fpu ±ØĞëÕıÈ·µØ½øĞĞ±£´æ/»Ö¸´´¦Àí£¬ÕâĞ©»¹Ã»ÓĞ²âÊÔ¹ı¡£
+* ;asm.s ³ÌĞòÖĞ°üÀ¨´ó²¿·ÖµÄÓ²¼ş¹ÊÕÏ(»ò³ö´í)´¦ÀíµÄµ×²ã´Î´úÂë¡£Ò³Òì³£ÊÇÓÉÄÚ´æ¹ÜÀí³ÌĞò
+* ;mm ´¦ÀíµÄ£¬ËùÒÔ²»ÔÚÕâÀï¡£´Ë³ÌĞò»¹´¦Àí(Ï£ÍûÊÇÕâÑù)ÓÉÓÚ TS-Î»¶øÔì³ÉµÄ fpu Òì³££¬
+* ;ÒòÎª fpu ±ØĞëÕıÈ·µØ½øĞĞ±£´æ/»Ö¸´´¦Àí£¬ÕâĞ©»¹Ã»ÓĞ²âÊÔ¹ı¡£
 */
 
-//±¾´úÂëÎÄ¼şÖ÷ÒªÉæ¼°¶Ô Intel ±£ÁôµÄÖĞ¶Ï int0--int16 µÄ´¦Àí(int17-int31 Áô×÷½ñºóÊ¹ÓÃ)¡£
-//ÒÔÏÂÊÇÒ»Ğ©È«¾Öº¯ÊıÃûµÄÉùÃ÷£¬ÆäÔ­ĞÎÔÚ traps.c ÖĞËµÃ÷¡£
+//;±¾´úÂëÎÄ¼şÖ÷ÒªÉæ¼°¶Ô Intel ±£ÁôµÄÖĞ¶Ï int0--int16 µÄ´¦Àí(int17-int31 Áô×÷½ñºóÊ¹ÓÃ)¡£
+//;ÒÔÏÂÊÇÒ»Ğ©È«¾Öº¯ÊıÃûµÄÉùÃ÷£¬ÆäÔ­ĞÎÔÚ traps.c ÖĞËµÃ÷¡£
 .globl _divide_error,_debug,_nmi,_int3,_overflow,_bounds,_invalid_op
 .globl _double_fault,_coprocessor_segment_overrun
 .globl _invalid_TSS,_segment_not_present,_stack_segment
 .globl _general_protection,_coprocessor_error,_irq13,_reserved
 
-_divide_error://Áã³ı³ö´í
-	pushl $_do_divide_error	//ÕæÕıµÄ´¦Àíº¯Êı
-no_error_code:	//ÕâÀïÊÇÎŞ´íÎóÂë´¦ÀíµÄÈë¿Ú´¦£¬ÓÃÕâ¸ö´¦ÀíµÄdoº¯Êı¶¼ÊÇerrorcodeºÍspÁ½¸ö²ÎÊı
-	xchgl %eax,(%esp)	//eax ±»½»»»ÈëÕ»
+_divide_error://;Áã³ı³ö´í
+	pushl $_do_divide_error	//;ÕæÕıµÄ´¦Àíº¯Êı
+no_error_code:	//;ÕâÀïÊÇÎŞ´íÎóÂë´¦ÀíµÄÈë¿Ú´¦£¬ÓÃÕâ¸ö´¦ÀíµÄdoº¯Êı¶¼ÊÇerrorcodeºÍspÁ½¸ö²ÎÊı
+	xchgl %eax,(%esp)	//;eax ±»½»»»ÈëÕ»
 	pushl %ebx
 	pushl %ecx
 	pushl %edx
 	pushl %edi
 	pushl %esi
 	pushl %ebp
-	push %ds	// !!16 Î»µÄ¶Î¼Ä´æÆ÷ÈëÕ»ºóÒ²ÒªÕ¼ÓÃ 4 ¸ö×Ö½Ú
+	push %ds	// ;!!16 Î»µÄ¶Î¼Ä´æÆ÷ÈëÕ»ºóÒ²ÒªÕ¼ÓÃ 4 ¸ö×Ö½Ú
 	push %es
 	push %fs
-	pushl $0		//µÚ¶ş¸ö²ÎÊıerror code
-	lea 44(%esp),%edx	//È¡Ô­µ÷ÓÃ·µ»ØµØÖ·´¦¼´ÓÃ»§Ì¬¶ÑÕ»Ö¸ÕëÎ»ÖÃ£¬²¢Ñ¹Èë¶ÑÕ»£¬leaÊÇÈ¡µØÖ·
+	pushl $0		//;µÚ¶ş¸ö²ÎÊıerror code
+	lea 44(%esp),%edx	//;È¡Ô­µ÷ÓÃ·µ»ØµØÖ·´¦¼´ÓÃ»§Ì¬¶ÑÕ»Ö¸ÕëÎ»ÖÃ£¬²¢Ñ¹Èë¶ÑÕ»£¬leaÊÇÈ¡µØÖ·
 	pushl %edx
-	movl $0x10,%edx	//ÄÚºË´úÂëÊı¾İ¶ÎÑ¡Ôñ·û£¬Ô­À´µÄ¿ÉÄÜÊÇÓÃ»§Ì¬ÖĞ¶Ï¹ıÀ´µÄ
+	movl $0x10,%edx	//;ÄÚºË´úÂëÊı¾İ¶ÎÑ¡Ôñ·û£¬Ô­À´µÄ¿ÉÄÜÊÇÓÃ»§Ì¬ÖĞ¶Ï¹ıÀ´µÄ
 	mov %dx,%ds
 	mov %dx,%es
 	mov %dx,%fs
-	call *%eax //µ÷ÓÃCº¯Êıdo_divide_error£¬Á½¸ö²ÎÊıµÄµ÷ÓÃº¯ÊıÉÏÁ½¸öÕ»ÊÇ²ÎÊı
-	addl $8,%esp	//×¼±¸»Ö¸´¼Ä´æÆ÷£¬ÈÃ¶ÑÕ»Ö¸ÕëÖØĞÂÖ¸Ïò¼Ä´æÆ÷fsÈëÕ»´¦£¬ÒòÎªspÉÏÃæÁ½¸ö¾ÍÊÇfsÁË
+	call *%eax //;µ÷ÓÃCº¯Êıdo_divide_error£¬Á½¸ö²ÎÊıµÄµ÷ÓÃº¯ÊıÉÏÁ½¸öÕ»ÊÇ²ÎÊı
+	addl $8,%esp//;×¼±¸»Ö¸´¼Ä´æÆ÷£¬ÈÃ¶ÑÕ»Ö¸ÕëÖØĞÂÖ¸Ïò¼Ä´æÆ÷fsÈëÕ»´¦£¬ÒòÎªspÉÏÃæÁ½¸ö¾ÍÊÇfsÁË
 	pop %fs
 	pop %es
 	pop %ds
@@ -57,40 +57,40 @@ no_error_code:	//ÕâÀïÊÇÎŞ´íÎóÂë´¦ÀíµÄÈë¿Ú´¦£¬ÓÃÕâ¸ö´¦ÀíµÄdoº¯Êı¶¼ÊÇerrorcodeºÍsp
 	popl %eax
 	iret
 
-_debug://int1debug µ÷ÊÔÖĞ¶ÏÈë¿Úµã
+_debug://;int1debug µ÷ÊÔÖĞ¶ÏÈë¿Úµã
 	pushl $_do_int3		# _do_debug
 	jmp no_error_code
 
-_nmi://int2·ÇÆÁ±ÎÖĞ¶Ï
+_nmi://;int2·ÇÆÁ±ÎÖĞ¶Ï
 	pushl $_do_nmi
 	jmp no_error_code
 
-_int3://µ÷ÊÔ´ò¶Ïµã
+_int3://;µ÷ÊÔ´ò¶Ïµã
 	pushl $_do_int3
 	jmp no_error_code
 
-_overflow://int4Òç³ö³ö´í
+_overflow://;int4Òç³ö³ö´í
 	pushl $_do_overflow
 	jmp no_error_code
 
-_bounds://int5±ß½ç¼ì²é³ö´íÖĞ¶Ï
+_bounds://;int5±ß½ç¼ì²é³ö´íÖĞ¶Ï
 	pushl $_do_bounds
 	jmp no_error_code
 
-_invalid_op://int6 -- ÎŞĞ§²Ù×÷Ö¸Áî³ö´íÖĞ¶Ï
+_invalid_op://;int6 -- ÎŞĞ§²Ù×÷Ö¸Áî³ö´íÖĞ¶Ï
 	pushl $_do_invalid_op
 	jmp no_error_code
 
-_coprocessor_segment_overrun://int9 -- Ğ­´¦ÀíÆ÷¶Î³¬³ö³ö´íÖĞ¶Ï
+_coprocessor_segment_overrun://;int9 -- Ğ­´¦ÀíÆ÷¶Î³¬³ö³ö´íÖĞ¶Ï
 	pushl $_do_coprocessor_segment_overrun
 	jmp no_error_code
 
-_reserved://int15 ¨C ±£Áô
+_reserved://;int15 ¨C ±£Áô
 	pushl $_do_reserved
 	jmp no_error_code
 
-//int45 -- ( = 0x20 + 13 ) ÊıÑ§Ğ­´¦ÀíÆ÷(Coprocessor)·¢³öµÄÖĞ¶Ï¡£
-//µ±Ğ­´¦ÀíÆ÷Ö´ĞĞÍêÒ»¸ö²Ù×÷Ê±¾Í»á·¢³ö IRQ13 ÖĞ¶ÏĞÅºÅ£¬ÒÔÍ¨Öª CPU ²Ù×÷Íê³É
+//;int45 -- ( = 0x20 + 13 ) ÊıÑ§Ğ­´¦ÀíÆ÷(Coprocessor)·¢³öµÄÖĞ¶Ï¡£
+//;µ±Ğ­´¦ÀíÆ÷Ö´ĞĞÍêÒ»¸ö²Ù×÷Ê±¾Í»á·¢³ö IRQ13 ÖĞ¶ÏĞÅºÅ£¬ÒÔÍ¨Öª CPU ²Ù×÷Íê³É
 _irq13:
 	pushl %eax
 	xorb %al,%al
@@ -104,10 +104,10 @@ _irq13:
 	jmp _coprocessor_error
 
 
-//ÒÔÏÂÖĞ¶ÏÔÚµ÷ÓÃÊ±»áÔÚÖĞ¶Ï·µ»ØµØÖ·Ö®ºó½«³ö´íºÅÑ¹Èë¶ÑÕ»£¬Òò´Ë·µ»ØÊ±Ò²ĞèÒª½«³ö´íºÅµ¯³ö¡£
-_double_fault:	//int8 -- Ë«³ö´í¹ÊÕÏ¡£
+//;ÒÔÏÂÖĞ¶ÏÔÚµ÷ÓÃÊ±»áÔÚÖĞ¶Ï·µ»ØµØÖ·Ö®ºó½«³ö´íºÅÑ¹Èë¶ÑÕ»£¬Òò´Ë·µ»ØÊ±Ò²ĞèÒª½«³ö´íºÅµ¯³ö¡£
+_double_fault:	//;int8 -- Ë«³ö´í¹ÊÕÏ¡£
 	pushl $_do_double_fault
-error_code:	//ÕâÀïÊÇ´ø´íÎóÂë´¦ÀíµÄÈë¿Ú´¦£¬ÓÃÕâ¸ö´¦ÀíµÄdoº¯ÊıÒ²¶¼ÊÇerrorcodeºÍspÁ½¸ö²ÎÊı
+error_code:	//;ÕâÀïÊÇ´ø´íÎóÂë´¦ÀíµÄÈë¿Ú´¦£¬ÓÃÕâ¸ö´¦ÀíµÄdoº¯ÊıÒ²¶¼ÊÇerrorcodeºÍspÁ½¸ö²ÎÊı
 	xchgl %eax,4(%esp)		# error code <-> %eax
 	xchgl %ebx,(%esp)		# &function <-> %ebx
 	pushl %ecx
@@ -121,12 +121,12 @@ error_code:	//ÕâÀïÊÇ´ø´íÎóÂë´¦ÀíµÄÈë¿Ú´¦£¬ÓÃÕâ¸ö´¦ÀíµÄdoº¯ÊıÒ²¶¼ÊÇerrorcodeºÍspÁ
 	pushl %eax			# error code	//µÚ¶ş¸ö²ÎÊı
 	lea 44(%esp),%eax		# offset	//µÚÒ»¸ö²ÎÊıesp
 	pushl %eax
-	movl $0x10,%eax	//ÄÚºË´úÂëÊı¾İ¶ÎÑ¡Ôñ·û£¬Ô­À´µÄ¿ÉÄÜÊÇÓÃ»§Ì¬ÖĞ¶Ï¹ıÀ´µÄ
+	movl $0x10,%eax	//;ÄÚºË´úÂëÊı¾İ¶ÎÑ¡Ôñ·û£¬Ô­À´µÄ¿ÉÄÜÊÇÓÃ»§Ì¬ÖĞ¶Ï¹ıÀ´µÄ
 	mov %ax,%ds
 	mov %ax,%es
 	mov %ax,%fs
-	call *%ebx	//µ÷ÓÃcº¯Êı£¬Á½¸ö²ÎÊıÒÑÈëÕ»
-	addl $8,%esp	//×¼±¸»Ö¸´¼Ä´æÆ÷£¬ÈÃ¶ÑÕ»Ö¸ÕëÖØĞÂÖ¸Ïò¼Ä´æÆ÷fsÈëÕ»´¦£¬ÒòÎªspÉÏÃæÁ½¸ö¾ÍÊÇfsÁË
+	call *%ebx	//;µ÷ÓÃcº¯Êı£¬Á½¸ö²ÎÊıÒÑÈëÕ»
+	addl $8,%esp	//;×¼±¸»Ö¸´¼Ä´æÆ÷£¬ÈÃ¶ÑÕ»Ö¸ÕëÖØĞÂÖ¸Ïò¼Ä´æÆ÷fsÈëÕ»´¦£¬ÒòÎªspÉÏÃæÁ½¸ö¾ÍÊÇfsÁË
 	pop %fs
 	pop %es
 	pop %ds
@@ -139,25 +139,25 @@ error_code:	//ÕâÀïÊÇ´ø´íÎóÂë´¦ÀíµÄÈë¿Ú´¦£¬ÓÃÕâ¸ö´¦ÀíµÄdoº¯ÊıÒ²¶¼ÊÇerrorcodeºÍspÁ
 	popl %eax
 	iret
 
-_invalid_TSS://int10ÎŞĞ§µÄÈÎÎñ×´Ì¬¶Î
+_invalid_TSS://;int10ÎŞĞ§µÄÈÎÎñ×´Ì¬¶Î
 	pushl $_do_invalid_TSS
 	jmp error_code
 
-_segment_not_present://int11 -- ¶Î²»´æÔÚ
+_segment_not_present://;int11 -- ¶Î²»´æÔÚ
 	pushl $_do_segment_not_present
 	jmp error_code
 
-_stack_segment://int12 -- ¶ÑÕ»¶Î´íÎó
+_stack_segment://;int12 -- ¶ÑÕ»¶Î´íÎó
 	pushl $_do_stack_segment
 	jmp error_code
 
-_general_protection://int13 -- Ò»°ã±£»¤ĞÔ³ö´í
+_general_protection://;int13 -- Ò»°ã±£»¤ĞÔ³ö´í
 	pushl $_do_general_protection
 	jmp error_code
 
 	
-//int7 -- Éè±¸²»´æÔÚ(_device_not_available)ÔÚ(kernel/system_call.s,148)
-//int14 -- Ò³´íÎó(_page_fault)ÔÚ(mm/page.s,14)
-//int16 -- Ğ­´¦ÀíÆ÷´íÎó(_coprocessor_error)ÔÚ(kernel/system_call.s,131) 
-//Ê±ÖÓÖĞ¶Ï int 0x20 (_timer_interrupt)ÔÚ(kernel/system_call.s,176)
-//ÏµÍ³µ÷ÓÃ int 0x80 (_system_call)ÔÚ(kernel/system_call.s,80)
+//;int7 -- Éè±¸²»´æÔÚ(_device_not_available)ÔÚ(kernel/system_call.s,148)
+//;int14 -- Ò³´íÎó(_page_fault)ÔÚ(mm/page.s,14)
+//;int16 -- Ğ­´¦ÀíÆ÷´íÎó(_coprocessor_error)ÔÚ(kernel/system_call.s,131) 
+//;Ê±ÖÓÖĞ¶Ï int 0x20 (_timer_interrupt)ÔÚ(kernel/system_call.s,176)
+//;ÏµÍ³µ÷ÓÃ int 0x80 (_system_call)ÔÚ(kernel/system_call.s,80)

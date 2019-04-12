@@ -1,3 +1,5 @@
+//sys.h 头文件列出了内核中所有系统调用函数的原型，以及系统调用函数指针表。
+
 extern int sys_setup();
 extern int sys_exit();
 extern int sys_fork();
@@ -71,6 +73,7 @@ extern int sys_ssetmask();
 extern int sys_setreuid();
 extern int sys_setregid();
 
+// 系统调用函数指针表。用于系统调用中断处理程序(int 0x80)，作为跳转表。
 fn_ptr sys_call_table[] = { sys_setup, sys_exit, sys_fork, sys_read,
 sys_write, sys_open, sys_close, sys_waitpid, sys_creat, sys_link,
 sys_unlink, sys_execve, sys_chdir, sys_time, sys_mknod, sys_chmod,

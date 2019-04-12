@@ -1,10 +1,27 @@
+/*
+¸ÃÎÄ¼şº¬ÓĞÖÕ¶Ë I/O ½Ó¿Ú¶¨Òå¡£°üÀ¨ termios Êı¾İ½á¹¹ºÍÒ»Ğ©¶ÔÍ¨ÓÃÖÕ¶Ë½Ó¿ÚÉèÖÃµÄº¯ÊıÔ­ĞÍ¡£
+ÕâĞ©º¯ÊıÓÃÀ´¶ÁÈ¡»òÉèÖÃÖÕ¶ËµÄÊôĞÔ¡¢ÏßÂ·¿ØÖÆ¡¢¶ÁÈ¡»òÉèÖÃ²¨ÌØÂÊÒÔ¼°¶ÁÈ¡»òÉèÖÃÖÕ¶ËÇ°¶Ë½ø³ÌµÄ×é id ¡£
+ËäÈ»ÕâÊÇ linux ÔçÆÚµÄÍ·ÎÄ¼ş£¬µ«ÒÑÍêÈ«·ûºÏÄ¿Ç°µÄ POSIX ±ê×¼£¬²¢×÷ÁËÊÊµ±µÄÀ©Õ¹¡£
+
+ÔÚ¸ÃÎÄ¼şÖĞ¶¨ÒåµÄÁ½¸öÖÕ¶ËÊı¾İ½á¹¹ termio ºÍ termios ÊÇ·Ö±ğÊôÓÚÁ½Àà UNIX ÏµÁĞ£¨»ò¿ÌÂ¡£©£¬ 
+termioÊÇÔÚ AT&T ÏµÍ³ V ÖĞ¶¨ÒåµÄ£¬¶ø termios ÊÇ POSIX ±ê×¼Ö¸¶¨µÄ¡£
+Á½¸ö½á¹¹»ù±¾Ò»Ñù£¬Ö»ÊÇ termio Ê¹ÓÃ¶ÌÕûÊıÀàĞÍ¶¨ÒåÄ£Ê½±êÖ¾¼¯£¬¶ø termios Ê¹ÓÃ³¤ÕûÊı¶¨ÒåÄ£Ê½±êÖ¾¼¯¡£
+ÓÉÓÚÄ¿Ç°ÕâÁ½ÖÖ½á¹¹¶¼ÔÚÊ¹ÓÃ£¬Òò´ËÎªÁË¼æÈİĞÔ£¬´ó¶àÊıÏµÍ³¶¼Í¬Ê±Ö§³ÖËüÃÇ¡£
+ÁíÍâ£¬ÒÔÇ°Ê¹ÓÃµÄÊÇÒ»ÀàËÆµÄ sgtty ½á¹¹£¬Ä¿Ç°ÒÑ»ù±¾²»ÓÃ¡£
+*/
+
+
 #ifndef _TERMIOS_H
 #define _TERMIOS_H
 
 #define TTY_BUF_SIZE 1024
 
 /* 0x54 is just a magic number to make these relatively uniqe ('T') */
+/* 0x54 Ö»ÊÇÒ»¸öÄ§Êı£¬Ä¿µÄÊÇÎªÁËÊ¹ÕâĞ©³£ÊıÎ¨Ò»('T') */
 
+// tty Éè±¸µÄ ioctl µ÷ÓÃÃüÁî¼¯¡£ioctl ½«ÃüÁî±àÂëÔÚµÍÎ»×ÖÖĞ¡£
+// ÏÂÃæÃû³Æ TC[*]µÄº¬ÒåÊÇ tty ¿ØÖÆÃüÁî¡£
+// È¡ÏàÓ¦ÖÕ¶Ë termios ½á¹¹ÖĞµÄĞÅÏ¢(²Î¼û tcgetattr())
 #define TCGETS		0x5401
 #define TCSETS		0x5402
 #define TCSETSW		0x5403
@@ -33,24 +50,28 @@
 #define TIOCSSOFTCAR	0x541A
 #define TIOCINQ		0x541B
 
+// ´°¿Ú´óĞ¡(Window size)ÊôĞÔ½á¹¹¡£ÔÚ´°¿Ú»·¾³ÖĞ¿ÉÓÃÓÚ»ùÓÚÆÁÄ»µÄÓ¦ÓÃ³ÌĞò¡£
+// ioctls ÖĞµÄ TIOCGWINSZ ºÍ TIOCSWINSZ ¿ÉÓÃÀ´¶ÁÈ¡»òÉèÖÃÕâĞ©ĞÅÏ¢¡£
 struct winsize {
-	unsigned short ws_row;
-	unsigned short ws_col;
-	unsigned short ws_xpixel;
-	unsigned short ws_ypixel;
+	unsigned short ws_row;		// ´°¿Ú×Ö·ûĞĞÊı¡£
+	unsigned short ws_col;		// ´°¿Ú×Ö·ûÁĞÊı¡£
+	unsigned short ws_xpixel;	// ´°¿Ú¿í¶È£¬ÏóËØÖµ¡£
+	unsigned short ws_ypixel;	// ´°¿Ú¸ß¶È£¬ÏóËØÖµ¡£
 };
 
-#define NCC 8
+// AT&T ÏµÍ³ V µÄ termio ½á¹¹¡£
+#define NCC 8					// termio ½á¹¹ÖĞ¿ØÖÆ×Ö·ûÊı×éµÄ³¤¶È¡£
 struct termio {
-	unsigned short c_iflag;		/* input mode flags */
-	unsigned short c_oflag;		/* output mode flags */
-	unsigned short c_cflag;		/* control mode flags */
-	unsigned short c_lflag;		/* local mode flags */
-	unsigned char c_line;		/* line discipline */
-	unsigned char c_cc[NCC];	/* control characters */
+	unsigned short c_iflag;		/* input mode flags */		// ÊäÈëÄ£Ê½±êÖ¾¡£
+	unsigned short c_oflag;		/* output mode flags */		// Êä³öÄ£Ê½±êÖ¾¡£
+	unsigned short c_cflag;		/* control mode flags */	// ¿ØÖÆÄ£Ê½±êÖ¾¡£
+	unsigned short c_lflag;		/* local mode flags */		// ±¾µØÄ£Ê½±êÖ¾¡£
+	unsigned char c_line;		/* line discipline */		// ÏßÂ·¹æ³Ì£¨ËÙÂÊ£©¡£
+	unsigned char c_cc[NCC];	/* control characters */	// ¿ØÖÆ×Ö·ûÊı×é¡£
 };
 
-#define NCCS 17
+// POSIX µÄ termios ½á¹¹¡£
+#define NCCS 17					// termios ½á¹¹ÖĞ¿ØÖÆ×Ö·ûÊı×éµÄ³¤¶È¡£
 struct termios {
 	unsigned long c_iflag;		/* input mode flags */
 	unsigned long c_oflag;		/* output mode flags */
@@ -60,9 +81,9 @@ struct termios {
 	unsigned char c_cc[NCCS];	/* control characters */
 };
 
-/* c_cc characters */
-#define VINTR 0
-#define VQUIT 1
+/* c_cc characters */			/* c_cc Êı×éÖĞµÄ×Ö·û */
+#define VINTR 0					// c_cc[VINTR] = INTR (^C)£¬\003£¬ÖĞ¶Ï×Ö·û¡£
+#define VQUIT 1					// c_cc[VQUIT] = QUIT (^\)£¬\034£¬ÍË³ö×Ö·û¡£
 #define VERASE 2
 #define VKILL 3
 #define VEOF 4
@@ -79,24 +100,27 @@ struct termios {
 #define VLNEXT 15
 #define VEOL2 16
 
-/* c_iflag bits */
-#define IGNBRK	0000001
-#define BRKINT	0000002
-#define IGNPAR	0000004
-#define PARMRK	0000010
-#define INPCK	0000020
-#define ISTRIP	0000040
-#define INLCR	0000100
-#define IGNCR	0000200
-#define ICRNL	0000400
-#define IUCLC	0001000
-#define IXON	0002000
-#define IXANY	0004000
-#define IXOFF	0010000
-#define IMAXBEL	0020000
+/* c_iflag bits */				/* c_iflag ±ÈÌØÎ» */
+// termios ½á¹¹ÊäÈëÄ£Ê½×Ö¶Î c_iflag ¸÷ÖÖ±êÖ¾µÄ·ûºÅ³£Êı¡£
+#define IGNBRK 	0000001 // ÊäÈëÊ±ºöÂÔ BREAK Ìõ¼ş¡£
+#define BRKINT 	0000002 // ÔÚ BREAK Ê±²úÉú SIGINT ĞÅºÅ¡£
+#define IGNPAR 	0000004 // ºöÂÔÆæÅ¼Ğ£Ñé³ö´íµÄ×Ö·û¡£
+#define PARMRK 	0000010 // ±ê¼ÇÆæÅ¼Ğ£Ñé´í¡£
+#define INPCK 	0000020 // ÔÊĞíÊäÈëÆæÅ¼Ğ£Ñé¡£
+#define ISTRIP 	0000040 // ÆÁ±Î×Ö·ûµÚ 8 Î»¡£
+#define INLCR 	0000100 // ÊäÈëÊ±½«»»ĞĞ·û NL Ó³Éä³É»Ø³µ·û CR¡£
+#define IGNCR 	0000200 // ºöÂÔ»Ø³µ·û CR¡£
+#define ICRNL 	0000400 // ÔÚÊäÈëÊ±½«»Ø³µ·û CR Ó³Éä³É»»ĞĞ·û NL¡£
+#define IUCLC 	0001000 // ÔÚÊäÈëÊ±½«´óĞ´×Ö·û×ª»»³ÉĞ¡Ğ´×Ö·û¡£
+#define IXON 	0002000 // ÔÊĞí¿ªÊ¼/Í£Ö¹£¨XON/XOFF£©Êä³ö¿ØÖÆ¡£
+#define IXANY 	0004000 // ÔÊĞíÈÎºÎ×Ö·ûÖØÆôÊä³ö¡£
+#define IXOFF 	0010000 // ÔÊĞí¿ªÊ¼/Í£Ö¹£¨XON/XOFF£©ÊäÈë¿ØÖÆ¡£
+#define IMAXBEL 0020000 // ÊäÈë¶ÓÁĞÂúÊ±ÏìÁå¡£
 
-/* c_oflag bits */
-#define OPOST	0000001
+
+/* c_oflag bits */			/* c_oflag ±ÈÌØÎ» */
+// termios ½á¹¹ÖĞÊä³öÄ£Ê½×Ö¶Î c_oflag ¸÷ÖÖ±êÖ¾µÄ·ûºÅ³£Êı
+#define OPOST	0000001		// Ö´ĞĞÊä³ö´¦Àí¡£
 #define OLCUC	0000002
 #define ONLCR	0000004
 #define OCRNL	0000010
@@ -128,8 +152,9 @@ struct termios {
 #define   FF0	0000000
 #define   FF1	0040000
 
-/* c_cflag bit meaning */
-#define CBAUD	0000017
+/* c_cflag bit meaning */		/* c_cflag ±ÈÌØÎ»µÄº¬Òå */
+// termios ½á¹¹ÖĞ¿ØÖÆÄ£Ê½±êÖ¾×Ö¶Î c_cflag ±êÖ¾µÄ·ûºÅ³£Êı£¨8 ½øÖÆÊı£©¡£
+#define CBAUD	0000017		// ´«ÊäËÙÂÊÎ»ÆÁ±ÎÂë¡££
 #define  B0	0000000		/* hang up */
 #define  B50	0000001
 #define  B75	0000002
@@ -165,8 +190,9 @@ struct termios {
 #define PARENB CPARENB
 #define PARODD CPARODD
 
-/* c_lflag bits */
-#define ISIG	0000001
+/* c_lflag bits */			/* c_lflag ±ÈÌØÎ» */
+// termios ½á¹¹ÖĞ±¾µØÄ£Ê½±êÖ¾×Ö¶Î c_lflag µÄ·ûºÅ³£Êı¡£
+#define ISIG	0000001		// µ±ÊÕµ½×Ö·û INTR¡¢QUIT¡¢SUSP »ò DSUSP£¬²úÉúÏàÓ¦µÄĞÅºÅ¡£
 #define ICANON	0000002
 #define XCASE	0000004
 #define ECHO	0000010
@@ -182,8 +208,8 @@ struct termios {
 #define PENDIN	0040000
 #define IEXTEN	0100000
 
-/* modem lines */
-#define TIOCM_LE	0x001
+/* modem lines */				/* modem ÏßÂ·ĞÅºÅ·ûºÅ³£Êı */
+#define TIOCM_LE	0x001		// ÏßÂ·ÔÊĞí(Line Enable)¡£
 #define TIOCM_DTR	0x002
 #define TIOCM_RTS	0x004
 #define TIOCM_ST	0x008
@@ -195,23 +221,23 @@ struct termios {
 #define TIOCM_CD	TIOCM_CAR
 #define TIOCM_RI	TIOCM_RNG
 
-/* tcflow() and TCXONC use these */
-#define	TCOOFF		0
+/* tcflow() and TCXONC use these */	/* tcflow()ºÍ TCXONC Ê¹ÓÃÕâĞ©·ûºÅ³£Êı */
+#define	TCOOFF		0				// ¹ÒÆğÊä³ö¡£
 #define	TCOON		1
 #define	TCIOFF		2
 #define	TCION		3
 
-/* tcflush() and TCFLSH use these */
-#define	TCIFLUSH	0
+/* tcflush() and TCFLSH use these */	/* tcflush()ºÍ TCFLSH Ê¹ÓÃÕâĞ©·ûºÅ³£Êı */
+#define	TCIFLUSH	0					// Çå½ÓÊÕµ½µÄÊı¾İµ«²»¶Á¡£
 #define	TCOFLUSH	1
 #define	TCIOFLUSH	2
 
-/* tcsetattr uses these */
-#define	TCSANOW		0
+/* tcsetattr uses these */				/* tcsetattr()Ê¹ÓÃÕâĞ©·ûºÅ³£Êı */
+#define	TCSANOW		0					// ¸Ä±äÁ¢¼´·¢Éú¡£
 #define	TCSADRAIN	1
 #define	TCSAFLUSH	2
 
-typedef int speed_t;
+typedef int speed_t;					// ²¨ÌØÂÊÊıÖµÀàĞÍ¡£
 
 extern speed_t cfgetispeed(struct termios *termios_p);
 extern speed_t cfgetospeed(struct termios *termios_p);
