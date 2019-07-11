@@ -147,7 +147,7 @@ static struct buffer_head * find_entry(struct m_inode ** dir,
 	if (namelen > NAME_LEN)
 		namelen = NAME_LEN;
 #endif
-	entries = (*dir)->i_size / (sizeof (struct dir_entry));	//计算本目录中目录项项数 entries
+	entries = (*dir)->i_size / (sizeof (struct dir_entry));	//计算本目录中目录项项数
 	*res_dir = NULL;	//置空返回目录项结构指针
 	if (!namelen)
 		return NULL;

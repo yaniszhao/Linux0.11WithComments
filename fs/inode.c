@@ -64,7 +64,7 @@ void invalidate_inodes(int dev)
 	}
 }
 
-// 同步所有 i 节点。
+// 同步所有 i 节点。将 i 节点数据写入高速缓冲。
 // 同步内存与设备上的所有 i 节点信息。
 void sync_inodes(void)
 {
@@ -75,7 +75,7 @@ void sync_inodes(void)
 	for(i=0 ; i<NR_INODE ; i++,inode++) {
 		wait_on_inode(inode);
 		if (inode->i_dirt && !inode->i_pipe)	// 如果该 i 节点已修改且不是管道节点，
-			write_inode(inode);					// 写盘
+			write_inode(inode);					// 回写
 	}
 }
 
@@ -294,7 +294,7 @@ struct m_inode * get_empty_inode(void)
 // 首先扫描 i 节点表，寻找一个空闲 i 节点项，然后取得一页空闲内存供管道使用。
 // 然后将得到的 i 节点的引用计数置为 2(读者和写者)，初始化管道头和尾，置 i 节点的管道类型表示。
 struct m_inode * get_pipe_inode(void)
-{
+{// 这个创建的应该是无名管道
 	struct m_inode * inode;
 
 	if (!(inode = get_empty_inode()))			// 如果找不到空闲 i 节点则返回 NULL。
@@ -318,7 +318,7 @@ struct m_inode * iget(int dev,int nr)
 	if (!dev)
 		panic("iget with dev==0");
 	empty = get_empty_inode();	// 从 i 节点表中取一个空闲 i 节点。
-	inode = inode_table;	// 扫描 i 节点表。寻找指定节点号的 i 节点。并递增该节点的引用次数。
+	inode = inode_table;		// 扫描 i 节点表。寻找指定节点号的 i 节点。并递增该节点的引用次数。
 	while (inode < NR_INODE+inode_table) {
 		// 如果当前扫描的 i 节点的设备号不等于指定的设备号或者节点号不等于指定的节点号，
 		// 则继续扫描。

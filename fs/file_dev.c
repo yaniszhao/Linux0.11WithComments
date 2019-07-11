@@ -18,8 +18,9 @@
 #define MAX(a,b) (((a)>(b))?(a):(b))
 
 // 文件读函数 - 根据 i 节点和文件结构，读设备数据。
-// 由 i 节点可以知道设备号，由 filp 结构可以知道文件中当前读写指针位置。buf 指定用户态中
-// 缓冲区的位置，count 为需要读取的字节数。返回值是实际读取的字节数，或出错号(小于 0)。
+// 由 i 节点可以知道设备号，由 filp 结构可以知道文件中当前读写指针位置。
+// buf 指定用户态中缓冲区的位置，count 为需要读取的字节数。
+// 返回值是实际读取的字节数，或出错号(小于 0)。
 int file_read(struct m_inode * inode, struct file * filp, char * buf, int count)
 {
 	int left,chars,nr;

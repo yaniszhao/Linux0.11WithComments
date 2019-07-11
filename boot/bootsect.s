@@ -31,12 +31,12 @@ begdata:
 begbss:
 .text
 
-SETUPLEN = 4				! nr of setup-sectors //;setup占四个磁盘块
-BOOTSEG  = 0x07c0			! original address of boot-sector //;从第31KB的地方开始
-INITSEG  = 0x9000			! we move boot here - out of the way //;bootsect.s要被移到576K，差64K到640K
-SETUPSEG = 0x9020			! setup starts here //;setup.s要被移到这，因为bootsect只占512B
-SYSSEG   = 0x1000			! system loaded at 0x10000 (65536). //;内核被移到64K的地方
-ENDSEG   = SYSSEG + SYSSIZE		! where to stop loading //;内核最多能占用到的地方
+SETUPLEN = 4			! nr of setup-sectors //;setup占四个磁盘块
+BOOTSEG  = 0x07c0		! original address of boot-sector //;从第31KB的地方开始
+INITSEG  = 0x9000		! we move boot here - out of the way //;bootsect.s要被移到576K，差64K到640K
+SETUPSEG = 0x9020		! setup starts here //;setup.s要被移到这，因为bootsect只占512B
+SYSSEG   = 0x1000		! system loaded at 0x10000 (65536). //;内核被移到64K的地方
+ENDSEG   = SYSSEG + SYSSIZE	! where to stop loading //;内核最多能占用到的地方
 
 ! ROOT_DEV:	0x000 - same type of floppy as boot.
 !		0x301 - first partition on first drive etc
@@ -70,9 +70,9 @@ load_setup: //;读取setup到内存
 	mov	cx,#0x0002		! sector 2, track 0
 	mov	bx,#0x0200		! address = 512, in INITSEG
 	mov	ax,#0x0200+SETUPLEN	! service 2, nr of sectors
-	int	0x13			! read it //;利用BIOS的中断
+	int	0x13			! read it 	//;利用BIOS的中断
 	jnc	ok_load_setup		! ok - continue //;成功则去进行下面的操作
-	mov	dx,#0x0000	//;不成功则重新读
+	mov	dx,#0x0000				//;不成功则重新读
 	mov	ax,#0x0000		! reset the diskette
 	int	0x13
 	j	load_setup
@@ -85,7 +85,7 @@ ok_load_setup:
 	mov	ax,#0x0800		! AH=8 is get drive parameters
 	int	0x13
 	mov	ch,#0x00
-	seg cs
+	seg cs	//;只影响下一条代码的数据段
 	mov	sectors,cx
 	mov	ax,#INITSEG
 	mov	es,ax
@@ -118,7 +118,7 @@ ok_load_setup:
 	seg cs	//;只影响下一条代码的数据段
 	mov	ax,root_dev
 	cmp	ax,#0
-	jne	root_defined //ax不为0
+	jne	root_defined //;ax不为0
 	seg cs
 	mov	bx,sectors
 	mov	ax,#0x0208		! /dev/ps0 - 1.2Mb

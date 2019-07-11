@@ -77,7 +77,7 @@ int copy_mem(int nr,struct task_struct * p)
 	//设置新进程局部描述符表中段描述符中的基地址
 	set_base(p->ldt[1],new_code_base);
 	set_base(p->ldt[2],new_data_base);
-	//设置新进程的页目录表项和页表项。即把新进程的线性地址内存页对应到实际物理地址内存页面上
+	//设置新进程的页目录表项和页表项。即把新进程的线性地址内存页对应到实际物理地址内存页面上。
 	if (copy_page_tables(old_data_base,new_data_base,data_limit)) {
 		free_page_tables(new_data_base,data_limit);
 		return -ENOMEM;
@@ -109,42 +109,43 @@ int copy_process(int nr,long ebp,long edi,long esi,long gs,long none,
 	// 其中 nr 为任务号，由前面 find_empty_process()返回
 	task[nr] = p;
 
-	
+	// 复制所有结构内的内容
 	*p = *current;	/* NOTE! this doesn't copy the supervisor stack */
 					/* 注意!这样做不会复制超级用户的堆栈(只复制当前进程内容) */
-	p->state = TASK_UNINTERRUPTIBLE; // 将新进程的状态先置为不可中断等待状态，以免被执行
-	p->pid = last_pid;// 新进程号。由前面调用 find_empty_process()得到
-	p->father = current->pid;//设置父进程
-	p->counter = p->priority;//初始化运行counter数
-	p->signal = 0;//初始化信号位图
-	p->alarm = 0;//初始化报警定时(滴答数)，0表示无报警定时
+	// 修改特别的内容
+	p->state = TASK_UNINTERRUPTIBLE; 	//将新进程的状态先置为不可中断等待状态，以免被执行
+	p->pid = last_pid;					//新进程号。由前面调用 find_empty_process()得到
+	p->father = current->pid;			//设置父进程
+	p->counter = p->priority;			//初始化运行counter数，默认值为15
+	p->signal = 0;						//初始化信号位图
+	p->alarm = 0;						//初始化报警定时(滴答数)，0表示无报警定时
 	p->leader = 0;		/* process leadership doesn't inherit */ //领导权不能继承
-	p->utime = p->stime = 0;//初始化utime和stime
-	p->cutime = p->cstime = 0;//初始化子进程utime和stime
-	p->start_time = jiffies;//设置开始时间
+	p->utime = p->stime = 0;			//初始化utime和stime
+	p->cutime = p->cstime = 0;			//初始化子进程utime和stime
+	p->start_time = jiffies;			//设置开始时间
 	//设置任务状态段tss
 	p->tss.back_link = 0;
-	p->tss.esp0 = PAGE_SIZE + (long) p;//内核态的esp，刚好在PCB的末尾
-	p->tss.ss0 = 0x10;//内核态ss
+	p->tss.esp0 = PAGE_SIZE + (long) p;	//内核态的esp，刚好在PCB的末尾
+	p->tss.ss0 = 0x10;					//内核态ss
 	//ss1:esp1和ss2:esp2没有用
-	p->tss.eip = eip;//用户态eip，和父进程一样
-	p->tss.eflags = eflags;//用户态eflags，和父进程一样
-	p->tss.eax = 0;//子进程的fork函数返回的是0，但是父进程返回子进程的pid
+	p->tss.eip = eip;					//用户态eip，和父进程一样
+	p->tss.eflags = eflags;				//用户态eflags，和父进程一样
+	p->tss.eax = 0;						//子进程的fork函数返回的是0，但是父进程返回子进程的pid
 	p->tss.ecx = ecx;
 	p->tss.edx = edx;
 	p->tss.ebx = ebx;
-	p->tss.esp = esp;//新进程的esp用的父进程的，所以要求父进程的栈要尽量干净
+	p->tss.esp = esp;					//新进程的esp用的父进程的，所以要求父进程的栈要尽量干净
 	p->tss.ebp = ebp;
 	p->tss.esi = esi;
 	p->tss.edi = edi;
-	p->tss.es = es & 0xffff;//虽然段选择符都是16位，但是数据结构用的是long是32位
+	p->tss.es = es & 0xffff;			//虽然段选择符都是16位，但是数据结构用的是long是32位
 	p->tss.cs = cs & 0xffff;
 	p->tss.ss = ss & 0xffff;
 	p->tss.ds = ds & 0xffff;
 	p->tss.fs = fs & 0xffff;
 	p->tss.gs = gs & 0xffff;
-	p->tss.ldt = _LDT(nr);//设置ldt，ldt在gdt中
-	p->tss.trace_bitmap = 0x80000000;//(高 16 位有效)
+	p->tss.ldt = _LDT(nr);				//用于设置ldtr
+	p->tss.trace_bitmap = 0x80000000;	//高 16 位有效
 
 	// 如果当前任务使用了协处理器，就保存其上下文。
 	if (last_task_used_math == current)
@@ -158,7 +159,7 @@ int copy_process(int nr,long ebp,long edi,long esi,long gs,long none,
 		return -EAGAIN;
 	}
 
-	// 继承父进程的打开的文件
+	// 继承父进程的打开的文件。
 	// 如果父进程中有文件是打开的，则将对应文件的打开次数增 1。
 	for (i=0; i<NR_OPEN;i++)
 		if (f=p->filp[i])
@@ -183,13 +184,13 @@ int copy_process(int nr,long ebp,long edi,long esi,long gs,long none,
 int find_empty_process(void)
 {
 	int i;
-
-	repeat://循环得到一个没被用过的正数作为新的pid
+	//循环得到一个没被用过的正数作为新的pid
+	repeat:
 		if ((++last_pid)<0) last_pid=1;//循环到负数之后要变回正数
 		for(i=0 ; i<NR_TASKS ; i++)//如果已经被分配了就判断下一个数满足与否
 			if (task[i] && task[i]->pid == last_pid) goto repeat;
 
-	//找到一个空的任务块
+	//找到一个空的任务块并返回其下标即任务号
 	for(i=1 ; i<NR_TASKS ; i++)
 		if (!task[i])
 			return i;

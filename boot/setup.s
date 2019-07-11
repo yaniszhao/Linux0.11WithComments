@@ -138,7 +138,7 @@ end_move:
 	lidt	idt_48		! load idt with 0,0
 	lgdt	gdt_48		! load gdt with whatever appropriate
 
-! that was painless, now we enable A20	//开启A20获得1MB以上的内存
+! that was painless, now we enable A20	//;开启A20获得1MB以上的内存
 
 	call	empty_8042	//;等待输入缓冲器空。只有当输入缓冲器为空时才可以对其进行写命令。
 	mov	al,#0xD1		! command write	//;command write ! 0xD1 命令码-表示要写数据到
@@ -222,10 +222,10 @@ gdt:	//;一个表项占8个字节，这里只临时设置了3个项
 	//;具体内容为00|C09A|000000|07FF
 	.word	0x07FF		! 8Mb - limit=2047 (2048*4096=8Mb)
 	.word	0x0000		! base address=0
-	.word	0x9A00		! code read/exec	//可读可执行
+	.word	0x9A00		! code read/exec	//;可读可执行
 	.word	0x00C0		! granularity=4096, 386
 
-	//;第2项用于系统的数据段，当ds等为0x08时选的就是这个
+	//;第2项用于系统的数据段，当ds等为0x10时选的就是这个
 	//;具体内容为00|C092|000000|07FF
 	.word	0x07FF		! 8Mb - limit=2047 (2048*4096=8Mb)
 	.word	0x0000		! base address=0

@@ -1,4 +1,9 @@
 /*
+traps.c 程序主要包括一些在处理异常故障（硬件中断）的底层代码 asm.s 中调用的相应 C 函数。
+用于显示出错位置和出错号等调试信息。
+*/
+
+/*
  *  linux/kernel/traps.c
  *
  *  (C) 1991  Linus Torvalds
@@ -10,6 +15,11 @@
  * to mainly kill the offending process (probably by giving it a signal,
  * but possibly by killing it outright if necessary).
  */
+/*
+ * 在程序 asm.s 中保存了一些状态后，本程序用来处理硬件陷阱和故障。目前主要用于调试目的，
+ * 以后将扩展用来杀死遭损坏的进程（主要是通过发送一个信号，但如果必要也会直接杀死）。
+ */
+ 
 #include <string.h>
 
 #include <linux/head.h>
@@ -86,7 +96,7 @@ static void die(char * str,long esp_ptr,long nr)
 			printk("%p ",get_seg_long(0x17,i+(long *)esp[3]));
 		printk("\n");
 	}
-	str(i);//这是什么?
+	str(i);// 取当前运行任务的任务号
 	//进程号和任务号
 	printk("Pid: %d, process nr: %d\n\r",current->pid,0xffff & i);
 	for(i=0;i<10;i++) //得到用户态10个字节的二进制指令
@@ -217,8 +227,8 @@ void trap_init(void)
 	// 下面将 int17-48 的陷阱门先均设置为 reserved，以后每个硬件初始化时会重新设置自己的陷阱门
 	for (i=17;i<48;i++)
 		set_trap_gate(i,&reserved);
-	set_trap_gate(45,&irq13);// 设置协处理器的陷阱门
-	outb_p(inb_p(0x21)&0xfb,0x21);// 允许主 8259A 芯片的 IRQ2 中断请求
-	outb(inb_p(0xA1)&0xdf,0xA1);// 允许从 8259A 芯片的 IRQ13 中断请求
-	set_trap_gate(39,&parallel_interrupt);// 设置并行口的陷阱门
+	set_trap_gate(45,&irq13);				// 设置协处理器的陷阱门
+	outb_p(inb_p(0x21)&0xfb,0x21);			// 允许主 8259A 芯片的 IRQ2 中断请求
+	outb(inb_p(0xA1)&0xdf,0xA1);			// 允许从 8259A 芯片的 IRQ13 中断请求
+	set_trap_gate(39,&parallel_interrupt);	// 设置并行口的陷阱门
 }

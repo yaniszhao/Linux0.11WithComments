@@ -103,6 +103,7 @@ register unsigned long __res asm("ax");
 
 __asm__("std ; repne ; scasb\n\t"		// 方向位置位，将 al(0)与对应每个页面的(di)内容比较，
 	"jne 1f\n\t"						// 如果没有等于 0 的字节，则跳转结束（返回 0）。
+										// 找到了空闲页:
 	"movb $1,1(%%edi)\n\t"				// 将对应页面的内存映像位置 1。
 	"sall $12,%%ecx\n\t"				// 页面数*4K = 相对页面起始地址。
 	"addl %2,%%ecx\n\t"					// 再加上低端内存地址，即获得页面实际物理起始地址。
@@ -145,8 +146,8 @@ void free_page(unsigned long addr)
  * by 'exit()'. As does copy_page_tables(), this handles only 4Mb blocks.
  */
 /*
- * 下面函数释放页表连续的内存块，'exit()'需要该函数。与 copy_page_tables()
- * 类似，该函数仅处理 4Mb 的内存块。
+ * 下面函数释放页表连续的内存块，'exit()'需要该函数。
+ * 与 copy_page_tables()类似，该函数仅处理 4Mb 的内存块。
  */
 // 根据指定的线性地址和限长（页表个数），释放对应内存页表所指定的内存块并置表项空闲。
 // 页目录位于物理地址 0 开始处，共 1024 项，占 4K 字节。每个目录项指定一个页表。
@@ -205,11 +206,11 @@ int free_page_tables(unsigned long from,unsigned long size)
 /*
  * 好了，下面是内存管理 mm 中最为复杂的程序之一。它通过只复制内存页面
  * 来拷贝一定范围内线性地址中的内容。希望代码中没有错误，因为我不想
- * 再调试这块代码了?。
+ * 再调试这块代码了。
  *
  * 注意！我们并不是仅复制任何内存块 - 内存块的地址需要是 4Mb 的倍数（正好
- * 一个页目录项对应的内存大小），因为这样处理可使函数很简单。不管怎样，
- * 它仅被 fork()使用（fork.c 第 56 行）。
+ * 一个页目录项对应的内存大小），因为这样处理可使函数很简单。
+ * 不管怎样，它仅被 fork()使用。
  *
  * 注意 2！！当 from==0 时，是在为第一次 fork()调用复制内核空间。此时我们
  * 不想复制整个页目录项对应的内存，因为这样做会导致内存严重的浪费 - 我们
@@ -229,16 +230,17 @@ int copy_page_tables(unsigned long from,unsigned long to,long size)
 	unsigned long * from_dir, * to_dir;
 	unsigned long nr;
 	// 源地址和目的地址都需要是在 4Mb 的内存边界地址上。否则出错，死机。
+	// 复制一页页表影响到的范围是4Mb的内存。
 	if ((from&0x3fffff) || (to&0x3fffff))
 		panic("copy_page_tables called with wrong alignment");
 	// 取得源地址和目的地址的目录项指针(from_dir 和 to_dir)。
 	from_dir = (unsigned long *) ((from>>20) & 0xffc); /* _pg_dir = 0 */
 	to_dir = (unsigned long *) ((to>>20) & 0xffc);
 	// 计算要复制的内存块占用的页表数（也即目录项数）。
-	size = ((unsigned) (size+0x3fffff)) >> 22;
+	size = ((unsigned) (size+0x3fffff)) >> 22;	// (size+4Mb-1)/4Mb
 	// 下面开始对每个占用的页表依次进行复制操作。
 	for( ; size-->0 ; from_dir++,to_dir++) {
-		if (1 & *to_dir)	// 如果目的目录项指定的页表已经存在(P=1)，则出错，死机。
+		if (1 & *to_dir)		// 如果目的目录项指定的页表已经存在(P=1)，则出错，死机。
 			panic("copy_page_tables: already exist");
 		if (!(1 & *from_dir))	// 如果此源目录项未被使用，则不用复制对应页表，跳过
 			continue;
@@ -260,7 +262,7 @@ int copy_page_tables(unsigned long from,unsigned long to,long size)
 			// 复位页表项中 R/W 标志(置 0)。(如果 U/S 位是 0，则 R/W 就没有作用。
 			// 如果 U/S 是 1，而 R/W 是 0，那么运行在用户层的代码就只能读页面。
 			// 如果 U/S 和 R/W 都置位，则就有写的权限。)
-			this_page &= ~2;
+			this_page &= ~2;				//去掉写，设为只读
 			*to_page_table = this_page;
 			// 如果该页表项所指页面的地址在 1MB 以上，则需要设置内存页面映射数组 mem_map[]，
 			// 于是计算页面号，并以它为索引在页面映射数组相应项中增加引用次数。
@@ -271,10 +273,10 @@ int copy_page_tables(unsigned long from,unsigned long to,long size)
 			// 只有当调用 fork()的父进程代码处于主内存区（页面位置大于 1MB）时才会执行。
 			// 这种情况需要在进程调用了 execve()，装载并执行了新程序代码时才会出现。
 			if (this_page > LOW_MEM) {
-				*from_page_table = this_page;
+				*from_page_table = this_page;	//大于LOW_MEM的父进程此时也只能可读，写时复制。
 				this_page -= LOW_MEM;
 				this_page >>= 12;
-				mem_map[this_page]++;
+				mem_map[this_page]++;			//内存块链接数加一
 			}
 		}
 	}
@@ -343,7 +345,7 @@ void un_wp_page(unsigned long * table_entry)
 	// 并且其在页面映射字节图数组中值为 1（表示仅被引用 1 次，页面没有被共享），
 	// 则在该页面的页表项中置 R/W 标志（可写），并刷新页变换高速缓冲，然后返回。
 	if (old_page >= LOW_MEM && mem_map[MAP_NR(old_page)]==1) {
-		*table_entry |= 2;
+		*table_entry |= 2;	// 加上可写
 		invalidate();
 		return;
 	}
@@ -374,7 +376,7 @@ void un_wp_page(unsigned long * table_entry)
  *
  * 如果它在代码空间，我们就以段错误信息退出。
  */
-// 页异常中断处理调用的 C 函数。写共享页面处理函数。在 page.s 程序中被调用。
+// 页异常中断处理调用的 C 函数。写共享页面即写保护处理函数。在 page.s 程序中被调用。
 // 参数 error_code 是由 CPU 自动产生，address 是页面线性地址。
 // 写共享页面时，需复制页面（写时复制）。
 void do_wp_page(unsigned long error_code,unsigned long address)
@@ -482,14 +484,14 @@ static int try_to_share(unsigned long address, struct task_struct * p)
 	if (phys_addr >= HIGH_MEMORY || phys_addr < LOW_MEM)
 		return 0;
 	// *** 对当前进程页面进行操作。
-	// 取页目录项内容?to。如果该目录项无效(P=0)，则取空闲页面，并更新 to_page 所指的目录项。
+	// 取页目录项内容-->to。如果该目录项无效(P=0)，则取空闲页面，并更新 to_page 所指的目录项。
 	to = *(unsigned long *) to_page;
 	if (!(to & 1))
 		if (to = get_free_page())
 			*(unsigned long *) to_page = to | 7;
 		else
 			oom();
-	// 取对应页表地址?to，页表项地址?to_page。如果对应的页面已经存在，则出错，死机。
+	// 取对应页表地址-->to，页表项地址-->to_page。如果对应的页面已经存在，则出错，死机。
 	to &= 0xfffff000;
 	to_page = to + ((address>>10) & 0xffc);
 	if (1 & *(unsigned long *) to_page)
@@ -559,13 +561,14 @@ void do_no_page(unsigned long error_code,unsigned long address)
 
 	address &= 0xfffff000;	// 页面地址。
 	// 首先算出指定线性地址在进程空间中相对于进程基址的偏移长度值。
-	tmp = address - current->start_code;	
-	// 若当前进程的 executable 空，或者指定地址超出代码+数据长度，则申请一页物理内存，并映射
-	// 影射到指定的线性地址处。executable 是进程的 i 节点结构。该值为 0，表明进程刚开始设置，
-	// 需要内存；而指定的线性地址超出代码加数据长度，表明进程在申请新的内存空间，也需要给予。
+	tmp = address - current->start_code;
+	// 若当前进程的 executable 空，或者指定地址超出代码+数据长度，则申请一页物理内存，
+	// 并映射影射到指定的线性地址处。executable 是进程的 i 节点结构。
+	// 该值为 0，表明进程刚开始设置，需要内存；
+	// 而指定的线性地址超出代码加数据长度，表明进程在申请新的内存空间，也需要给予。
 	// 因此就直接调用 get_empty_page()函数，申请一页物理内存并映射到指定线性地址处即可。
-	// start_code 是进程代码段地址，end_data 是代码加数据长度。对于 Linux 内核，它的代码段和
-	// 数据段是起始基址是相同的。
+	// start_code 是进程代码段地址，end_data 是代码加数据长度。
+	// 对于 Linux 内核，它的代码段和数据段是起始基址是相同的。
 	if (!current->executable || tmp >= current->end_data) {
 		get_empty_page(address);
 		return;
@@ -606,12 +609,14 @@ void do_no_page(unsigned long error_code,unsigned long address)
 // 在该版的 Linux 内核中，最多能使用 16Mb 的内存，大于 16Mb 的内存将不于考虑，弃置不用。
 // 0 - 1Mb 内存空间用于内核系统（其实是 0-640Kb）。
 void mem_init(long start_mem, long end_mem)
-{
+{//最后是除主内存的标志位USED，主内存的是未被使用
 	int i;
 
 	HIGH_MEMORY = end_mem;				// 设置内存最高端。
+	//主要是设置主内存前面的页面标识
 	for (i=0 ; i<PAGING_PAGES ; i++)	// 首先置所有页面为已占用(USED=100)状态，
 		mem_map[i] = USED;				// 即将页面映射数组全置成 USED。
+	//设置从主内存开始的标识为未使用
 	i = MAP_NR(start_mem);				// 然后计算可使用起始内存的页面号。
 	end_mem -= start_mem;				// 再计算可分页处理的内存块大小。
 	end_mem >>= 12;						// 从而计算出可用于分页处理的页面数。

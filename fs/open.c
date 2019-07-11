@@ -183,7 +183,7 @@ int sys_chown(const char * filename,int uid,int gid)
 // 用于指定使用文件的许可属性，这些属性有 S_IRWXU(文件宿主具有读、写和执行权限)、S_IRUSR
 // (用户具有读文件权限)、S_IRWXG(组成员具有读、写和执行权限)等等。对于新创建的文件，这些
 // 属性只应用于将来对文件的访问，创建了只读文件的打开调用也将返回一个可读写的文件句柄。
-// 若操作成功则返回文件句柄(文件描述符)，否则返回出错码。(参见 sys/stat.h, fcntl.h)
+// 若操作成功则返回文件句柄(文件描述符)，否则返回出错码。
 int sys_open(const char * filename,int flag,int mode)
 {
 	struct m_inode * inode;
@@ -218,14 +218,14 @@ int sys_open(const char * filename,int flag,int mode)
 	// 如果是字符设备文件，那么如果设备号是 4 的话，则设置当前进程的 tty 号为该 i 节点的子设备号。
 	// 并设置当前进程 tty 对应的 tty 表项的父进程组号等于进程的父进程组号。
 	if (S_ISCHR(inode->i_mode))
-		if (MAJOR(inode->i_zone[0])==4) {
+		if (MAJOR(inode->i_zone[0])==4) {// ttyx
 			if (current->leader && current->tty<0) {
 				current->tty = MINOR(inode->i_zone[0]);
 				tty_table[current->tty].pgrp = current->pgrp;
 			}
 		// 否则如果该字符文件设备号是 5 的话，若当前进程没有 tty，则说明出错，
 		// 释放 i 节点和申请到的文件结构，返回出错码。
-		} else if (MAJOR(inode->i_zone[0])==5)
+		} else if (MAJOR(inode->i_zone[0])==5)	// tty
 			if (current->tty<0) {
 				iput(inode);
 				current->filp[fd]=NULL;

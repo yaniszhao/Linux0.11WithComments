@@ -64,7 +64,7 @@ int sys_dup(unsigned int fildes)
 }
 
 // 文件控制系统调用函数。
-// 参数 fd 是文件句柄，cmd 是操作命令(参见 include/fcntl.h，23-30 行)。
+// 参数 fd 是文件句柄，cmd 是操作命令。
 int sys_fcntl(unsigned int fd, unsigned int cmd, unsigned long arg)
 {	
 	struct file * filp;

@@ -130,7 +130,7 @@ struct m_inode {
 	unsigned char i_lock;			//是否上锁
 	unsigned char i_dirt;			//脏位
 	unsigned char i_pipe;			//是否是管道文件
-	unsigned char i_mount;			// 安装标志。
+	unsigned char i_mount;			// 安装标志。是否是mount点。
 	unsigned char i_seek;			// 搜寻标志(lseek 时)。
 	unsigned char i_update;			// 更新标志。
 };

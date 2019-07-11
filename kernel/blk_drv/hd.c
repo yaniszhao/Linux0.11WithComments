@@ -183,12 +183,7 @@ int sys_setup(void * BIOS)
 		hd[i*5].nr_sects = 0;
 	}
 
-	// 读取每一个硬盘上第 1 块数据(第 1 个扇区有用)，获取其中的分区表信息。
-	// 首先利用函数 bread()读硬盘第 1 块数据(fs/buffer.c,267)，
-	// 参数中的 0x300 是硬盘的主设备号(参见列表后的说明)。
-	// 然后根据硬盘头 1 个扇区位置 0x1fe 处的两个字节是否为'55AA'，
-	// 来判断该扇区中位于 0x1BE 开始的分区表是否有效。
-	// 最后将分区表信息放入硬盘分区数据结构 hd 中。
+	// 读取每一个硬盘上第 1 块数据，获取分区表信息。
 	for (drive=0 ; drive<NR_HD ; drive++) {
 		if (!(bh = bread(0x300 + drive*5,0))) {//读取第一个数据块到缓冲区
 			printk("Unable to read partition table of drive %d\n\r",
@@ -201,7 +196,7 @@ int sys_setup(void * BIOS)
 			panic("");
 		}
 		p = 0x1BE + (void *)bh->b_data;	// 分区表位于硬盘第 1 扇区的 0x1BE 处。
-		for (i=1;i<5;i++,p++) {//每块硬盘读5个分区表
+		for (i=1;i<5;i++,p++) {//每块硬盘读4个分区表
 			hd[i+5*drive].start_sect = p->start_sect;
 			hd[i+5*drive].nr_sects = p->nr_sects;
 		}
@@ -209,8 +204,8 @@ int sys_setup(void * BIOS)
 	}
 	if (NR_HD)		//有硬盘且已读入，则打印信息。
 		printk("Partition table%s ok.\n\r",(NR_HD>1)?"s":"");//打印信息还考虑加复数，哈哈
-	rd_load();		// 加载(创建)RAMDISK
-	mount_root();	// 安装根文件系统
+	rd_load();		// 加载根文件系统到RAMDISK
+	mount_root();	// 加载超级块和根目录到高速缓冲区
 	return (0);
 }
 
@@ -239,7 +234,7 @@ static int win_result(void)
 	return (1);
 }
 
-// 向硬盘控制器发送命令块(参见列表后的说明)。
+// 向硬盘控制器发送命令块。
 // 调用参数:drive - 硬盘号(0-1); nsect - 读写扇区数;
 // sect - 起始扇区; head - 磁头号;
 // cyl - 柱面号; cmd - 命令码(参见控制器命令列表，表 6.3);
@@ -395,9 +390,8 @@ static void recal_intr(void)
 }
 
 // 执行硬盘读写请求操作。
-// 若请求项是块设备的第 1 个，则块设备当前请求项指针（参见 ll_rw_blk.c，28 行）会直接指向该
-// 请求项，并会立刻调用本函数执行读写操作。否则在一个读写操作完成而引发的硬盘中断过程中，
-// 若还有请求项需要处理，则也会在中断过程中调用本函数。参见 kernel/system_call.s，221 行。
+// 若请求项是块设备的第 1 个，则块设备当前请求项指针会直接指向该请求项，并会立刻调用本函数执行读写操作。
+// 否则在一个读写操作完成而引发的硬盘中断过程中，若还有请求项需要处理，则也会在中断过程中调用本函数。
 void do_hd_request(void)
 {
 	int i,r;
@@ -405,15 +399,13 @@ void do_hd_request(void)
 	unsigned int sec,head,cyl;
 	unsigned int nsect;
 
-	// 检测请求项的合法性，若已没有请求项则退出(参见 blk.h,127)。
+	// 检测请求项的合法性，若已没有请求项则退出。
 	INIT_REQUEST;
 	// 取设备号中的子设备号(见列表后对硬盘设备号的说明)。子设备号即是硬盘上的分区号。
 	dev = MINOR(CURRENT->dev);
 	block = CURRENT->sector;
-	// 如果子设备号不存在或者起始扇区大于该分区扇区数-2，则结束该请求，
-	// 并跳转到标号 repeat 处（定义在 INIT_REQUEST 开始处）。
-	// 因为一次要求读写 2 个扇区（512*2 字节），
-	// 所以请求的扇区号不能大于分区中最后倒数第二个扇区号。
+	// 如果子设备号不存在或者起始扇区大于该分区扇区数-2，则结束该请求，并跳转到标号 repeat 处。
+	// 因为一次要求读写 2 个扇区（512*2 字节），所以请求的扇区号不能大于分区中最后倒数第二个扇区号。
 	if (dev >= 5*NR_HD || block+2 > hd[dev].nr_sects) {
 		end_request(0);
 		goto repeat;//repeat在INIT_REQUEST中定义的。
@@ -470,7 +462,7 @@ void do_hd_request(void)
 void hd_init(void)
 {
 	blk_dev[MAJOR_NR].request_fn = DEVICE_REQUEST;// do_hd_request()。
-	// 设置硬盘中断门向量 int 0x2E(46)。hd_interrupt 在(kernel/system_call.s,221)。
+	// 设置硬盘中断门向量 int 0x2E(46)。
 	set_intr_gate(0x2E,&hd_interrupt);
 	// 复位接联的主 8259A int2 的屏蔽位，允许从片发出中断请求信号。
 	outb_p(inb_p(0x21)&0xfb,0x21);

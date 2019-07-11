@@ -118,8 +118,8 @@ error_code:	//;这里是带错误码处理的入口处，用这个处理的do函数也都是errorcode和sp
 	push %ds
 	push %es
 	push %fs
-	pushl %eax			# error code	//第二个参数
-	lea 44(%esp),%eax		# offset	//第一个参数esp
+	pushl %eax			# error code	//;第二个参数
+	lea 44(%esp),%eax		# offset	//;第一个参数esp
 	pushl %eax
 	movl $0x10,%eax	//;内核代码数据段选择符，原来的可能是用户态中断过来的
 	mov %ax,%ds

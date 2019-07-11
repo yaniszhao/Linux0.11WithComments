@@ -56,7 +56,7 @@ int read_pipe(struct m_inode * inode, char * buf, int count)
 	return read;
 }
 
-// 管道写操作函数。
+// 管道写操作函数。无名管道。
 // 参数 inode 是管道对应的 i 节点，buf 是数据缓冲区指针，count 是将写入管道的字节数。
 int write_pipe(struct m_inode * inode, char * buf, int count)
 {

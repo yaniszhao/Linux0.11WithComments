@@ -25,30 +25,31 @@ int block_write(int dev, long * pos, char * buf, int count)
 	// 由 pos 地址换算成开始读写块的块序号 block。
 	// 并求出需读第 1 字节在该块中的偏移位置 offset。
 	int block = *pos >> BLOCK_SIZE_BITS;
-	int offset = *pos & (BLOCK_SIZE-1); //似乎是要比求余块
-	int chars;
-	int written = 0;
+	int offset = *pos & (BLOCK_SIZE-1); // 似乎是要比求余快
+	int chars;			// 一块中剩余可写的字节数。
+	int written = 0;	// 已写字节数
 	struct buffer_head * bh;
 	register char * p;
 
 	// 针对要写入的字节数 count，循环执行以下操作，直到全部写入。
 	while (count>0) {
-		chars = BLOCK_SIZE - offset;
-		// 计算在该块中可写入的字节数。如果需要写入的字节数填不满一块，则只需写 count 字节。
+		// 计算一块中剩余可写的字节数。
+		chars = BLOCK_SIZE - offset;	
+		// 如果需要写入的字节数填不满一块，则只需写 count 字节。
 		if (chars > count)
 			chars=count;
-		// 如果正好要写 1 块数据，则直接申请 1 块高速缓冲块，否则需要读入将被修改的数据块，
-		// 并预读下两块数据，然后将块号递增 1。
+		// 如果正好要写 1 块数据，则直接申请 1 块高速缓冲块。
 		if (chars == BLOCK_SIZE)
 			bh = getblk(dev,block);
+		// 否则需要读入将被修改的数据块，并预读下两块数据，然后将块号递增 1。
 		else
 			bh = breada(dev,block,block+1,block+2,-1);
 		block++;
 		// 如果缓冲块操作失败，则返回已写字节数，如果没有写入任何字节，则返回出错号（负数）
 		if (!bh)
 			return written?written:-EIO;
-		// p 指向读出数据块中开始写的位置。若最后写入的数据不足一块，
-		// 则需从块开始填写（修改）所需的字节，因此这里需置 offset 为零。
+		// p 指向读出数据块中开始写的位置。
+		// 若最后写入的数据不足一块，则需从块开始填写（修改）所需的字节，因此这里需置 offset 为零。
 		p = offset + bh->b_data;
 		offset = 0;
 		// 将文件中偏移指针前移已写字节数。累加已写字节数 chars。传送计数值减去此次已传送字节数。

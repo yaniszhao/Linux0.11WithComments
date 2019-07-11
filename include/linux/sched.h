@@ -56,10 +56,10 @@ struct i387_struct {
 							// 8 个 10 字节的协处理器累加器。
 };
 
-// 任务状态段数据结构（参见列表后的 TSS 信息）。
+// 任务状态段数据结构。
 struct tss_struct {
-	long	back_link;	/* 16 high bits zero */
-	long	esp0;
+	long	back_link;	/* 16 high bits zero */	// 前一执行任务 TSS 的描述符
+	long	esp0;		// 注意esp0不会保存，所以每当一个任务进入内核态执行时，其内核态堆栈总是空的。
 	long	ss0;		/* 16 high bits zero */
 	long	esp1;
 	long	ss1;		/* 16 high bits zero */
@@ -69,7 +69,7 @@ struct tss_struct {
 	long	eip;
 	long	eflags;
 	long	eax,ecx,edx,ebx;
-	long	esp;
+	long	esp;		//esp3
 	long	ebp;
 	long	esi;
 	long	edi;
@@ -80,7 +80,7 @@ struct tss_struct {
 	long	fs;		/* 16 high bits zero */
 	long	gs;		/* 16 high bits zero */
 	long	ldt;		/* 16 high bits zero */
-	long	trace_bitmap;	/* bits: trace 0, bitmap 16-31 */
+	long	trace_bitmap;	/* bits: trace 0, bitmap 16-31 */	// I/O映射图基地址(MAPBASE) 
 	struct i387_struct i387;
 };
 
@@ -135,7 +135,7 @@ struct task_struct {
 /* these are hardcoded - don't touch */
 	long state;	/* -1 unrunnable, 0 runnable, >0 stopped */	//状态
 	long counter;	//时间片计数
-	long priority;	//优先级，用于分配counter
+	long priority;	//优先级，用于分配counter，0号进程默认值是15
 	long signal;	//信号位图
 	struct sigaction sigaction[32];	//信号处理
 	long blocked;	/* bitmap of masked signals */ //一表示屏蔽，零表示有效
@@ -181,11 +181,11 @@ struct task_struct {
 /* math */	0, \
 /* fs info */	-1,0022,NULL,NULL,NULL,0, \
 /* filp */	{NULL,}, \
-	{ \
-		{0,0}, \
-/* ldt */	{0x9f,0xc0fa00}, \
-		{0x9f,0xc0f200}, \
-	}, \
+{ \/* ldt */	
+{0,0}, \
+{0x9f,0xc0fa00}, \ // 00 c0fa 000000 009f
+{0x9f,0xc0f200}, \ // 00 c0f2 000000 009f
+}, \
 /*tss*/	{0,PAGE_SIZE+(long)&init_task,0x10,0,0,0,0,(long)&pg_dir,\
 	 0,0,0,0,0,0,0,0, \
 	 0,0,0x17,0x17,0x17,0x17,0x17,0x17, \
@@ -220,15 +220,17 @@ extern void wake_up(struct task_struct ** p);
 // 全局表中第 1 个局部描述符表(LDT)描述符的选择符索引号。
 #define FIRST_LDT_ENTRY (FIRST_TSS_ENTRY+1)
 // 宏定义，计算在全局表中第 n 个任务的 TSS 描述符的索引号（选择符）。
+// 感觉算的是gdt上的第几个字节。但是其实就是index x xx的形式。
 #define _TSS(n) ((((unsigned long) n)<<4)+(FIRST_TSS_ENTRY<<3))
 // 宏定义，计算在全局表中第 n 个任务的 LDT 描述符的索引号。
+// 感觉算的是gdt上的第几个字节。但是其实就是index x xx的形式。
 #define _LDT(n) ((((unsigned long) n)<<4)+(FIRST_LDT_ENTRY<<3))
 // 宏定义，加载第 n 个任务的任务寄存器 tr。
 #define ltr(n) __asm__("ltr %%ax"::"a" (_TSS(n)))
 // 宏定义，加载第 n 个任务的局部描述符表寄存器 ldtr。
 #define lldt(n) __asm__("lldt %%ax"::"a" (_LDT(n)))
 // 取当前运行任务的任务号（是任务数组中的索引值，与进程号 pid 不同）。
-// 返回：n - 当前任务号。用于( kernel/traps.c, 79)。
+// 返回：n - 当前任务号。
 #define str(n) \
 __asm__("str %%ax\n\t" \
 	"subl %2,%%eax\n\t" \
@@ -247,23 +249,14 @@ __asm__("str %%ax\n\t" \
  * 协处理器的话，则还需复位控制寄存器 cr0 中的 TS 标志。
  */
 // 跳转到一个任务的 TSS 段选择符组成的地址处会造成 CPU 进行任务切换操作。
-// 输入：%0 - 偏移地址(*&__tmp.a)； %1 - 存放新 TSS 的选择符；
-// dx - 新任务 n 的 TSS 段选择符；ecx - 新任务指针 task[n]。
-// 其中临时数据结构__tmp 用于组建 177 行远跳转（far jump）指令的操作数。该操作数由 4 字节偏移
-// 地址和 2 字节的段选择符组成。因此__tmp 中 a 的值是 32 位偏移值，而 b 的低 2 字节是新 TSS 段的
-// 选择符（高 2 字节不用）。跳转到 TSS 段选择符会造成任务切换到该 TSS 对应的进程。对于造成任务
-// 切换的长跳转，a 值无用。177 行上的内存间接跳转指令使用 6 字节操作数作为跳转目的地的长指针，
-// 其格式为：jmp 16 位段选择符：32 位偏移值。但在内存中操作数的表示顺序与这里正好相反。
-// 在判断新任务上次执行是否使用过协处理器时，是通过将新任务状态段地址与保存在
-// last_task_used_math 变量中的使用过协处理器的任务状态段地址进行比较而作出的，
-// 参见 kernel/sched.c 中函数 math_state_restore()。
+// ljmp会保存当前的TSS然后更新新的TSS，再跳转到tss的ip处执行代码。
 #define switch_to(n) {\
 struct {long a,b;} __tmp; \
 __asm__("cmpl %%ecx,_current\n\t" \	// 任务 n 是当前任务吗?(current ==task[n]?)
 	"je 1f\n\t" \					// 是，则什么都不做，退出。
 	"movw %%dx,%1\n\t" \			// 将新任务 16 位选择符存入__tmp.b 中。
 	"xchgl %%ecx,_current\n\t" \	// current = task[n]；ecx = 被切换出的任务。
-	"ljmp %0\n\t" \					// 执行长跳转至*&__tmp，造成任务切换。
+	"ljmp %0\n\t" \					// 执行长跳转至*&__tmp.a，造成任务切换。
 									// 在任务切换回来后才会继续执行下面的语句。
 	"cmpl %%ecx,_last_task_used_math\n\t" \	// 新任务上次使用过协处理器吗？
 	"jne 1f\n\t" \							// 没有则跳转，退出。

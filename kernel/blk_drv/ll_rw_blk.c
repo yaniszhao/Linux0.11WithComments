@@ -178,7 +178,7 @@ repeat:
 	}
 /* fill up the request-info, and add it to the queue */
 	/* 向空闲请求项中填写请求信息，并将其加入队列中 */
-	// 程序执行到这里表示已找到一个空闲请求项。请求结构参见（kernel/blk_drv/blk.h,23）。
+	// 程序执行到这里表示已找到一个空闲请求项。。
 	req->dev = bh->b_dev;
 	req->cmd = rw;
 	req->errors=0;
@@ -209,7 +209,7 @@ void ll_rw_block(int rw, struct buffer_head * bh)
 	make_request(major,rw,bh);// 创建请求项并插入请求队列。
 }
 
-// 块设备初始化函数，由初始化程序 main.c 调用（init/main.c,128）。
+// 块设备初始化函数，由初始化程序 main.c 调用。
 // 初始化请求数组，将所有请求项置为空闲项(dev = -1)。有 32 项(NR_REQUEST = 32)。
 void blk_dev_init(void)
 {

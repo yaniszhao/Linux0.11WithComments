@@ -101,7 +101,7 @@ int sys_sigaction(int signum, const struct sigaction * action,
 }
 
 
-// 系统调用中断处理程序中真正的信号处理程序(在 kernel/system_call.s,119 行)。 
+// 系统调用中断处理程序中真正的信号处理程序在system_call.s。 
 // 该段代码的主要作用是将信号的处理句柄插入到用户程序堆栈中，
 // 并在本系统调用结束返回后立刻执行信号句柄程序，然后继续执行用户的程序。
 // 信号处理函数放到用户态去执行而不是放到内核态执行，可以减少内核处理时间，而且更安全。
@@ -111,7 +111,7 @@ void do_signal(long signr,long eax, long ebx, long ecx, long edx,
 	unsigned long * esp, long ss)
 {
 	unsigned long sa_handler;
-	long old_eip=eip;//用户态eip
+	long old_eip=eip;	//用户态eip
 	struct sigaction * sa = current->sigaction + signr - 1;
 	int longs;
 	unsigned long * tmp_esp;
@@ -139,8 +139,8 @@ void do_signal(long signr,long eax, long ebx, long ecx, long edx,
 	// 如果允许信号自己的处理句柄收到信号自己，则也需要将进程的阻塞码压入堆栈。
 	// 注意，这里 longs 的结果应该选择(7*4):(8*4)，因为堆栈是以 4 字节为单位操作的
 	longs = (sa->sa_flags & SA_NOMASK)?7:8;
-	*(&esp) -= longs;//esp-=longs看成long*的减每次减的绝对值为4
-	verify_area(esp,longs*4);// 并检查内存使用情况(例如如果内存超界则分配新页等)
+	*(&esp) -= longs;			// esp-=longs看成long*的减每次减的绝对值为4
+	verify_area(esp,longs*4);	// 写前验证(例如如果内存超界则分配新页等)
 	tmp_esp=esp;
 	put_fs_long((long) sa->sa_restorer,tmp_esp++);	//放restorer处理函数入口，下面是处理函数的参数
 	put_fs_long(signr,tmp_esp++);					//放信号值，同时是sa_handler函数的参数

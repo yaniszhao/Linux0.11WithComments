@@ -14,6 +14,12 @@
  * dont handle signal-recognition, as that would clutter them up totally
  * unnecessarily.
  *
+ * ;system_call.s ÎÄ¼ş°üº¬ÏµÍ³µ÷ÓÃ(system-call)µ×²ã´¦Àí×Ó³ÌĞò¡£ÓÉÓÚÓĞĞ©´úÂë±È½ÏÀàËÆ£¬ËùÒÔ
+ * ;Í¬Ê±Ò²°üÀ¨Ê±ÖÓÖĞ¶Ï´¦Àí(timer-interrupt)¾ä±ú¡£Ó²ÅÌºÍÈíÅÌµÄÖĞ¶Ï´¦Àí³ÌĞòÒ²ÔÚÕâÀï¡£
+ *
+ * ;×¢Òâ£ºÕâ¶Î´úÂë´¦ÀíĞÅºÅ(signal)Ê¶±ğ£¬ÔÚÃ¿´ÎÊ±ÖÓÖĞ¶ÏºÍÏµÍ³µ÷ÓÃÖ®ºó¶¼»á½øĞĞÊ¶±ğ¡£Ò»°ã
+ * ;ÖĞ¶ÏĞÅºÅ²¢²»´¦ÀíĞÅºÅÊ¶±ğ£¬ÒòÎª»á¸øÏµÍ³Ôì³É»ìÂÒ¡£
+ *
  * Stack layout in 'ret_from_system_call':
  *//;´ÓÏµÍ³µ÷ÓÃ·µ»Ø('ret_from_system_call')Ê±¶ÑÕ»µÄÄÚÈİ
  *	 0(%esp) - %eax
@@ -51,14 +57,14 @@ OLDESP		= 0x28
 OLDSS		= 0x2C
 
 //;ÒÔÏÂÕâĞ©ÊÇÈÎÎñ½á¹¹(task_struct)ÖĞ±äÁ¿µÄÆ«ÒÆÖµ
-state	= 0		# these are offsets into the task-struct. //½ø³Ì×´Ì¬Âë
+state	= 0		# these are offsets into the task-struct. //;½ø³Ì×´Ì¬Âë
 counter	= 4		//;ÈÎÎñÔËĞĞÊ±¼ä¼ÆÊı(µİ¼õ)(µÎ´ğÊı)£¬ÔËĞĞÊ±¼äÆ¬
 priority = 8		//;ÔËĞĞÓÅÏÈÊı¡£ÈÎÎñ¿ªÊ¼ÔËĞĞÊ± counter=priority£¬Ô½´óÔòÔËĞĞÊ±¼äÔ½³¤
 signal	= 12		//;ÊÇĞÅºÅÎ»Í¼£¬Ã¿¸ö±ÈÌØÎ»´ú±íÒ»ÖÖĞÅºÅ£¬ĞÅºÅÖµ=Î»Æ«ÒÆÖµ+1
-sigaction = 16		# MUST be 16 (=len of sigaction) // sigaction ½á¹¹³¤¶È±ØĞëÊÇ 16 ×Ö½Ú
+sigaction = 16		# MUST be 16 (=len of sigaction) // ;sigaction ½á¹¹³¤¶È±ØĞëÊÇ 16 ×Ö½Ú
 blocked = (33*16)	//;ÊÜ×èÈûĞÅºÅÎ»Í¼µÄÆ«ÒÆÁ¿
 
-//ÒÔÏÂ¶¨ÒåÔÚ sigaction ½á¹¹ÖĞµÄÆ«ÒÆÁ¿
+//;ÒÔÏÂ¶¨ÒåÔÚ sigaction ½á¹¹ÖĞµÄÆ«ÒÆÁ¿
 # offsets within sigaction
 sa_handler = 0		// ;ĞÅºÅ´¦Àí¹ı³ÌµÄ¾ä±ú(ÃèÊö·û)
 sa_mask = 4		// ;ĞÅºÅÁ¿ÆÁ±ÎÂë
@@ -103,9 +109,9 @@ _system_call://;int 0x80 --linux ÏµÍ³µ÷ÓÃÈë¿Úµã(µ÷ÓÃÖĞ¶Ï int 0x80£¬eax ÖĞÊÇµ÷ÓÃº
 	movl _current,%eax
 	//;²é¿´µ±Ç°ÈÎÎñµÄÔËĞĞ×´Ì¬¡£Èç¹û²»ÔÚ¾ÍĞ÷×´Ì¬(state ²»µÈÓÚ 0)¾ÍÈ¥Ö´ĞĞµ÷¶È³ÌĞò¡£
 	//;Èç¹û¸ÃÈÎÎñÔÚ¾ÍĞ÷×´Ì¬£¬µ«ÆäÊ±¼äÆ¬ÒÑÓÃÍê(counter=0)£¬ÔòÒ²È¥Ö´ĞĞµ÷¶È³ÌĞò
-	cmpl $0,state(%eax)		# state
+	cmpl $0,state(%eax)		# state		//;±ÈÈçsleep×ßµ½Õâ¾ÍÓ¦¸ÃÖØĞÂµ÷¶È
 	jne reschedule
-	cmpl $0,counter(%eax)		# counter
+	cmpl $0,counter(%eax)		# counter	//;±ÈÈçÊ±ÖÓÖĞ¶ÏÈÃcounter¼õµ½0ºó
 	je reschedule
 ret_from_sys_call://;ÏµÍ³µ÷ÓÃ C º¯Êı·µ»Øºó£¬¶ÔĞÅºÅÁ¿½øĞĞÊ¶±ğ´¦Àí
 	//;Ê×ÏÈÅĞ±ğµ±Ç°ÈÎÎñÊÇ·ñÊÇ³õÊ¼ÈÎÎñ task0£¬Èç¹ûÊÇÔò²»±Ø¶ÔÆä½øĞĞĞÅºÅÁ¿·½ÃæµÄ´¦Àí£¬Ö±½Ó·µ»Ø
@@ -251,7 +257,7 @@ _sys_fork:
 	call _find_empty_process	//;ÕÒµ½Ò»¸ö¿ÕµÄPCBÏî
 	testl %eax,%eax
 	js 1f
-	push %gs
+	push %gs			//;ÏÂÃæ¼¸¸öÈëÕ»ÊÇ´«µİ²ÎÊı
 	pushl %esi
 	pushl %edi
 	pushl %ebp
@@ -261,9 +267,9 @@ _sys_fork:
 1:	ret
 
 //;int 46 -- (int 0x2E) Ó²ÅÌÖĞ¶Ï´¦Àí³ÌĞò£¬ÏìÓ¦Ó²¼şÖĞ¶ÏÇëÇó IRQ14¡£
-//;µ±Ó²ÅÌ²Ù×÷Íê³É»ò³ö´í¾Í»á·¢³ö´ËÖĞ¶ÏĞÅºÅ¡£(²Î¼û kernel/blk_drv/hd.c)¡£
+//;µ±Ó²ÅÌ²Ù×÷Íê³É»ò³ö´í¾Í»á·¢³ö´ËÖĞ¶ÏĞÅºÅ¡£
 //;Ê×ÏÈÏò 8259A ÖĞ¶Ï¿ØÖÆ´ÓĞ¾Æ¬·¢ËÍ½áÊøÓ²¼şÖĞ¶ÏÖ¸Áî(EOI)£¬
-//;È»ºóÈ¡±äÁ¿ do_hd ÖĞµÄº¯ÊıÖ¸Õë·ÅÈë edx # ¼Ä´æÆ÷ÖĞ£¬²¢ÖÃ do_hd Îª NULL£¬
+//;È»ºóÈ¡±äÁ¿ do_hd ÖĞµÄº¯ÊıÖ¸Õë·ÅÈë edx ¼Ä´æÆ÷ÖĞ£¬²¢ÖÃ do_hd Îª NULL£¬
 //;½Ó×ÅÅĞ¶Ï edx º¯ÊıÖ¸ÕëÊÇ·ñÎª¿Õ¡£Èç¹ûÎª¿Õ£¬Ôò¸ø edx ¸³ÖµÖ¸Ïòunexpected_hd_interrupt()£¬
 //;ÓÃÓÚÏÔÊ¾³ö´íĞÅÏ¢¡£ËæºóÏò 8259A Ö÷Ğ¾Æ¬ËÍ EOI Ö¸Áî£¬²¢µ÷ÓÃ edx ÖĞÖ¸ÕëÖ¸ÏòµÄº¯Êı:
 //;read_intr()¡¢write_intr()»ò unexpected_hd_interrupt()¡£

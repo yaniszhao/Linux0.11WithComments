@@ -88,18 +88,18 @@ int sys_kill(int pid,int sig)
 	struct task_struct **p = NR_TASKS + task;
 	int err, retval = 0;
 
-	if (!pid) while (--p > &FIRST_TASK) {//pid为0，进程组长使用pid=0才有意义
+	if (!pid) while (--p > &FIRST_TASK) {			//pid为0，进程组长使用pid=0才有意义
 		if (*p && (*p)->pgrp == current->pid) 
 			if (err=send_sig(sig,*p,1))
 				retval = err;
-	} else if (pid>0) while (--p > &FIRST_TASK) {//pid大于0，指定pid
+	} else if (pid>0) while (--p > &FIRST_TASK) {	//pid大于0，指定pid
 		if (*p && (*p)->pid == pid) 
 			if (err=send_sig(sig,*p,0))
 				retval = err;
-	} else if (pid == -1) while (--p > &FIRST_TASK)//pid=-1，除0号进程所有有权限的进程
+	} else if (pid == -1) while (--p > &FIRST_TASK)	//pid=-1，除0号进程所有有权限的进程
 		if (err = send_sig(sig,*p,0))
 			retval = err;
-	else while (--p > &FIRST_TASK)//小于-1，对应-pid进程组，前提也得有权限
+	else while (--p > &FIRST_TASK)					//小于-1，对应-pid进程组，前提也得有权限
 		if (*p && (*p)->pgrp == -pid)
 			if (err = send_sig(sig,*p,0))
 				retval = err;
@@ -128,8 +128,7 @@ static void tell_father(int pid)
 	release(current);//找不到父进程才把自己的PCB回收，一般都不会没有父进程的
 }
 
-// 程序退出处理程序。在下面 137 行处的系统调用 sys_exit()中被调用
-// code 是错误码。
+// 程序退出处理程序。code 是错误码。
 int do_exit(long code)
 {
 	int i;
@@ -139,9 +138,9 @@ int do_exit(long code)
 
 	//把子进程交给1号进程处理，似乎父进程死了子进程并不用死
 	for (i=0 ; i<NR_TASKS ; i++)		
-		if (task[i] && task[i]->father == current->pid) {//处理当前进程的子进程
-			task[i]->father = 1;//让1号进程去收留子进程
-			if (task[i]->state == TASK_ZOMBIE)//若子进程已死，让1号进程处理尸体
+		if (task[i] && task[i]->father == current->pid) {	//处理当前进程的子进程
+			task[i]->father = 1;							//让1号进程去收留子进程
+			if (task[i]->state == TASK_ZOMBIE)				//若子进程已死，让1号进程处理尸体
 				/* assumption task[1] is always init */
 				(void) send_sig(SIGCHLD, task[1], 1);
 		}
@@ -177,9 +176,9 @@ int do_exit(long code)
 	// 除0号进程外。最起码都有一个父进程，最差也被1号进程收养，
 	// 且进程退出时最后都要被父进程放到1号进程去，所以所有进程都是被1号进程处理尸体。
 	current->state = TASK_ZOMBIE;
-	current->exit_code = code;//这个变量就是专门放退出的错误码的
-	tell_father(current->father);//告诉父进程自己先挂了
-	schedule();// 重新调度进程运行，以让父进程处理僵死进程其它的善后事宜
+	current->exit_code = code;		//这个变量就是专门放退出的错误码的
+	tell_father(current->father);	//告诉父进程自己先挂了
+	schedule();						//重新调度进程运行，以让父进程处理僵死进程其它的善后事宜
 	return (-1);	/* just to suppress warnings */
 }
 

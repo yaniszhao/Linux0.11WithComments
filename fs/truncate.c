@@ -61,7 +61,7 @@ void truncate(struct m_inode * inode)
 	// 如果不是常规文件或者是目录文件，则返回。
 	if (!(S_ISREG(inode->i_mode) || S_ISDIR(inode->i_mode)))
 		return;
-	for (i=0;i<7;i++)	// 7个直接块
+	for (i=0;i<7;i++)							// 7个直接块
 		if (inode->i_zone[i]) {
 			free_block(inode->i_dev,inode->i_zone[i]);
 			inode->i_zone[i]=0;

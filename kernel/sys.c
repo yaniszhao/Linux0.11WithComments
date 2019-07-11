@@ -252,6 +252,7 @@ int sys_getpgrp(void)
 	return current->pgrp;
 }
 
+// 把当前进程设成会话首领。
 // 创建一个会话(session)(即设置其 leader=1)，并且设置其会话号=其组号=其进程号。
 // setsid -- SET Session ID。
 int sys_setsid(void)

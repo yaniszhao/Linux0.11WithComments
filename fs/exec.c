@@ -156,10 +156,14 @@ static int count(char ** argv)
  * 我们尽量避免调用 set_fs()，除非实在必要。
  */
 // 复制指定个数的参数字符串到参数和环境空间。
-// 参数：argc - 欲添加的参数个数；argv - 参数指针数组；page - 参数和环境空间页面指针数组。
-// p -在参数表空间中的偏移指针，始终指向已复制串的头部；from_kmem - 字符串来源标志。
-// 在 do_execve()函数中，p 初始化为指向参数表(128kB)空间的最后一个长字处，参数字符串
-// 是以堆栈操作方式逆向往其中复制存放的，因此 p 指针会始终指向参数字符串的头部。
+// 参数：
+// argc - 欲添加的参数个数；
+// argv - 参数指针数组；
+// page - 参数和环境空间页面指针数组。
+// p -在参数表空间中的偏移指针，始终指向已复制串的头部；
+// from_kmem - 字符串来源标志。
+// 在 do_execve()函数中，p 初始化为指向参数表(128kB)空间的最后一个长字处，
+// 参数字符串是以堆栈操作方式逆向往其中复制存放的，因此 p 指针会始终指向参数字符串的头部。
 // 返回：参数和环境空间当前头部指针。
 static unsigned long copy_strings(int argc,char ** argv,unsigned long *page,
 		unsigned long p, int from_kmem)
@@ -238,7 +242,7 @@ static unsigned long change_ldt(unsigned long text_size,unsigned long * page)
 	// 并设置数据段长度为 64MB。
 	code_limit = text_size+PAGE_SIZE -1;
 	code_limit &= 0xFFFFF000;
-	data_limit = 0x4000000;
+	data_limit = 0x4000000;	//64MB
 	// 取当前进程中局部描述符表代码段描述符中代码段基址，代码段基址与数据段基址相同。
 	code_base = get_base(current->ldt[1]);//cs
 	data_base = code_base;
@@ -267,9 +271,12 @@ static unsigned long change_ldt(unsigned long text_size,unsigned long * page)
  */
 // execve()系统中断调用函数。加载并执行子进程（其它程序）。
 // 该函数系统中断调用(int 0x80)功能号__NR_execve 调用的函数。
-// 参数：eip - 指向堆栈中调用系统中断的程序代码指针 eip 处，参见 kernel/system_call.s 程序
-// 开始部分的说明；tmp - 系统中断中在调用_sys_execve 时的返回地址，无用；
-// filename - 被执行程序文件名；argv - 命令行参数指针数组；envp - 环境变量指针数组。
+// 参数：
+// eip - 指向堆栈中调用系统中断的程序代码指针 eip 处；
+// tmp - 系统中断中在调用_sys_execve 时的返回地址，无用；
+// filename - 被执行程序文件名；
+// argv - 命令行参数指针数组；
+// envp - 环境变量指针数组。
 // 返回：如果调用成功，则不返回；否则设置出错号，并返回-1。
 int do_execve(unsigned long * eip,long tmp,char * filename,
 	char ** argv, char ** envp)
@@ -332,7 +339,7 @@ restart_interp:
 		retval = -EACCES;
 		goto exec_error2;
 	}
-	// 下面对执行文件的头结构数据进行处理，首先让 ex 指向执行头部分的数据结构。
+	// 下面对执行文件的头结构数据进行处理，首先把执行头部分的数据结构复值到ex。
 	ex = *((struct exec *) bh->b_data);	/* read exec-header */
 	// 如果执行文件开始的两个字节为'#!'，并且 sh_bang 标志没有置位，则处理脚本文件的执行。
 	if ((bh->b_data[0] == '#') && (bh->b_data[1] == '!') && (!sh_bang)) {
@@ -352,7 +359,7 @@ restart_interp:
 		// 释放高速缓冲块和该执行文件 i 节点。
 		brelse(bh);
 		iput(inode);
-		// 取第一行内容，并删除开始的空格、制表符。
+		// 找到第一行的第一个字符
 		buf[1022] = '\0';
 		if (cp = strchr(buf, '\n')) {
 			*cp = '\0';
@@ -437,7 +444,8 @@ restart_interp:
 		set_fs(old_fs);
 		goto restart_interp;
 	}
-	brelse(bh);	// 释放该缓冲区。
+	// 因为头信息已经复制给ex了，所以可以释放了。
+	brelse(bh);	
 	// 下面对执行头信息进行处理。
 	// 对于下列情况，将不执行程序：如果执行文件不是需求页可执行文件(ZMAGIC)、
 	// 或者代码重定位部分长度 a_trsize 不等于 0、或者数据重定位信息长度不等于 0、
@@ -482,8 +490,7 @@ restart_interp:
 		if ((current->close_on_exec>>i)&1)
 			sys_close(i);
 	current->close_on_exec = 0;
-	// 根据指定的基地址和限长，释放原来进程代码段和数据段所对应的内存页表指定的内存块
-	// 及页表本身。
+	// 根据指定的基地址和限长，释放原来进程代码段和数据段所对应的内存页表指定的内存块及页表本身。
 	// 此时被执行程序没有占用主内存区任何页面。
 	// 在执行时会引起内存管理程序执行缺页处理而为其申请内存页面，并把程序读入内存。
 	free_page_tables(get_base(current->ldt[1]),get_limit(0x0f));

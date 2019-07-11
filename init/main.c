@@ -155,10 +155,10 @@ void main(void)		/* This really IS void, no error here. */
 
 // 如果定义了内存虚拟盘，则初始化虚拟盘。此时主内存将减少
 #ifdef RAMDISK
-	main_memory_start += rd_init(main_memory_start, RAMDISK*1024);
+	main_memory_start += rd_init(main_memory_start, RAMDISK*1024);//确认起始/长度，清零
 #endif
 	mem_init(main_memory_start,memory_end);	// 主内存的初始化，主要是设置map
-	trap_init();							// 陷阱门(硬件中断向量)初始化
+	trap_init();							// 陷阱门(软中断)初始化
 	blk_dev_init();							// 块设备初始化，主要是请求队列
 	chr_dev_init();							// 字符设备初始化
 	tty_init();								// tty 初始化，rs和con
@@ -168,7 +168,7 @@ void main(void)		/* This really IS void, no error here. */
 	hd_init();								// 硬盘初始化，请求队列和硬盘中断地址
 	floppy_init();							// 软驱初始化，请求队列和软盘中断地址
 	sti(); 									// 所有初始化工作都做完了，开启中断。中断在setup就关了
-	move_to_user_mode();					//从内核态切换到用户态
+	move_to_user_mode();					// 从内核态切换到用户态
 	if (!fork()) {		/* we count on this going ok */
 		init();	// 在新建的子进程(任务 1)中执行
 	}
@@ -203,11 +203,11 @@ static int printf(const char *fmt, ...)
 	return i;
 }
 
-//普通用户
+//普通shell
 static char * argv_rc[] = { "/bin/sh", NULL };	// 调用执行程序时参数的字符串数组
 static char * envp_rc[] = { "HOME=/", NULL };	// 调用执行程序时的环境字符串数组
 
-//root用户
+//登录shell
 // “-”是传递给 shell 程序 sh 的一个标志。
 // 通过识别该标志，sh程序会作为登录 shell 执行。
 // 其执行过程与在 shell 提示符下执行 sh 不太一样。
@@ -276,7 +276,7 @@ void init(void)
 		}
 		if (!pid) {	//子进程
 			close(0);close(1);close(2);			//为什么要关了重新创建--创建会话的要求
-			setsid();							//设置一个会话
+			setsid();							//把当前进程设成会话首领。
 			(void) open("/dev/tty0",O_RDWR,0);
 			(void) dup(0);
 			(void) dup(0);

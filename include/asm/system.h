@@ -36,9 +36,8 @@ __asm__ ("movl %%esp,%%eax\n\t" \
 #define iret() __asm__ ("iret"::)	// 中断返回。
 
 // 设置门描述符宏函数。
-// 参数：gate_addr -描述符地址；type -描述符中类型域值；dpl -描述符特权层值；addr -偏移地址。
-// %0 - (由 dpl,type 组合成的类型标志字)；%1 - (描述符低 4 字节地址)；
-// %2 - (描述符高 4 字节地址)；%3 - edx(程序偏移地址 addr)；%4 - eax(高字中含有段选择符)。
+// 函数入口地址是由 seg:addr 共同组成的，这里的seg用的是0x80即内核代码段。
+// 对于type : 14 - 80386 32-bit interrupt gate; 15 - 80386 32-bit trap gate
 #define _set_gate(gate_addr,type,dpl,addr) \
 __asm__ ("movw %%dx,%%ax\n\t" \		//给eax低两个字节
 	"movw %0,%%dx\n\t" \			//给edx低两个字节

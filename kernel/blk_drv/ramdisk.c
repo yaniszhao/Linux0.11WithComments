@@ -48,14 +48,14 @@ void do_rd_request(void)
 	int	len;
 	char	*addr;
 
-	// 检测请求项的合法性，若已没有请求项则退出(参见 blk.h,127)。
+	// 检测请求项的合法性，若已没有请求项则退出。
 	INIT_REQUEST;
 	// 下面语句取得 ramdisk 的起始扇区对应的内存起始位置和内存长度。
-	// 其中 sector << 9 表示 sector * 512，CURRENT 定义为(blk_dev[MAJOR_NR].current_request)。
+	// 其中 sector << 9 表示 sector * 512。
 	addr = rd_start + (CURRENT->sector << 9);
 	len = CURRENT->nr_sectors << 9;
 	// 如果子设备号不为 1 或者对应内存起始位置>虚拟盘末尾，则结束该请求，并跳转到 repeat 处。
-	// 标号 repeat 定义在宏 INIT_REQUEST 内，位于宏的开始处，参见 blk.h，127 行。
+	// 标号 repeat 定义在宏 INIT_REQUEST 内，位于宏的开始处。
 	if ((MINOR(CURRENT->dev) != 1) || (addr+len > rd_start+rd_length)) {
 		end_request(0);
 		goto repeat;
@@ -107,7 +107,6 @@ long rd_init(long mem_start, int length)
  * 软盘的，我们将它改成指向 ramdisk。
  */
 // 尝试把根文件系统加载到虚拟盘中。
-// 该函数将在内核设置函数 setup()（hd.c，156 行）中被调用。另外，1 磁盘块 = 1024 字节。
 void rd_load(void)
 {
 	struct buffer_head *bh;	// 高速缓冲块头指针。
@@ -133,15 +132,15 @@ void rd_load(void)
 		return;
 	}
 	// 将 s 指向缓冲区中的磁盘超级块。(d_super_block 磁盘中超级块结构)。
-	*((struct d_super_block *) &s) = *((struct d_super_block *) bh->b_data);
-	brelse(bh);
+	*((struct d_super_block *) &s) = *((struct d_super_block *) bh->b_data);//拷贝了值的
+	brelse(bh);	//拷贝完值就可以释放了
 	if (s.s_magic != SUPER_MAGIC)	// 如果超级块中魔数不对，则说明不是 minix 文件系统。
 		/* No ram disk image present, assume normal floppy boot */
 		/* 磁盘中没有 ramdisk 映像文件，退出去执行通常的软盘引导 */
 		return;
 	// 块数 = 逻辑块数(区段数) * 2^(每区段块数的次方)。
-	// 如果数据块数大于内存中虚拟盘所能容纳的块数，则也不能加载，显示出错信息并返回。否则显示
-	// 加载数据块信息。
+	// 如果数据块数大于内存中虚拟盘所能容纳的块数，则也不能加载，显示出错信息并返回。
+	// 否则显示加载数据块信息。
 	nblocks = s.s_nzones << s.s_log_zone_size;
 	if (nblocks > (rd_length >> BLOCK_SIZE_BITS)) {
 		printk("Ram disk image too big!  (%d blocks, %d avail)\n", 

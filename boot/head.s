@@ -25,9 +25,9 @@ startup_32:
 	lss _stack_start,%esp	//;_stack_start在sched.c文件中定义
 				//;lss--通过6个字节的数据结构设置ss:sp
 				//;在运行任务0之前它是内核代码栈，以后用作任务0和1的用户态栈
-
-	call setup_idt		//;因为这里函数调用要用到栈所以之前就得初始化栈
-	call setup_gdt		//;设置临时的中断表
+				//;因为这里函数调用要用到栈所以之前就得初始化栈
+	call setup_idt		//;设置临时的中断表
+	call setup_gdt		
 
 	//;由于段描述符中的段限长从setup程序的8MB改成了本程序设置的16MB
 	//;因此这里再次对所有段寄存器执行加载操作是必须的
@@ -225,7 +225,7 @@ ignore_int:	//;临时的中断处理程序
 //;空间，地址空间将被映射到其它一些地方去 -- mm(内存管理程序)会管理这些事的。
 //;对于那些有多于 16Mb 内存的家伙 – 真是太幸运了，我还没有，为什么你会有?。代码就在
 //;这里，对它进行修改吧。(实际上，这并不太困难的。通常只需修改一些常数等。我把它设置
-//;为 16Mb，因为我的机器再怎么扩充甚至不能超过这个界限(当然，我的机器是很便宜的?)。
+//;为 16Mb，因为我的机器再怎么扩充甚至不能超过这个界限(当然，我的机器是很便宜的)。
 //;我已经通过设置某类标志来给出需要改动的地方(搜索“16Mb”)，但我不能保证作这些
 //;改动就行了)。
 
@@ -251,19 +251,22 @@ setup_paging:
 	movl $pg1+7,_pg_dir+4		/*  --------- " " --------- */
 	movl $pg2+7,_pg_dir+8		/*  --------- " " --------- */
 	movl $pg3+7,_pg_dir+12		/*  --------- " " --------- */
-	movl $pg3+4092,%edi
-	movl $0xfff007,%eax		/*  16Mb - 4096 + 7 (r/w user,p) */
-	std
+	//;填表项
+	movl $pg3+4092,%edi		//;最后一项的地址
+	movl $0xfff007,%eax		/*  16Mb - 4096 + 7 (r/w user,p) */ //;最后一项的值
+	std				//;清方向，每次减4字节
 1:	stosl			/* fill pages backwards - more efficient :-) */
-	subl $0x1000,%eax
-	jge 1b
+	subl $0x1000,%eax		//;每填写好一项，物理地址值减 0x1000
+	jge 1b				//;如果小于 0 则说明全添写好了
 	xorl %eax,%eax		/* pg_dir is at 0x0000 */
-	movl %eax,%cr3		/* cr3 - page directory start */
+	movl %eax,%cr3		/* cr3 - page directory start */	//;页目录所在地址
 	movl %cr0,%eax
 	orl $0x80000000,%eax
-	movl %eax,%cr0		/* set paging (PG) bit */
+	movl %eax,%cr0		/* set paging (PG) bit */	//;开启分页
 	ret			/* this also flushes prefetch-queue */	//;去执行main
-
+		//; 在改变分页处理标志后要求使用转移指令刷新预取指令队列，这里用的是返回指令 ret。
+		//; 该返回指令的另一个作用是将堆栈中的 main 程序的地址弹出，并开始运行/init/main.c 程序。
+		//; 本程序到此真正结束了。
 .align 2
 .word 0
 idt_descr:
@@ -282,7 +285,7 @@ _gdt:	.quad 0x0000000000000000	/* NULL descriptor */	//;第一个不用
 	.quad 0x00c09a0000000fff	/* 16Mb */ //;内核代码段00 c09a 000000 0fff
 					//;base-00000000，limit-0fff改成了16M
 					//;c09a-1100 0000 1001 1010
-	.quad 0x00c0920000000fff	/* 16Mb */ //;内核数据段00 c092 0000000 fff
+	.quad 0x00c0920000000fff	/* 16Mb */ //;内核数据段00 c092 000000 0fff
 					//;base-00000000，limit-0fff改成了16M
 					//;c092-1100 0000 1001 0010
 	.quad 0x0000000000000000	/* TEMPORARY - dont use */
