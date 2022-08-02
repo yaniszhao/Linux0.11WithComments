@@ -1,7 +1,7 @@
 /*
-¸ÃÍ·ÎÄ¼şÓÃÒÔËµÃ÷ÈíÅÌÏµÍ³³£ÓÃµ½µÄÒ»Ğ©²ÎÊıÒÔ¼°ËùÊ¹ÓÃµÄ I/O ¶Ë¿Ú¡£ÓÉÓÚÈíÅÌÇı¶¯Æ÷µÄ¿ØÖÆ±È½Ï
-·³Ëö£¬ÃüÁîÒ²¶à£¬Òò´ËÔÚÔÄ¶Á´úÂëÖ®Ç°£¬×îºÃÏÈ²Î¿¼ÓĞ¹ØÎ¢ĞÍ¼ÆËã»ú¿ØÖÆ½Ó¿ÚÔ­ÀíµÄÊé¼®£¬ÁË½âÈíÅÌ¿Ø
-ÖÆÆ÷ (FDC) µÄ¹¤×÷Ô­Àí£¬È»ºóÄã¾Í»á¾õµÃÕâÀïµÄ¶¨Òå»¹ÊÇ±È½ÏºÏÀíÓĞĞòµÄ¡£
+è¯¥å¤´æ–‡ä»¶ç”¨ä»¥è¯´æ˜è½¯ç›˜ç³»ç»Ÿå¸¸ç”¨åˆ°çš„ä¸€äº›å‚æ•°ä»¥åŠæ‰€ä½¿ç”¨çš„ I/O ç«¯å£ã€‚ç”±äºè½¯ç›˜é©±åŠ¨å™¨çš„æ§åˆ¶æ¯”è¾ƒ
+çƒ¦çï¼Œå‘½ä»¤ä¹Ÿå¤šï¼Œå› æ­¤åœ¨é˜…è¯»ä»£ç ä¹‹å‰ï¼Œæœ€å¥½å…ˆå‚è€ƒæœ‰å…³å¾®å‹è®¡ç®—æœºæ§åˆ¶æ¥å£åŸç†çš„ä¹¦ç±ï¼Œäº†è§£è½¯ç›˜æ§
+åˆ¶å™¨ (FDC) çš„å·¥ä½œåŸç†ï¼Œç„¶åä½ å°±ä¼šè§‰å¾—è¿™é‡Œçš„å®šä¹‰è¿˜æ˜¯æ¯”è¾ƒåˆç†æœ‰åºçš„ã€‚
 fd--floppy disk
 */
 
@@ -11,50 +11,50 @@ fd--floppy disk
  * Handbook", Sanches and Canton.
  */
 /*
- * ¸ÃÎÄ¼şÖĞº¬ÓĞÒ»Ğ©ÈíÅÌ¿ØÖÆÆ÷µÄÒ»Ğ©¶¨Òå¡£ÕâĞ©ĞÅÏ¢ÓĞ¶à´¦À´Ô´£¬´ó¶àÊıÈ¡×Ô Sanches ºÍ Canton
- * ±àÖøµÄ"IBM Î¢ĞÍ¼ÆËã»ú£º³ÌĞòÔ±ÊÖ²á"Ò»Êé¡£
+ * è¯¥æ–‡ä»¶ä¸­å«æœ‰ä¸€äº›è½¯ç›˜æ§åˆ¶å™¨çš„ä¸€äº›å®šä¹‰ã€‚è¿™äº›ä¿¡æ¯æœ‰å¤šå¤„æ¥æºï¼Œå¤§å¤šæ•°å–è‡ª Sanches å’Œ Canton
+ * ç¼–è‘—çš„"IBM å¾®å‹è®¡ç®—æœºï¼šç¨‹åºå‘˜æ‰‹å†Œ"ä¸€ä¹¦ã€‚
  */
  
 #ifndef _FDREG_H
 #define _FDREG_H
 
-// Ò»Ğ©ÈíÅÌÀàĞÍº¯ÊıµÄÔ­ĞÍËµÃ÷¡£
+// ä¸€äº›è½¯ç›˜ç±»å‹å‡½æ•°çš„åŸå‹è¯´æ˜ã€‚
 extern int ticks_to_floppy_on(unsigned int nr);
 extern void floppy_on(unsigned int nr);
 extern void floppy_off(unsigned int nr);
 extern void floppy_select(unsigned int nr);
 extern void floppy_deselect(unsigned int nr);
 
-// ÏÂÃæÊÇÓĞ¹ØÈíÅÌ¿ØÖÆÆ÷Ò»Ğ©¶Ë¿ÚºÍ·ûºÅµÄ¶¨Òå¡£
+// ä¸‹é¢æ˜¯æœ‰å…³è½¯ç›˜æ§åˆ¶å™¨ä¸€äº›ç«¯å£å’Œç¬¦å·çš„å®šä¹‰ã€‚
 /* Fd controller regs. S&C, about page 340 */
-/* ÈíÅÌ¿ØÖÆÆ÷(FDC)¼Ä´æÆ÷¶Ë¿Ú¡£Õª×Ô S&C ÊéÖĞÔ¼ 340 Ò³ */
-#define FD_STATUS	0x3f4		// Ö÷×´Ì¬¼Ä´æÆ÷¶Ë¿Ú¡£
-#define FD_DATA		0x3f5		// Êı¾İ¶Ë¿Ú¡£
-#define FD_DOR		0x3f2		/* Digital Output Register */	// Êı×ÖÊä³ö¼Ä´æÆ÷£¨Ò²³ÆÎªÊı×Ö¿ØÖÆ¼Ä´æÆ÷£©¡£
-#define FD_DIR		0x3f7		/* Digital Input Register (read) */	// Êı×ÖÊäÈë¼Ä´æÆ÷¡£
-#define FD_DCR		0x3f7		/* Diskette Control Register (write)*/	// Êı¾İ´«ÊäÂÊ¿ØÖÆ¼Ä´æÆ÷¡£
+/* è½¯ç›˜æ§åˆ¶å™¨(FDC)å¯„å­˜å™¨ç«¯å£ã€‚æ‘˜è‡ª S&C ä¹¦ä¸­çº¦ 340 é¡µ */
+#define FD_STATUS	0x3f4		// ä¸»çŠ¶æ€å¯„å­˜å™¨ç«¯å£ã€‚
+#define FD_DATA		0x3f5		// æ•°æ®ç«¯å£ã€‚
+#define FD_DOR		0x3f2		/* Digital Output Register */	// æ•°å­—è¾“å‡ºå¯„å­˜å™¨ï¼ˆä¹Ÿç§°ä¸ºæ•°å­—æ§åˆ¶å¯„å­˜å™¨ï¼‰ã€‚
+#define FD_DIR		0x3f7		/* Digital Input Register (read) */	// æ•°å­—è¾“å…¥å¯„å­˜å™¨ã€‚
+#define FD_DCR		0x3f7		/* Diskette Control Register (write)*/	// æ•°æ®ä¼ è¾“ç‡æ§åˆ¶å¯„å­˜å™¨ã€‚
 
 /* Bits of main status register */
-/* Ö÷×´Ì¬¼Ä´æÆ÷¸÷±ÈÌØÎ»µÄº¬Òå */
-#define STATUS_BUSYMASK	0x0F		/* drive busy mask */	// Çı¶¯Æ÷Ã¦Î»£¨Ã¿Î»¶ÔÓ¦Ò»¸öÇı¶¯Æ÷£©¡£
-#define STATUS_BUSY	0x10		/* FDC busy */		// ÈíÅÌ¿ØÖÆÆ÷Ã¦¡£
-#define STATUS_DMA	0x20		/* 0- DMA mode */	// 0 - Îª DMA Êı¾İ´«ÊäÄ£Ê½£¬1 - Îª·Ç DMA Ä£Ê½¡£
-#define STATUS_DIR	0x40		/* 0- cpu->fdc */	// ´«Êä·½Ïò£º0 - CPU --> fdc£¬1 - Ïà·´¡£
-#define STATUS_READY	0x80		/* Data reg ready */	// Êı¾İ¼Ä´æÆ÷¾ÍĞ÷Î»¡£
+/* ä¸»çŠ¶æ€å¯„å­˜å™¨å„æ¯”ç‰¹ä½çš„å«ä¹‰ */
+#define STATUS_BUSYMASK	0x0F		/* drive busy mask */	// é©±åŠ¨å™¨å¿™ä½ï¼ˆæ¯ä½å¯¹åº”ä¸€ä¸ªé©±åŠ¨å™¨ï¼‰ã€‚
+#define STATUS_BUSY	0x10		/* FDC busy */		// è½¯ç›˜æ§åˆ¶å™¨å¿™ã€‚
+#define STATUS_DMA	0x20		/* 0- DMA mode */	// 0 - ä¸º DMA æ•°æ®ä¼ è¾“æ¨¡å¼ï¼Œ1 - ä¸ºé DMA æ¨¡å¼ã€‚
+#define STATUS_DIR	0x40		/* 0- cpu->fdc */	// ä¼ è¾“æ–¹å‘ï¼š0 - CPU --> fdcï¼Œ1 - ç›¸åã€‚
+#define STATUS_READY	0x80		/* Data reg ready */	// æ•°æ®å¯„å­˜å™¨å°±ç»ªä½ã€‚
 
 /* Bits of FD_ST0 */
-/*×´Ì¬×Ö½Ú 0£¨ST0£©¸÷±ÈÌØÎ»µÄº¬Òå */
-#define ST0_DS		0x03		/* drive select mask */	// Çı¶¯Æ÷Ñ¡ÔñºÅ£¨·¢ÉúÖĞ¶ÏÊ±Çı¶¯Æ÷ºÅ£©¡£
-#define ST0_HA		0x04		/* Head (Address) */	// ´ÅÍ·ºÅ¡£
-#define ST0_NR		0x08		/* Not Ready */			// ´ÅÅÌÇı¶¯Æ÷Î´×¼±¸ºÃ¡£
-#define ST0_ECE		0x10		/* Equipment chech error */	// Éè±¸¼ì²â³ö´í£¨Áã´ÅµÀĞ£×¼³ö´í£©¡£
-#define ST0_SE		0x20		/* Seek end */				// Ñ°µÀ»òÖØĞÂĞ£Õı²Ù×÷Ö´ĞĞ½áÊø¡£
+/*çŠ¶æ€å­—èŠ‚ 0ï¼ˆST0ï¼‰å„æ¯”ç‰¹ä½çš„å«ä¹‰ */
+#define ST0_DS		0x03		/* drive select mask */	// é©±åŠ¨å™¨é€‰æ‹©å·ï¼ˆå‘ç”Ÿä¸­æ–­æ—¶é©±åŠ¨å™¨å·ï¼‰ã€‚
+#define ST0_HA		0x04		/* Head (Address) */	// ç£å¤´å·ã€‚
+#define ST0_NR		0x08		/* Not Ready */			// ç£ç›˜é©±åŠ¨å™¨æœªå‡†å¤‡å¥½ã€‚
+#define ST0_ECE		0x10		/* Equipment chech error */	// è®¾å¤‡æ£€æµ‹å‡ºé”™ï¼ˆé›¶ç£é“æ ¡å‡†å‡ºé”™ï¼‰ã€‚
+#define ST0_SE		0x20		/* Seek end */				// å¯»é“æˆ–é‡æ–°æ ¡æ­£æ“ä½œæ‰§è¡Œç»“æŸã€‚
 #define ST0_INTR	0xC0		/* Interrupt code mask */	
-								// ÖĞ¶Ï´úÂëÎ»£¨ÖĞ¶ÏÔ­Òò£©£¬00 - ÃüÁîÕı³£½áÊø£»
-								// 01 - ÃüÁîÒì³£½áÊø£»10 - ÃüÁîÎŞĞ§£»11 - FDD ¾ÍĞ÷×´Ì¬¸Ä±ä¡£
+								// ä¸­æ–­ä»£ç ä½ï¼ˆä¸­æ–­åŸå› ï¼‰ï¼Œ00 - å‘½ä»¤æ­£å¸¸ç»“æŸï¼›
+								// 01 - å‘½ä»¤å¼‚å¸¸ç»“æŸï¼›10 - å‘½ä»¤æ— æ•ˆï¼›11 - FDD å°±ç»ªçŠ¶æ€æ”¹å˜ã€‚
 
 /* Bits of FD_ST1 */
-/*×´Ì¬×Ö½Ú 1£¨ST1£©¸÷±ÈÌØÎ»µÄº¬Òå */
+/*çŠ¶æ€å­—èŠ‚ 1ï¼ˆST1ï¼‰å„æ¯”ç‰¹ä½çš„å«ä¹‰ */
 #define ST1_MAM		0x01		/* Missing Address Mark */
 #define ST1_WP		0x02		/* Write Protect */
 #define ST1_ND		0x04		/* No Data - unreadable */
@@ -63,7 +63,7 @@ extern void floppy_deselect(unsigned int nr);
 #define ST1_EOC		0x80		/* End Of Cylinder */
 
 /* Bits of FD_ST2 */
-/*×´Ì¬×Ö½Ú 2£¨ST2£©¸÷±ÈÌØÎ»µÄº¬Òå */
+/*çŠ¶æ€å­—èŠ‚ 2ï¼ˆST2ï¼‰å„æ¯”ç‰¹ä½çš„å«ä¹‰ */
 #define ST2_MAM		0x01		/* Missing Addess Mark (again) */
 #define ST2_BC		0x02		/* Bad Cylinder */
 #define ST2_SNS		0x04		/* Scan Not Satisfied */
@@ -73,22 +73,22 @@ extern void floppy_deselect(unsigned int nr);
 #define ST2_CM		0x40		/* Control Mark = deleted */
 
 /* Bits of FD_ST3 */
-/*×´Ì¬×Ö½Ú 3£¨ST3£©¸÷±ÈÌØÎ»µÄº¬Òå */
+/*çŠ¶æ€å­—èŠ‚ 3ï¼ˆST3ï¼‰å„æ¯”ç‰¹ä½çš„å«ä¹‰ */
 #define ST3_HA		0x04		/* Head (Address) */
 #define ST3_TZ		0x10		/* Track Zero signal (1=track 0) */
 #define ST3_WP		0x40		/* Write Protect */
 
 /* Values for FD_COMMAND */
-/* ÈíÅÌÃüÁîÂë */
-#define FD_RECALIBRATE	0x07		/* move to track 0 */	// ÖØĞÂĞ£Õı(´ÅÍ·ÍËµ½Áã´ÅµÀ)¡£
-#define FD_SEEK		0x0F		/* seek track */	// ´ÅÍ·Ñ°µÀ¡£
-#define FD_READ		0xE6		/* read with MT, MFM, SKip deleted */	// ¶ÁÊı¾İ£¨MT ¶à´ÅµÀ²Ù×÷£¬MFM ¸ñÊ½£¬Ìø¹ıÉ¾³ıÊı¾İ£©¡£
-#define FD_WRITE	0xC5		/* write with MT, MFM */	// Ğ´Êı¾İ£¨MT£¬MFM£©¡£
-#define FD_SENSEI	0x08		/* Sense Interrupt Status */	// ¼ì²âÖĞ¶Ï×´Ì¬¡£
-#define FD_SPECIFY	0x03		/* specify HUT etc */	// Éè¶¨Çı¶¯Æ÷²ÎÊı£¨²½½øËÙÂÊ¡¢´ÅÍ·Ğ¶ÔØÊ±¼äµÈ£©¡£
+/* è½¯ç›˜å‘½ä»¤ç  */
+#define FD_RECALIBRATE	0x07		/* move to track 0 */	// é‡æ–°æ ¡æ­£(ç£å¤´é€€åˆ°é›¶ç£é“)ã€‚
+#define FD_SEEK		0x0F		/* seek track */	// ç£å¤´å¯»é“ã€‚
+#define FD_READ		0xE6		/* read with MT, MFM, SKip deleted */	// è¯»æ•°æ®ï¼ˆMT å¤šç£é“æ“ä½œï¼ŒMFM æ ¼å¼ï¼Œè·³è¿‡åˆ é™¤æ•°æ®ï¼‰ã€‚
+#define FD_WRITE	0xC5		/* write with MT, MFM */	// å†™æ•°æ®ï¼ˆMTï¼ŒMFMï¼‰ã€‚
+#define FD_SENSEI	0x08		/* Sense Interrupt Status */	// æ£€æµ‹ä¸­æ–­çŠ¶æ€ã€‚
+#define FD_SPECIFY	0x03		/* specify HUT etc */	// è®¾å®šé©±åŠ¨å™¨å‚æ•°ï¼ˆæ­¥è¿›é€Ÿç‡ã€ç£å¤´å¸è½½æ—¶é—´ç­‰ï¼‰ã€‚
 
 /* DMA commands */
-#define DMA_READ	0x46	// DMA ¶ÁÅÌ£¬DMA ·½Ê½×Ö£¨ËÍ DMA ¶Ë¿Ú 12£¬11£©¡£
-#define DMA_WRITE	0x4A	// DMA Ğ´ÅÌ£¬DMA ·½Ê½×Ö¡£
+#define DMA_READ	0x46	// DMA è¯»ç›˜ï¼ŒDMA æ–¹å¼å­—ï¼ˆé€ DMA ç«¯å£ 12ï¼Œ11ï¼‰ã€‚
+#define DMA_WRITE	0x4A	// DMA å†™ç›˜ï¼ŒDMA æ–¹å¼å­—ã€‚
 
 #endif

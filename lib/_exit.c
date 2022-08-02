@@ -7,9 +7,9 @@
 #define __LIBRARY__
 #include <unistd.h>
 
-// ÄÚºËÊ¹ÓÃµÄ³ÌĞò(ÍË³ö)ÖÕÖ¹º¯Êı¡£
-// Ö±½Óµ÷ÓÃÏµÍ³ÖĞ¶Ï int 0x80£¬¹¦ÄÜºÅ__NR_exit¡£
-// ²ÎÊı£ºexit_code - ÍË³öÂë¡£
+// å†…æ ¸ä½¿ç”¨çš„ç¨‹åº(é€€å‡º)ç»ˆæ­¢å‡½æ•°ã€‚
+// ç›´æ¥è°ƒç”¨ç³»ç»Ÿä¸­æ–­ int 0x80ï¼ŒåŠŸèƒ½å·__NR_exitã€‚
+// å‚æ•°ï¼šexit_code - é€€å‡ºç ã€‚
 volatile void _exit(int exit_code)
 {
 	__asm__("int $0x80"::"a" (__NR_exit),"b" (exit_code));

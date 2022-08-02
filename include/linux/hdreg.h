@@ -4,15 +4,15 @@
  * a ques).
  */
 /*
- * ±¾ÎÄ¼şº¬ÓĞÒ»Ğ© AT Ó²ÅÌ¿ØÖÆÆ÷µÄ¶¨Òå¡£À´×Ô¸÷ÖÖ×ÊÁÏ¡£Çë²éÖ¤Ä³Ğ©
- * ¶¨Òå£¨´øÓĞÎÊºÅµÄ×¢ÊÍ£©¡£
+ * æœ¬æ–‡ä»¶å«æœ‰ä¸€äº› AT ç¡¬ç›˜æ§åˆ¶å™¨çš„å®šä¹‰ã€‚æ¥è‡ªå„ç§èµ„æ–™ã€‚è¯·æŸ¥è¯æŸäº›
+ * å®šä¹‰ï¼ˆå¸¦æœ‰é—®å·çš„æ³¨é‡Šï¼‰ã€‚
  */
  
 #ifndef _HDREG_H
 #define _HDREG_H
 
 /* Hd controller regs. Ref: IBM AT Bios-listing */
-/* Ó²ÅÌ¿ØÖÆÆ÷¼Ä´æÆ÷¶Ë¿Ú¡£²Î¼û£ºIBM AT Bios ³ÌĞò */
+/* ç¡¬ç›˜æ§åˆ¶å™¨å¯„å­˜å™¨ç«¯å£ã€‚å‚è§ï¼šIBM AT Bios ç¨‹åº */
 #define HD_DATA		0x1f0	/* _CTL when writing */
 #define HD_ERROR	0x1f1	/* see err-bits */
 #define HD_NSECTOR	0x1f2	/* nr of sectors to read/write */
@@ -24,10 +24,10 @@
 #define HD_PRECOMP HD_ERROR	/* same io address, read=error, write=precomp */
 #define HD_COMMAND HD_STATUS	/* same io address, read=status, write=cmd */
 
-#define HD_CMD		0x3f6	// ¿ØÖÆ¼Ä´æÆ÷¶Ë¿Ú¡£
+#define HD_CMD		0x3f6	// æ§åˆ¶å¯„å­˜å™¨ç«¯å£ã€‚
 
 /* Bits of HD_STATUS */
-/* Ó²ÅÌ×´Ì¬¼Ä´æÆ÷¸÷Î»µÄ¶¨Òå(HD_STATUS) */
+/* ç¡¬ç›˜çŠ¶æ€å¯„å­˜å™¨å„ä½çš„å®šä¹‰(HD_STATUS) */
 #define ERR_STAT	0x01
 #define INDEX_STAT	0x02
 #define ECC_STAT	0x04	/* Corrected error */
@@ -38,7 +38,7 @@
 #define BUSY_STAT	0x80
 
 /* Values for HD_COMMAND */
-/* Ó²ÅÌÃüÁîÖµ£¨HD_CMD£© */
+/* ç¡¬ç›˜å‘½ä»¤å€¼ï¼ˆHD_CMDï¼‰ */
 #define WIN_RESTORE		0x10
 #define WIN_READ		0x20
 #define WIN_WRITE		0x30
@@ -50,19 +50,19 @@
 #define WIN_SPECIFY		0x91
 
 /* Bits for HD_ERROR */
-/* ´íÎó¼Ä´æÆ÷¸÷±ÈÌØÎ»µÄº¬Òå£¨HD_ERROR£© */
-// Ö´ĞĞ¿ØÖÆÆ÷Õï¶ÏÃüÁîÊ±º¬ÒåÓëÆäËüÃüÁîÊ±µÄ²»Í¬¡£ÏÂÃæ·Ö±ğÁĞ³ö£º
+/* é”™è¯¯å¯„å­˜å™¨å„æ¯”ç‰¹ä½çš„å«ä¹‰ï¼ˆHD_ERRORï¼‰ */
+// æ‰§è¡Œæ§åˆ¶å™¨è¯Šæ–­å‘½ä»¤æ—¶å«ä¹‰ä¸å…¶å®ƒå‘½ä»¤æ—¶çš„ä¸åŒã€‚ä¸‹é¢åˆ†åˆ«åˆ—å‡ºï¼š
 // ==================================================
-// Õï¶ÏÃüÁîÊ± ÆäËüÃüÁîÊ±
+// è¯Šæ–­å‘½ä»¤æ—¶ å…¶å®ƒå‘½ä»¤æ—¶
 // --------------------------------------------------
-// 0x01 ÎŞ´íÎó Êı¾İ±êÖ¾¶ªÊ§
-// 0x02 ¿ØÖÆÆ÷³ö´í ´ÅµÀ 0 ´í
-// 0x03 ÉÈÇø»º³åÇø´í
-// 0x04 ECC ²¿¼ş´í ÃüÁî·ÅÆú
-// 0x05 ¿ØÖÆ´¦ÀíÆ÷´í
-// 0x10 ID Î´ÕÒµ½
-// 0x40 ECC ´íÎó
-// 0x80 »µÉÈÇø
+// 0x01 æ— é”™è¯¯ æ•°æ®æ ‡å¿—ä¸¢å¤±
+// 0x02 æ§åˆ¶å™¨å‡ºé”™ ç£é“ 0 é”™
+// 0x03 æ‰‡åŒºç¼“å†²åŒºé”™
+// 0x04 ECC éƒ¨ä»¶é”™ å‘½ä»¤æ”¾å¼ƒ
+// 0x05 æ§åˆ¶å¤„ç†å™¨é”™
+// 0x10 ID æœªæ‰¾åˆ°
+// 0x40 ECC é”™è¯¯
+// 0x80 åæ‰‡åŒº
 //---------------------------------------------------
 #define MARK_ERR	0x01	/* Bad address mark ? */
 #define TRK0_ERR	0x02	/* couldn't find track 0 */
@@ -71,7 +71,7 @@
 #define ECC_ERR		0x40	/* ? */
 #define	BBD_ERR		0x80	/* ? */
 
-// Ó²ÅÌ·ÖÇø±í½á¹¹¡£²Î¼ûÏÂÃæÁĞ±íºóĞÅÏ¢¡£
+// ç¡¬ç›˜åˆ†åŒºè¡¨ç»“æ„ã€‚å‚è§ä¸‹é¢åˆ—è¡¨åä¿¡æ¯ã€‚
 struct partition {
 	unsigned char boot_ind;		/* 0x80 - active (unused) */
 	unsigned char head;		/* ? */

@@ -4,8 +4,8 @@
  *  (C) 1991  Linus Torvalds
  */
 
-// ioctl.c �ļ�ʵ�������� / �������ϵͳ���� ioctl() ��
-// ��Ҫ���� tty_ioctl() ���������ն˵� I/O ���п��ơ�
+// ioctl.c 文件实现了输入 / 输出控制系统调用 ioctl() 。
+// 主要调用 tty_ioctl() 函数，对终端的 I/O 进行控制。
 
 
 #include <string.h>
@@ -16,11 +16,11 @@
 
 extern int tty_ioctl(int dev, int cmd, int arg);	
 
-typedef int (*ioctl_ptr)(int dev,int cmd,int arg);	// ���������������(ioctl)����ָ�롣
+typedef int (*ioctl_ptr)(int dev,int cmd,int arg);	// 定义输入输出控制(ioctl)函数指针。
 
-#define NRDEVS ((sizeof (ioctl_table))/(sizeof (ioctl_ptr)))	// ����ϵͳ���豸������
+#define NRDEVS ((sizeof (ioctl_table))/(sizeof (ioctl_ptr)))	// 定义系统中设备种数。
 
-static ioctl_ptr ioctl_table[]={	// ioctl ��������ָ�����
+static ioctl_ptr ioctl_table[]={	// ioctl 操作函数指针表。
 	NULL,		/* nodev */
 	NULL,		/* /dev/mem */
 	NULL,		/* /dev/fd */
@@ -30,28 +30,28 @@ static ioctl_ptr ioctl_table[]={	// ioctl ��������ָ�����
 	NULL,		/* /dev/lp */
 	NULL};		/* named pipes */
 	
-// ϵͳ���ú��� - ����������ƺ�����
-// ������fd - �ļ���������cmd - �����룻arg - ������
-// ���أ��ɹ��򷵻� 0�����򷵻س�����
+// 系统调用函数 - 输入输出控制函数。
+// 参数：fd - 文件描述符；cmd - 命令码；arg - 参数。
+// 返回：成功则返回 0，否则返回出错码
 int sys_ioctl(unsigned int fd, unsigned int cmd, unsigned long arg)
 {	
 	struct file * filp;
 	int dev,mode;
-	// ����ļ������������ɴ򿪵��ļ��������߶�Ӧ���������ļ��ṹָ��Ϊ�գ�
-	// �򷵻س����룬�˳���
+	// 如果文件描述符超出可打开的文件数，或者对应描述符的文件结构指针为空，
+	// 则返回出错码，退出。
 	if (fd >= NR_OPEN || !(filp = current->filp[fd]))
 		return -EBADF;
-	// ȡ��Ӧ�ļ������ԡ�������ļ������ַ��ļ���Ҳ���ǿ��豸�ļ����򷵻س����룬�˳���
+	// 取对应文件的属性。如果该文件不是字符文件，也不是块设备文件，则返回出错码，退出。
 	mode=filp->f_inode->i_mode;
 	if (!S_ISCHR(mode) && !S_ISBLK(mode))
 		return -EINVAL;
-	// ���ַ�����豸�ļ��� i �ڵ���ȡ�豸�š�����豸�Ŵ���ϵͳ���е��豸�����򷵻س����š�
+	// 从字符或块设备文件的 i 节点中取设备号。如果设备号大于系统现有的设备数，则返回出错号。
 	dev = filp->f_inode->i_zone[0];
 	if (MAJOR(dev) >= NRDEVS)
 		return -ENODEV;
-	// ������豸�� ioctl ����ָ�����û�ж�Ӧ�������򷵻س����롣
+	// 如果该设备在 ioctl 函数指针表中没有对应函数，则返回出错码。
 	if (!ioctl_table[MAJOR(dev)])
 		return -ENOTTY;
-	// ���򷵻�ʵ�� ioctl ���������룬�ɹ��򷵻� 0�����򷵻س����롣
+	// 否则返回实际 ioctl 函数返回码，成功则返回 0，否则返回出错码。
 	return ioctl_table[MAJOR(dev)](dev,cmd,arg);
 }

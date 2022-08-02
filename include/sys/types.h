@@ -1,17 +1,17 @@
-//types.h Í·ÎÄ¼şÖĞ¶¨ÒåÁË»ù±¾µÄÊı¾İÀàĞÍ¡£ËùÓĞµÄÀàĞÍ¶¨ÒåÎªÊÊµ±µÄÊıÑ§ÀàĞÍ³¤¶È¡£
-//ÁíÍâ£¬ size_t ÊÇÎŞ·ûºÅÕûÊıÀàĞÍ£¬ off_t ÊÇÀ©Õ¹µÄ·ûºÅÕûÊıÀàĞÍ£¬ pid_t ÊÇ·ûºÅÕûÊıÀàĞÍ¡£
+//types.h å¤´æ–‡ä»¶ä¸­å®šä¹‰äº†åŸºæœ¬çš„æ•°æ®ç±»å‹ã€‚æ‰€æœ‰çš„ç±»å‹å®šä¹‰ä¸ºé€‚å½“çš„æ•°å­¦ç±»å‹é•¿åº¦ã€‚
+//å¦å¤–ï¼Œ size_t æ˜¯æ— ç¬¦å·æ•´æ•°ç±»å‹ï¼Œ off_t æ˜¯æ‰©å±•çš„ç¬¦å·æ•´æ•°ç±»å‹ï¼Œ pid_t æ˜¯ç¬¦å·æ•´æ•°ç±»å‹ã€‚
 
 #ifndef _SYS_TYPES_H
 #define _SYS_TYPES_H
 
 #ifndef _SIZE_T
 #define _SIZE_T
-typedef unsigned int size_t;	// ÓÃÓÚ¶ÔÏóµÄ´óĞ¡£¨³¤¶È£©¡£
+typedef unsigned int size_t;	// ç”¨äºå¯¹è±¡çš„å¤§å°ï¼ˆé•¿åº¦ï¼‰ã€‚
 #endif
 
 #ifndef _TIME_T
 #define _TIME_T
-typedef long time_t;		// ÓÃÓÚÊ±¼ä£¨ÒÔÃë¼Æ£©¡£
+typedef long time_t;		// ç”¨äºæ—¶é—´ï¼ˆä»¥ç§’è®¡ï¼‰ã€‚
 #endif
 
 #ifndef _PTRDIFF_T
@@ -23,28 +23,28 @@ typedef long ptrdiff_t;
 #define NULL ((void *) 0)
 #endif
 
-typedef int pid_t;				// ÓÃÓÚ½ø³ÌºÅºÍ½ø³Ì×éºÅ¡£
-typedef unsigned short uid_t;	// ÓÃÓÚÓÃ»§ºÅ£¨ÓÃ»§±êÊ¶ºÅ£©¡£
-typedef unsigned char gid_t;	// ÓÃÓÚ×éºÅ¡£
-typedef unsigned short dev_t;	// ÓÃÓÚÉè±¸ºÅ¡£
-typedef unsigned short ino_t;	// ÓÃÓÚÎÄ¼şĞòÁĞºÅ¡£
-typedef unsigned short mode_t;	// ÓÃÓÚÄ³Ğ©ÎÄ¼şÊôĞÔ¡£
+typedef int pid_t;				// ç”¨äºè¿›ç¨‹å·å’Œè¿›ç¨‹ç»„å·ã€‚
+typedef unsigned short uid_t;	// ç”¨äºç”¨æˆ·å·ï¼ˆç”¨æˆ·æ ‡è¯†å·ï¼‰ã€‚
+typedef unsigned char gid_t;	// ç”¨äºç»„å·ã€‚
+typedef unsigned short dev_t;	// ç”¨äºè®¾å¤‡å·ã€‚
+typedef unsigned short ino_t;	// ç”¨äºæ–‡ä»¶åºåˆ—å·ã€‚
+typedef unsigned short mode_t;	// ç”¨äºæŸäº›æ–‡ä»¶å±æ€§ã€‚
 typedef unsigned short umode_t;
-typedef unsigned char nlink_t;	// ÓÃÓÚÁ¬½Ó¼ÆÊı¡£
+typedef unsigned char nlink_t;	// ç”¨äºè¿æ¥è®¡æ•°ã€‚
 typedef int daddr_t;
-typedef long off_t;				// ÓÃÓÚÎÄ¼ş³¤¶È£¨´óĞ¡£©¡£
-typedef unsigned char u_char;	// ÎŞ·ûºÅ×Ö·ûÀàĞÍ¡£
-typedef unsigned short ushort;	// ÎŞ·ûºÅ¶ÌÕûÊıÀàĞÍ¡£
+typedef long off_t;				// ç”¨äºæ–‡ä»¶é•¿åº¦ï¼ˆå¤§å°ï¼‰ã€‚
+typedef unsigned char u_char;	// æ— ç¬¦å·å­—ç¬¦ç±»å‹ã€‚
+typedef unsigned short ushort;	// æ— ç¬¦å·çŸ­æ•´æ•°ç±»å‹ã€‚
 
-typedef struct { int quot,rem; } div_t;		// ÓÃÓÚ DIV ²Ù×÷¡£
-typedef struct { long quot,rem; } ldiv_t;	// ÓÃÓÚ³¤ DIV ²Ù×÷¡£
+typedef struct { int quot,rem; } div_t;		// ç”¨äº DIV æ“ä½œã€‚
+typedef struct { long quot,rem; } ldiv_t;	// ç”¨äºé•¿ DIV æ“ä½œã€‚
 
-// ÎÄ¼şÏµÍ³²ÎÊı½á¹¹£¬ÓÃÓÚ ustat()º¯Êı¡£×îºóÁ½¸ö×Ö¶ÎÎ´Ê¹ÓÃ£¬×ÜÊÇ·µ»Ø NULL Ö¸Õë¡£
+// æ–‡ä»¶ç³»ç»Ÿå‚æ•°ç»“æ„ï¼Œç”¨äº ustat()å‡½æ•°ã€‚æœ€åä¸¤ä¸ªå­—æ®µæœªä½¿ç”¨ï¼Œæ€»æ˜¯è¿”å› NULL æŒ‡é’ˆã€‚
 struct ustat {
-	daddr_t f_tfree;	// ÏµÍ³×Ü¿ÕÏĞ¿éÊı¡£
-	ino_t f_tinode;		// ×Ü¿ÕÏĞ i ½ÚµãÊı¡£
-	char f_fname[6];	// ÎÄ¼şÏµÍ³Ãû³Æ¡£
-	char f_fpack[6];	// ÎÄ¼şÏµÍ³Ñ¹ËõÃû³Æ¡£
+	daddr_t f_tfree;	// ç³»ç»Ÿæ€»ç©ºé—²å—æ•°ã€‚
+	ino_t f_tinode;		// æ€»ç©ºé—² i èŠ‚ç‚¹æ•°ã€‚
+	char f_fname[6];	// æ–‡ä»¶ç³»ç»Ÿåç§°ã€‚
+	char f_fpack[6];	// æ–‡ä»¶ç³»ç»Ÿå‹ç¼©åç§°ã€‚
 };
 
 #endif

@@ -11,82 +11,82 @@
  * Kill-line thanks to John T Kohl.
  */
 /*
- * 'tty_io.c'�� tty һ�ַ���صĸо����ǿ���̨���Ǵ���ͨ�����ó���ͬ��
- * ʵ���˻��ԡ��淶(��)ģʽ�ȡ�
+ * 'tty_io.c'给 tty 一种非相关的感觉，是控制台还是串行通道。该程序同样
+ * 实现了回显、规范(熟)模式等。
  *
- * Kill-line��лл John T Kahl��
+ * Kill-line，谢谢 John T Kahl。
  */
 #include <ctype.h>
 #include <errno.h>
 #include <signal.h>
 
-// ���������Ӧ�ź����ź�λͼ�еĶ�Ӧ����λ��
-#define ALRMMASK (1<<(SIGALRM-1))		// ����(alarm)�ź�����λ��
-#define KILLMASK (1<<(SIGKILL-1))		// ��ֹ(kill)�ź�����λ��
-#define INTMASK (1<<(SIGINT-1))			// �����ж�(int)�ź�����λ��
-#define QUITMASK (1<<(SIGQUIT-1))		// �����˳�(quit)�ź�����λ��
-#define TSTPMASK (1<<(SIGTSTP-1))		// tty ������ֹͣ����(tty stop)�ź�����λ��
+// 下面给出相应信号在信号位图中的对应比特位。
+#define ALRMMASK (1<<(SIGALRM-1))		// 警告(alarm)信号屏蔽位。
+#define KILLMASK (1<<(SIGKILL-1))		// 终止(kill)信号屏蔽位。
+#define INTMASK (1<<(SIGINT-1))			// 键盘中断(int)信号屏蔽位。
+#define QUITMASK (1<<(SIGQUIT-1))		// 键盘退出(quit)信号屏蔽位。
+#define TSTPMASK (1<<(SIGTSTP-1))		// tty 发出的停止进程(tty stop)信号屏蔽位。
 
 #include <linux/sched.h>
 #include <linux/tty.h>
 #include <asm/segment.h>
 #include <asm/system.h>
 
-#define _L_FLAG(tty,f)	((tty)->termios.c_lflag & f)	// ȡ termios �ṹ�еı���ģʽ��־��
-#define _I_FLAG(tty,f)	((tty)->termios.c_iflag & f)	// ȡ termios �ṹ�е�����ģʽ��־��
-#define _O_FLAG(tty,f)	((tty)->termios.c_oflag & f)	// ȡ termios �ṹ�е����ģʽ��־��
+#define _L_FLAG(tty,f)	((tty)->termios.c_lflag & f)	// 取 termios 结构中的本地模式标志。
+#define _I_FLAG(tty,f)	((tty)->termios.c_iflag & f)	// 取 termios 结构中的输入模式标志。
+#define _O_FLAG(tty,f)	((tty)->termios.c_oflag & f)	// 取 termios 结构中的输出模式标志。
 
-// ȡ termios �ṹ�б���ģʽ��־���е�һ����־λ��
-#define L_CANON(tty)	_L_FLAG((tty),ICANON)	// ȡ����ģʽ��־���й淶���죩ģʽ��־λ��
-#define L_ISIG(tty)	_L_FLAG((tty),ISIG)			// ȡ�źű�־λ��
-#define L_ECHO(tty)	_L_FLAG((tty),ECHO)			// ȡ�����ַ���־λ��
-#define L_ECHOE(tty)	_L_FLAG((tty),ECHOE)	// �淶ģʽʱ��ȡ���Բ�����־λ��
-#define L_ECHOK(tty)	_L_FLAG((tty),ECHOK)	// �淶ģʽʱ��ȡ KILL ������ǰ�б�־λ��
-#define L_ECHOCTL(tty)	_L_FLAG((tty),ECHOCTL)	// ȡ���Կ����ַ���־λ��
-#define L_ECHOKE(tty)	_L_FLAG((tty),ECHOKE)	// �淶ģʽʱ��ȡ KILL �����в����Ա�־λ��
+// 取 termios 结构中本地模式标志集中的一个标志位。
+#define L_CANON(tty)	_L_FLAG((tty),ICANON)	// 取本地模式标志集中规范（熟）模式标志位。
+#define L_ISIG(tty)	_L_FLAG((tty),ISIG)			// 取信号标志位。
+#define L_ECHO(tty)	_L_FLAG((tty),ECHO)			// 取回显字符标志位。
+#define L_ECHOE(tty)	_L_FLAG((tty),ECHOE)	// 规范模式时，取回显擦出标志位。
+#define L_ECHOK(tty)	_L_FLAG((tty),ECHOK)	// 规范模式时，取 KILL 擦除当前行标志位。
+#define L_ECHOCTL(tty)	_L_FLAG((tty),ECHOCTL)	// 取回显控制字符标志位。
+#define L_ECHOKE(tty)	_L_FLAG((tty),ECHOKE)	// 规范模式时，取 KILL 擦除行并回显标志位。
 
-// ȡ termios �ṹ������ģʽ��־�е�һ����־λ��
-#define I_UCLC(tty)	_I_FLAG((tty),IUCLC)		// ȡ����ģʽ��־���д�д��Сдת����־λ��
-#define I_NLCR(tty)	_I_FLAG((tty),INLCR)		// ȡ���з� NL ת�س��� CR ��־λ��
-#define I_CRNL(tty)	_I_FLAG((tty),ICRNL)		// ȡ�س��� CR ת���з� NL ��־λ��
-#define I_NOCR(tty)	_I_FLAG((tty),IGNCR)		// ȡ���Իس��� CR ��־λ��
+// 取 termios 结构中输入模式标志中的一个标志位。
+#define I_UCLC(tty)	_I_FLAG((tty),IUCLC)		// 取输入模式标志集中大写到小写转换标志位。
+#define I_NLCR(tty)	_I_FLAG((tty),INLCR)		// 取换行符 NL 转回车符 CR 标志位。
+#define I_CRNL(tty)	_I_FLAG((tty),ICRNL)		// 取回车符 CR 转换行符 NL 标志位。
+#define I_NOCR(tty)	_I_FLAG((tty),IGNCR)		// 取忽略回车符 CR 标志位。
 
-// ȡ termios �ṹ�����ģʽ��־�е�һ����־λ��
-#define O_POST(tty)	_O_FLAG((tty),OPOST)		// ȡ���ģʽ��־����ִ�����������־��
-#define O_NLCR(tty)	_O_FLAG((tty),ONLCR)		// ȡ���з� NL ת�س����з� CR-NL ��־��
-#define O_CRNL(tty)	_O_FLAG((tty),OCRNL)		// ȡ�س��� CR ת���з� NL ��־��
-#define O_NLRET(tty)	_O_FLAG((tty),ONLRET)	// ȡ���з� NL ִ�лس����ܵı�־��
-#define O_LCUC(tty)	_O_FLAG((tty),OLCUC)		// ȡСдת��д�ַ���־��
+// 取 termios 结构中输出模式标志中的一个标志位。
+#define O_POST(tty)	_O_FLAG((tty),OPOST)		// 取输出模式标志集中执行输出处理标志。
+#define O_NLCR(tty)	_O_FLAG((tty),ONLCR)		// 取换行符 NL 转回车换行符 CR-NL 标志。
+#define O_CRNL(tty)	_O_FLAG((tty),OCRNL)		// 取回车符 CR 转换行符 NL 标志。
+#define O_NLRET(tty)	_O_FLAG((tty),ONLRET)	// 取换行符 NL 执行回车功能的标志。
+#define O_LCUC(tty)	_O_FLAG((tty),OLCUC)		// 取小写转大写字符标志。
 
-// tty ���ݽṹ�� tty_table ���顣���а���������ʼ�������ݣ��ֱ��Ӧ����̨�������ն� 1 ��
-// �����ն� 2 �ĳ�ʼ�����ݡ�
+// tty 数据结构的 tty_table 数组。其中包含三个初始化项数据，分别对应控制台、串口终端 1 和
+// 串口终端 2 的初始化数据。
 struct tty_struct tty_table[] = {
 	{
-		{ICRNL,		/* change incoming CR to NL */			/* ������� CR ת��Ϊ NL */
-		OPOST|ONLCR,	/* change outgoing NL to CRNL */	/* ������� NL ת CRNL */
-		0,													// ����ģʽ��־��ʼ��Ϊ 0��
-		ISIG | ICANON | ECHO | ECHOCTL | ECHOKE,			// ����ģʽ��־��
-		0,		/* console termio */						// ����̨ termio��
-		INIT_C_CC},											// �����ַ����顣
-		0,			/* initial pgrp */						// ������ʼ�����顣
-		0,			/* initial stopped */					// ��ʼֹͣ��־��
-		con_write,											// tty д����ָ�롣
-		{0,0,0,0,""},		/* console read-queue */		// tty ����̨�����С�
-		{0,0,0,0,""},		/* console write-queue */		// tty ����̨д���С�
-		{0,0,0,0,""}		/* console secondary queue */	// tty ����̨����(�ڶ�)���С�
+		{ICRNL,		/* change incoming CR to NL */			/* 将输入的 CR 转换为 NL */
+		OPOST|ONLCR,	/* change outgoing NL to CRNL */	/* 将输出的 NL 转 CRNL */
+		0,													// 控制模式标志初始化为 0。
+		ISIG | ICANON | ECHO | ECHOCTL | ECHOKE,			// 本地模式标志。
+		0,		/* console termio */						// 控制台 termio。
+		INIT_C_CC},											// 控制字符数组。
+		0,			/* initial pgrp */						// 所属初始进程组。
+		0,			/* initial stopped */					// 初始停止标志。
+		con_write,											// tty 写函数指针。
+		{0,0,0,0,""},		/* console read-queue */		// tty 控制台读队列。
+		{0,0,0,0,""},		/* console write-queue */		// tty 控制台写队列。
+		{0,0,0,0,""}		/* console secondary queue */	// tty 控制台辅助(第二)队列。
 	},{
-		{0, /* no translation */					// ����ģʽ��־��0������ת����
-		0,  /* no translation */					// ���ģʽ��־��0������ת����
-		B2400 | CS8,								// ����ģʽ��־�������� 2400bps��8 λ����λ��
-		0,											// ����ģʽ��־ 0��
-		0,											// �й�� 0��
-		INIT_C_CC},									// �����ַ����顣
-		0,											// ������ʼ�����顣
-		0,											// ��ʼֹͣ��־��
-		rs_write,									// ���� 1 tty д����ָ�롣
-		{0x3f8,0,0,0,""},		/* rs 1 */			// �����ն� 1 ��������С�
-		{0x3f8,0,0,0,""},							// �����ն� 1 д������С�
-		{0,0,0,0,""}								// �����ն� 1 ����������С�
+		{0, /* no translation */					// 输入模式标志。0，无须转换。
+		0,  /* no translation */					// 输出模式标志。0，无须转换。
+		B2400 | CS8,								// 控制模式标志。波特率 2400bps，8 位数据位。
+		0,											// 本地模式标志 0。
+		0,											// 行规程 0。
+		INIT_C_CC},									// 控制字符数组。
+		0,											// 所属初始进程组。
+		0,											// 初始停止标志。
+		rs_write,									// 串口 1 tty 写函数指针。
+		{0x3f8,0,0,0,""},		/* rs 1 */			// 串行终端 1 读缓冲队列。
+		{0x3f8,0,0,0,""},							// 串行终端 1 写缓冲队列。
+		{0,0,0,0,""}								// 串行终端 1 辅助缓冲队列。
 	},{
 		{0, /* no translation */
 		0,  /* no translation */
@@ -109,26 +109,26 @@ struct tty_struct tty_table[] = {
  * them. Currently not done.
  */
 /*
- * �����ǻ�����ʹ�õĻ�����е�ַ����ͨ���޸������ʵ��
- * α tty �ն˻������ն����͡�Ŀǰ��û����������
+ * 下面是汇编程序使用的缓冲队列地址表。通过修改你可以实现
+ * 伪 tty 终端或其它终端类型。目前还没有这样做。
  */
-// tty ������е�ַ����rs_io.s ������ʹ�ã�����ȡ�ö�д������е�ַ��
+// tty 缓冲队列地址表。rs_io.s 汇编程序使用，用于取得读写缓冲队列地址。
 struct tty_queue * table_list[]={
 	&tty_table[0].read_q, &tty_table[0].write_q,
 	&tty_table[1].read_q, &tty_table[1].write_q,
 	&tty_table[2].read_q, &tty_table[2].write_q
 	};
 
-// tty �ն˳�ʼ��������
-// ��ʼ�������ն˺Ϳ���̨�նˡ�
+// tty 终端初始化函数。
+// 初始化串口终端和控制台终端。
 void tty_init(void)
 {
 	rs_init();
 	con_init();
 }
 
-// tty �����жϣ�^C���ַ�����������
-// �� tty �ṹ��ָ���ģ�ǰ̨�������������еĽ��̷���ָ�����ź� mask��ͨ�����ź��� SIGINT��
+// tty 键盘中断（^C）字符处理函数。
+// 向 tty 结构中指明的（前台）进程组中所有的进程发送指定的信号 mask，通常该信号是 SIGINT。
 void tty_intr(struct tty_struct * tty, int mask)
 {
 	int i;
@@ -140,9 +140,9 @@ void tty_intr(struct tty_struct * tty, int mask)
 			task[i]->signal |= mask;
 }
 
-// ������л����������ý��̽�����жϵ�˯��״̬��
-// ������queue - ָ�����е�ָ�롣
-// ������ȡ���л��������ַ�ʱ���ô˺�����
+// 如果队列缓冲区空则让进程进入可中断的睡眠状态。
+// 参数：queue - 指定队列的指针。
+// 进程在取队列缓冲区中字符时调用此函数。
 static void sleep_if_empty(struct tty_queue * queue)
 {
 	cli();
@@ -151,9 +151,9 @@ static void sleep_if_empty(struct tty_queue * queue)
 	sti();
 }
 
-// �����л����������ý��̽�����жϵ�˯��״̬��
-// ������queue - ָ�����е�ָ�롣
-// �����������л�������д��ʱ���ô˺�����
+// 若队列缓冲区满则让进程进入可中断的睡眠状态。
+// 参数：queue - 指定队列的指针。
+// 进程在往队列缓冲区中写入时调用此函数。
 static void sleep_if_full(struct tty_queue * queue)
 {
 	if (!FULL(*queue))
@@ -164,16 +164,16 @@ static void sleep_if_full(struct tty_queue * queue)
 	sti();
 }
 
-// �ȴ�������
-// �������̨�Ķ����л����������ý��̽�����жϵ�˯��״̬��
+// 等待按键。
+// 如果控制台的读队列缓冲区空则让进程进入可中断的睡眠状态。
 void wait_for_keypress(void)
 {
 	sleep_if_empty(&tty_table[0].secondary);
 }
 
-// ���Ƴɹ淶ģʽ�ַ����С�
-// ��ָ�� tty �ն˶��л������е��ַ����Ƴɹ淶(��)ģʽ�ַ�������ڸ�������(�淶ģʽ����)�С�
-// ������tty - ָ���ն˵� tty �ṹ��
+// 复制成规范模式字符序列。
+// 将指定 tty 终端队列缓冲区中的字符复制成规范(熟)模式字符并存放在辅助队列(规范模式队列)中。
+// 参数：tty - 指定终端的 tty 结构。
 void copy_to_cooked(struct tty_struct * tty)
 {
 	signed char c;
@@ -259,9 +259,9 @@ void copy_to_cooked(struct tty_struct * tty)
 	wake_up(&tty->secondary.proc_list);
 }
 
-// tty �����������ն˸�����������ж�ȡָ���������ַ����ŵ��û�ָ���Ļ������С�
-// ������channel - ���豸�ţ�buf �C �û�������ָ�룻nr - �����ֽ�����
-// �����Ѷ��ֽ�����
+// tty 读函数，从终端辅助缓冲队列中读取指定数量的字符，放到用户指定的缓冲区中。
+// 参数：channel - 子设备号；buf  用户缓冲区指针；nr - 欲读字节数。
+// 返回已读字节数。
 int tty_read(unsigned channel, char * buf, int nr)
 {
 	struct tty_struct * tty;
@@ -322,9 +322,9 @@ int tty_read(unsigned channel, char * buf, int nr)
 	return (b-buf);
 }
 
-// tty д���������û��������е��ַ�д�� tty ��д�����С�
-// ������channel - ���豸�ţ�buf - ������ָ�룻nr - д�ֽ�����
-// ������д�ֽ�����
+// tty 写函数。把用户缓冲区中的字符写入 tty 的写队列中。
+// 参数：channel - 子设备号；buf - 缓冲区指针；nr - 写字节数。
+// 返回已写字节数。
 int tty_write(unsigned channel, char * buf, int nr)
 {
 	static cr_flag=0;
@@ -378,23 +378,23 @@ int tty_write(unsigned channel, char * buf, int nr)
  * totally innocent.
  */
 /*
- * �ǣ���ʱ������ú�ϲ�� 386�����ӳ����Ǵ�һ���жϴ��������е��õģ���ʹ��
- * �жϴ���������˯��ҲӦ�þ���û������(��ϣ�����)����Ȼ���������֤������
- * ���ģ���ô�ҽ����� intel һ����?���������Ǳ���С�ģ��ڵ��ø��ӳ���֮ǰ��
- * Ҫ�ָ��жϡ�
+ * 呵，有时我是真得很喜欢 386。该子程序是从一个中断处理程序中调用的，即使在
+ * 中断处理程序中睡眠也应该绝对没有问题(我希望如此)。当然，如果有人证明我是
+ * 错的，那么我将憎恨 intel 一辈子?。但是我们必须小心，在调用该子程序之前需
+ * 要恢复中断。
  *
- * �Ҳ���Ϊ��ͨ�������»ᴦ������˯�ߣ������ܺã���Ϊ����˯������ȫ����ġ�
+ * 我不认为在通常环境下会处在这里睡眠，这样很好，因为任务睡眠是完全任意的。
  */
-// tty �жϴ������ú��� - ִ�� tty �жϴ�����
-// ������tty - ָ���� tty �ն˺ţ�0��1 �� 2����
-// ��ָ�� tty �ն˶��л������е��ַ����Ƴɹ淶(��)ģʽ�ַ�������ڸ�������(�淶ģʽ����)�С�
-// �ڴ��ڶ��ַ��ж�(rs_io.s, 109)�ͼ����ж�(kerboard.S, 69)�е��á�
+// tty 中断处理调用函数 - 执行 tty 中断处理。
+// 参数：tty - 指定的 tty 终端号（0，1 或 2）。
+// 将指定 tty 终端队列缓冲区中的字符复制成规范(熟)模式字符并存放在辅助队列(规范模式队列)中。
+// 在串口读字符中断(rs_io.s, 109)和键盘中断(kerboard.S, 69)中调用。
 void do_tty_interrupt(int tty)
 {
 	copy_to_cooked(tty_table+tty);
 }
 
-// �ַ��豸��ʼ���������գ�Ϊ�Ժ���չ��׼����
+// 字符设备初始化函数。空，为以后扩展做准备。
 void chr_dev_init(void)
 {
 }

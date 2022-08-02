@@ -31,29 +31,29 @@ entry start
 start:
 
 ! ok, the read went well so we get current cursor position and save it for
-! posterity.	//;µÃµ½¹â±êÎ»ÖÃ
+! posterity.	//;å¾—åˆ°å…‰æ ‡ä½ç½®
 
 	mov	ax,#INITSEG	! this is done in bootsect already, but...
 	mov	ds,ax
 	mov	ah,#0x03	! read cursor pos
 	xor	bh,bh
 	int	0x10		! save it in known place, con_init fetches
-	mov	[0],dx		! it from 0x90000. //;»ùÓÚds¶ÎµÄÆ«ÒÆ
+	mov	[0],dx		! it from 0x90000. //;åŸºäºdsæ®µçš„åç§»
 
-! Get memory size (extended mem, kB)	//;µÃµ½À©Õ¹ÄÚ´æ´óĞ¡
+! Get memory size (extended mem, kB)	//;å¾—åˆ°æ‰©å±•å†…å­˜å¤§å°
 
 	mov	ah,#0x88
 	int	0x15
-	mov	[2],ax	//;»ùÓÚds¶ÎµÄÆ«ÒÆ
+	mov	[2],ax	//;åŸºäºdsæ®µçš„åç§»
 
-! Get video-card data:	//;µÃµ½ÏÔ¿¨ÏÔÊ¾Ä£Ê½
+! Get video-card data:	//;å¾—åˆ°æ˜¾å¡æ˜¾ç¤ºæ¨¡å¼
 
 	mov	ah,#0x0f
 	int	0x10
 	mov	[4],bx		! bh = display page
 	mov	[6],ax		! al = video mode, ah = window width
 
-! check for EGA/VGA and some config parameters	//;µÃµ½ÏÔ¿¨ÅäÖÃ²ÎÊı
+! check for EGA/VGA and some config parameters	//;å¾—åˆ°æ˜¾å¡é…ç½®å‚æ•°
 
 	mov	ah,#0x12
 	mov	bl,#0x10
@@ -62,7 +62,7 @@ start:
 	mov	[10],bx
 	mov	[12],cx
 
-! Get hd0 data	//;µÚÒ»¿éÓ²ÅÌ²ÎÊı±í
+! Get hd0 data	//;ç¬¬ä¸€å—ç¡¬ç›˜å‚æ•°è¡¨
 
 	mov	ax,#0x0000
 	mov	ds,ax
@@ -74,7 +74,7 @@ start:
 	rep
 	movsb
 
-! Get hd1 data	//;µÚ¶ş¿éÓ²ÅÌ²ÎÊı±í
+! Get hd1 data	//;ç¬¬äºŒå—ç¡¬ç›˜å‚æ•°è¡¨
 
 	mov	ax,#0x0000
 	mov	ds,ax
@@ -86,7 +86,7 @@ start:
 	rep
 	movsb
 
-! Check that there IS a hd1 :-)	//;ÅĞ¶ÏÊÇ·ñ´æÔÚµÚ¶ş¿éÓ²ÅÌ£¬²»´æÔÚÔò±íÇåÁã
+! Check that there IS a hd1 :-)	//;åˆ¤æ–­æ˜¯å¦å­˜åœ¨ç¬¬äºŒå—ç¡¬ç›˜ï¼Œä¸å­˜åœ¨åˆ™è¡¨æ¸…é›¶
 
 	mov	ax,#0x01500
 	mov	dl,#0x81
@@ -103,46 +103,46 @@ no_disk1:
 	rep
 	stosb
 is_disk1:
-	/*;×¼±¸¿ªÆô±£»¤Ä£Ê½*/
-	//;ÔÚ±£»¤Ä£Ê½ÏÂÔËĞĞ¿ÉÒÔÖ§³Ö¶àÈÎÎñ
-	//;Ö§³Ö4GµÄÎïÀíÄÚ´æ
-	//;Ö§³ÖĞéÄâÄÚ´æ
-	//;Ö§³ÖÄÚ´æµÄÒ³Ê½¹ÜÀíºÍ¶ÎÊ½¹ÜÀí
-	//;Ö§³ÖÌØÈ¨¼¶
+	/*;å‡†å¤‡å¼€å¯ä¿æŠ¤æ¨¡å¼*/
+	//;åœ¨ä¿æŠ¤æ¨¡å¼ä¸‹è¿è¡Œå¯ä»¥æ”¯æŒå¤šä»»åŠ¡
+	//;æ”¯æŒ4Gçš„ç‰©ç†å†…å­˜
+	//;æ”¯æŒè™šæ‹Ÿå†…å­˜
+	//;æ”¯æŒå†…å­˜çš„é¡µå¼ç®¡ç†å’Œæ®µå¼ç®¡ç†
+	//;æ”¯æŒç‰¹æƒçº§
 ! now we want to move to protected mode ...
-				//;¹ØÖĞ¶Ï£¬Ò»Ö±µ½main.c³õÊ¼»¯ºó²Å¿ªµÄ
+				//;å…³ä¸­æ–­ï¼Œä¸€ç›´åˆ°main.cåˆå§‹åŒ–åæ‰å¼€çš„
 	cli			! no interrupts allowed !
 
 ! first we move the system to its rightful place
-	/*;ÒÆ¶¯ÄÚºË*/
-	mov	ax,#0x0000	//;ÒÆ¶¯µ½µØÖ·0µÄÎ»ÖÃ
-	cld			! 'direction'=0, movs moves forward	//;ÉèÖÃÒÆ¶¯·½Ïò
-do_move:	//;Õâ¸ö´úÂëÓĞÖúÓÚÀí½âforÑ­»·µÄ»ã±à´úÂëÊÇÔõÃ´ÑùµÄ
-	mov	es,ax		! destination segment	//;Ã¿´ÎÑ­»·Ä¿±êµØÖ·¶¼¼Ó0x10000ÆğÊ¼Îª0
+	/*;ç§»åŠ¨å†…æ ¸*/
+	mov	ax,#0x0000	//;ç§»åŠ¨åˆ°åœ°å€0çš„ä½ç½®
+	cld			! 'direction'=0, movs moves forward	//;è®¾ç½®ç§»åŠ¨æ–¹å‘
+do_move:	//;è¿™ä¸ªä»£ç æœ‰åŠ©äºç†è§£forå¾ªç¯çš„æ±‡ç¼–ä»£ç æ˜¯æ€ä¹ˆæ ·çš„
+	mov	es,ax		! destination segment	//;æ¯æ¬¡å¾ªç¯ç›®æ ‡åœ°å€éƒ½åŠ 0x10000èµ·å§‹ä¸º0
 	add	ax,#0x1000
 	cmp	ax,#0x9000
 	jz	end_move
-	mov	ds,ax		! source segment	//;Ã¿´ÎÑ­»·Ô´µØÖ·¼Ó0x10000ÆğÊ¼Îª0x10000
+	mov	ds,ax		! source segment	//;æ¯æ¬¡å¾ªç¯æºåœ°å€åŠ 0x10000èµ·å§‹ä¸º0x10000
 	sub	di,di
 	sub	si,si
-	mov 	cx,#0x8000	//;ÖØ¸´ÒÆ¶¯0x8000´Î
+	mov 	cx,#0x8000	//;é‡å¤ç§»åŠ¨0x8000æ¬¡
 	rep
-	movsw			//;Ã¿´ÎÒÆ¶¯2¸ö×Ö½Ú£¬×Ü¾ÍÊÇ0x10000´ÎÁË
+	movsw			//;æ¯æ¬¡ç§»åŠ¨2ä¸ªå­—èŠ‚ï¼Œæ€»å°±æ˜¯0x10000æ¬¡äº†
 	jmp	do_move
 
-! then we load the segment descriptors	//;ÉèÖÃÁÙÊ±µÄidtrºÍgdtr¶¼ÊÇ48Î»µÄ
+! then we load the segment descriptors	//;è®¾ç½®ä¸´æ—¶çš„idtrå’Œgdtréƒ½æ˜¯48ä½çš„
 
 end_move:
 	mov	ax,#SETUPSEG	! right, forgot this at first. didnt work :-)
-	mov	ds,ax	//;Êı¾İ¶ÎÆğÊ¼ÎªsetupµÄÆğÊ¼
+	mov	ds,ax	//;æ•°æ®æ®µèµ·å§‹ä¸ºsetupçš„èµ·å§‹
 	lidt	idt_48		! load idt with 0,0
 	lgdt	gdt_48		! load gdt with whatever appropriate
 
-! that was painless, now we enable A20	//;¿ªÆôA20»ñµÃ1MBÒÔÉÏµÄÄÚ´æ
+! that was painless, now we enable A20	//;å¼€å¯A20è·å¾—1MBä»¥ä¸Šçš„å†…å­˜
 
-	call	empty_8042	//;µÈ´ıÊäÈë»º³åÆ÷¿Õ¡£Ö»ÓĞµ±ÊäÈë»º³åÆ÷Îª¿ÕÊ±²Å¿ÉÒÔ¶ÔÆä½øĞĞĞ´ÃüÁî¡£
-	mov	al,#0xD1		! command write	//;command write ! 0xD1 ÃüÁîÂë-±íÊ¾ÒªĞ´Êı¾İµ½
-	out	#0x64,al	//;8042µÄP2¶Ë¿Ú¡£P2¶Ë¿ÚµÄÎ»1ÓÃÓÚA20ÏßµÄÑ¡Í¨¡£Êı¾İÒªĞ´µ½0x60¿Ú¡£
+	call	empty_8042	//;ç­‰å¾…è¾“å…¥ç¼“å†²å™¨ç©ºã€‚åªæœ‰å½“è¾“å…¥ç¼“å†²å™¨ä¸ºç©ºæ—¶æ‰å¯ä»¥å¯¹å…¶è¿›è¡Œå†™å‘½ä»¤ã€‚
+	mov	al,#0xD1		! command write	//;command write ! 0xD1 å‘½ä»¤ç -è¡¨ç¤ºè¦å†™æ•°æ®åˆ°
+	out	#0x64,al	//;8042çš„P2ç«¯å£ã€‚P2ç«¯å£çš„ä½1ç”¨äºA20çº¿çš„é€‰é€šã€‚æ•°æ®è¦å†™åˆ°0x60å£ã€‚
 	call	empty_8042
 	mov	al,#0xDF		! A20 on
 	out	#0x60,al
@@ -155,7 +155,7 @@ end_move:
 ! rectify it afterwards. Thus the bios puts interrupts at 0x08-0x0f,
 ! which is used for the internal hardware interrupts as well. We just
 ! have to reprogram the 8259's, and it isn't fun.
-	/*;¶Ô8259ÖĞ¶Ï¿ØÖÆÆ÷ÖØĞÂ±à³Ì*/
+	/*;å¯¹8259ä¸­æ–­æ§åˆ¶å™¨é‡æ–°ç¼–ç¨‹*/
 	mov	al,#0x11		! initialization sequence
 	out	#0x20,al		! send it to 8259A-1
 	.word	0x00eb,0x00eb		! jmp $+2, jmp $+2
@@ -192,55 +192,55 @@ end_move:
 ! things as simple as possible, we do no register set-up or anything,
 ! we let the gnu-compiled 32-bit programs do that. We just jump to
 ! absolute address 0x00000, in 32-bit protected mode.
-//;²»ÔÙĞèÒª·¦Î¶µÄ BIOS ÁË(³ıÁË³õÊ¼µÄ¼ÓÔØ)¡£
-//;BIOS×Ó³ÌĞòÒªÇóºÜ¶à²»±ØÒªµÄÊı¾İ£¬¶øÇÒËüÒ»µã¶¼Ã»È¤¡£
-//;ÄÇÊÇ¡°ÕæÕı¡±µÄ³ÌĞòÔ±Ëù×öµÄÊÂ¡£
+//;ä¸å†éœ€è¦ä¹å‘³çš„ BIOS äº†(é™¤äº†åˆå§‹çš„åŠ è½½)ã€‚
+//;BIOSå­ç¨‹åºè¦æ±‚å¾ˆå¤šä¸å¿…è¦çš„æ•°æ®ï¼Œè€Œä¸”å®ƒä¸€ç‚¹éƒ½æ²¡è¶£ã€‚
+//;é‚£æ˜¯â€œçœŸæ­£â€çš„ç¨‹åºå‘˜æ‰€åšçš„äº‹ã€‚
 
-	mov	ax,#0x0001	! protected mode (PE) bit	//;±£»¤Ä£Ê½±ÈÌØÎ»(PE)
-	lmsw	ax		! This is it!	//;lmsw:Load Machine Status WordĞŞ¸ÄµÄCRO
-	jmpi	0,8		! jmp offset 0 of segment 8 (cs)//;Ìø×ªÖÁcs¶Î8£¬Æ«ÒÆ0´¦£¬¼´head
-				//;8==>00001 0 00±íÊ¾gdtÖĞÑ¡µÚ1¸öÏî
+	mov	ax,#0x0001	! protected mode (PE) bit	//;ä¿æŠ¤æ¨¡å¼æ¯”ç‰¹ä½(PE)
+	lmsw	ax		! This is it!	//;lmsw:Load Machine Status Wordä¿®æ”¹çš„CRO
+	jmpi	0,8		! jmp offset 0 of segment 8 (cs)//;è·³è½¬è‡³csæ®µ8ï¼Œåç§»0å¤„ï¼Œå³head
+				//;8==>00001 0 00è¡¨ç¤ºgdtä¸­é€‰ç¬¬1ä¸ªé¡¹
 
 ! This routine checks that the keyboard command queue is empty
 ! No timeout is used - if this hangs there is something wrong with
 ! the machine, and we probably couldnt proceed anyway.
 empty_8042:
-	.word	0x00eb,0x00eb	//;ÕâÊÇÁ½¸öÌø×ªÖ¸ÁîµÄ»úÆ÷Âë(Ìø×ªµ½ÏÂÒ»¾ä)£¬Ïàµ±ÓÚÑÓÊ±¿Õ²Ù×÷¡£
+	.word	0x00eb,0x00eb	//;è¿™æ˜¯ä¸¤ä¸ªè·³è½¬æŒ‡ä»¤çš„æœºå™¨ç (è·³è½¬åˆ°ä¸‹ä¸€å¥)ï¼Œç›¸å½“äºå»¶æ—¶ç©ºæ“ä½œã€‚
 	in	al,#0x64	! 8042 status port
 	test	al,#2		! is input buffer full?
 	jnz	empty_8042	! yes - loop
 	ret
 
-gdt:	//;Ò»¸ö±íÏîÕ¼8¸ö×Ö½Ú£¬ÕâÀïÖ»ÁÙÊ±ÉèÖÃÁË3¸öÏî
-	//;±íÏîÄÚÈİ:|¸ß8Î»²¿·Ö»ùÖ·|16Î»ÊôĞÔ|24Î»²¿·Ö»ùÖ·|16Î»¶ÎÏŞ³¤|
-	//;¶ÎÏŞ³¤ÒÔÒ³4KBÎªµ¥Î»
+gdt:	//;ä¸€ä¸ªè¡¨é¡¹å 8ä¸ªå­—èŠ‚ï¼Œè¿™é‡Œåªä¸´æ—¶è®¾ç½®äº†3ä¸ªé¡¹
+	//;è¡¨é¡¹å†…å®¹:|é«˜8ä½éƒ¨åˆ†åŸºå€|16ä½å±æ€§|24ä½éƒ¨åˆ†åŸºå€|16ä½æ®µé™é•¿|
+	//;æ®µé™é•¿ä»¥é¡µ4KBä¸ºå•ä½
 
-	//;µÚ0Ïî²»ÓÃ
+	//;ç¬¬0é¡¹ä¸ç”¨
 	.word	0,0,0,0		! dummy
 
-	//;µÚ1ÏîÓÃÓÚÏµÍ³µÄ´úÂë¶Î£¬µ±csÎª0x08Ê±Ñ¡µÄ¾ÍÊÇÕâ¸ö
-	//;¾ßÌåÄÚÈİÎª00|C09A|000000|07FF
+	//;ç¬¬1é¡¹ç”¨äºç³»ç»Ÿçš„ä»£ç æ®µï¼Œå½“csä¸º0x08æ—¶é€‰çš„å°±æ˜¯è¿™ä¸ª
+	//;å…·ä½“å†…å®¹ä¸º00|C09A|000000|07FF
 	.word	0x07FF		! 8Mb - limit=2047 (2048*4096=8Mb)
 	.word	0x0000		! base address=0
-	.word	0x9A00		! code read/exec	//;¿É¶Á¿ÉÖ´ĞĞ
+	.word	0x9A00		! code read/exec	//;å¯è¯»å¯æ‰§è¡Œ
 	.word	0x00C0		! granularity=4096, 386
 
-	//;µÚ2ÏîÓÃÓÚÏµÍ³µÄÊı¾İ¶Î£¬µ±dsµÈÎª0x10Ê±Ñ¡µÄ¾ÍÊÇÕâ¸ö
-	//;¾ßÌåÄÚÈİÎª00|C092|000000|07FF
+	//;ç¬¬2é¡¹ç”¨äºç³»ç»Ÿçš„æ•°æ®æ®µï¼Œå½“dsç­‰ä¸º0x10æ—¶é€‰çš„å°±æ˜¯è¿™ä¸ª
+	//;å…·ä½“å†…å®¹ä¸º00|C092|000000|07FF
 	.word	0x07FF		! 8Mb - limit=2047 (2048*4096=8Mb)
 	.word	0x0000		! base address=0
-	.word	0x9200		! data read/write	//;¿É¶Á¿ÉĞ´
+	.word	0x9200		! data read/write	//;å¯è¯»å¯å†™
 	.word	0x00C0		! granularity=4096, 386
 
-idt_48:	//;²¢²»ÊÇ°ÑÕâ¸öµØ·½µÄµØÖ·¸øidtr¶øÊÇ°ÑÕâÀïµÄ48Î»6×Ö½ÚµÄÊı¾İ¸øidtr
-	.word	0			! idt limit=0	//;ÁÙÊ±µÄ±í£¬ÎŞÊı¾İ
+idt_48:	//;å¹¶ä¸æ˜¯æŠŠè¿™ä¸ªåœ°æ–¹çš„åœ°å€ç»™idtrè€Œæ˜¯æŠŠè¿™é‡Œçš„48ä½6å­—èŠ‚çš„æ•°æ®ç»™idtr
+	.word	0			! idt limit=0	//;ä¸´æ—¶çš„è¡¨ï¼Œæ— æ•°æ®
 	.word	0,0			! idt base=0L
 
-gdt_48:	//;²¢²»ÊÇ°ÑÕâ¸öµØ·½µÄµØÖ·¸øgdtr¶øÊÇ°ÑÕâÀïµÄ48Î»6×Ö½ÚµÄÊı¾İ¸øgdtr
-	.word	0x800		! gdt limit=2048, 256 GDT entries //;µÍµØÖ·±íÏŞ³¤
-				//;0x800Îª2KB£¬Ò»¸ö±íÏîÕ¼8¸ö×Ö½Ú£¬Ö»ÓĞ256Ïî
-	.word	512+gdt,0x9	! gdt base = 0X9xxxx	//;¸ßµØÖ·±íÆğÊ¼
-				//;ÆäÊµ¾ÍÊÇSETUPSEG+gdt¼´0x90000+512+gdt
+gdt_48:	//;å¹¶ä¸æ˜¯æŠŠè¿™ä¸ªåœ°æ–¹çš„åœ°å€ç»™gdtrè€Œæ˜¯æŠŠè¿™é‡Œçš„48ä½6å­—èŠ‚çš„æ•°æ®ç»™gdtr
+	.word	0x800		! gdt limit=2048, 256 GDT entries //;ä½åœ°å€è¡¨é™é•¿
+				//;0x800ä¸º2KBï¼Œä¸€ä¸ªè¡¨é¡¹å 8ä¸ªå­—èŠ‚ï¼Œåªæœ‰256é¡¹
+	.word	512+gdt,0x9	! gdt base = 0X9xxxx	//;é«˜åœ°å€è¡¨èµ·å§‹
+				//;å…¶å®å°±æ˜¯SETUPSEG+gdtå³0x90000+512+gdt
 	
 .text
 endtext:

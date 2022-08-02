@@ -1,42 +1,42 @@
 
-// ¸ÃÎÄ¼şÊÇ¹ØÓÚ×Ö·û²âÊÔºÍ´¦ÀíµÄÍ·ÎÄ¼ş£¬Ò²ÊÇ±ê×¼ C ¿âµÄÍ·ÎÄ¼şÖ®Ò»¡£
-// ÆäÖĞ¶¨ÒåÁËÒ»Ğ©ÓĞ¹Ø×Ö·ûÀàĞÍÅĞ¶ÏºÍ×ª»»µÄºê¡£
+// è¯¥æ–‡ä»¶æ˜¯å…³äºå­—ç¬¦æµ‹è¯•å’Œå¤„ç†çš„å¤´æ–‡ä»¶ï¼Œä¹Ÿæ˜¯æ ‡å‡† C åº“çš„å¤´æ–‡ä»¶ä¹‹ä¸€ã€‚
+// å…¶ä¸­å®šä¹‰äº†ä¸€äº›æœ‰å…³å­—ç¬¦ç±»å‹åˆ¤æ–­å’Œè½¬æ¢çš„å®ã€‚
 
 #ifndef _CTYPE_H
 #define _CTYPE_H
 
-#define _U	0x01	/* upper */							// ¸Ã±ÈÌØÎ»ÓÃÓÚ´óĞ´×Ö·û[A-Z]¡£
-#define _L	0x02	/* lower */							// ¸Ã±ÈÌØÎ»ÓÃÓÚĞ¡Ğ´×Ö·û[a-z]¡£
-#define _D	0x04	/* digit */							// ¸Ã±ÈÌØÎ»ÓÃÓÚÊı×Ö[0-9]¡£
-#define _C	0x08	/* cntrl */							// ¸Ã±ÈÌØÎ»ÓÃÓÚ¿ØÖÆ×Ö·û¡£
-#define _P	0x10	/* punct */							// ¸Ã±ÈÌØÎ»ÓÃÓÚ±êµã×Ö·û¡£
-#define _S	0x20	/* white space (space/lf/tab) */	// ÓÃÓÚ¿Õ°××Ö·û£¬Èç¿Õ¸ñ¡¢\t¡¢\n µÈ¡£
-#define _X	0x40	/* hex digit */						// ¸Ã±ÈÌØÎ»ÓÃÓÚÊ®Áù½øÖÆÊı×Ö¡£
-#define _SP	0x80	/* hard space (0x20) */				// ¸Ã±ÈÌØÎ»ÓÃÓÚ¿Õ¸ñ×Ö·û(0x20)¡£
+#define _U	0x01	/* upper */							// è¯¥æ¯”ç‰¹ä½ç”¨äºå¤§å†™å­—ç¬¦[A-Z]ã€‚
+#define _L	0x02	/* lower */							// è¯¥æ¯”ç‰¹ä½ç”¨äºå°å†™å­—ç¬¦[a-z]ã€‚
+#define _D	0x04	/* digit */							// è¯¥æ¯”ç‰¹ä½ç”¨äºæ•°å­—[0-9]ã€‚
+#define _C	0x08	/* cntrl */							// è¯¥æ¯”ç‰¹ä½ç”¨äºæ§åˆ¶å­—ç¬¦ã€‚
+#define _P	0x10	/* punct */							// è¯¥æ¯”ç‰¹ä½ç”¨äºæ ‡ç‚¹å­—ç¬¦ã€‚
+#define _S	0x20	/* white space (space/lf/tab) */	// ç”¨äºç©ºç™½å­—ç¬¦ï¼Œå¦‚ç©ºæ ¼ã€\tã€\n ç­‰ã€‚
+#define _X	0x40	/* hex digit */						// è¯¥æ¯”ç‰¹ä½ç”¨äºåå…­è¿›åˆ¶æ•°å­—ã€‚
+#define _SP	0x80	/* hard space (0x20) */				// è¯¥æ¯”ç‰¹ä½ç”¨äºç©ºæ ¼å­—ç¬¦(0x20)ã€‚
 
-extern unsigned char _ctype[];	// ×Ö·ûÌØĞÔÊı×é(±í)£¬¶¨ÒåÁË¸÷¸ö×Ö·û¶ÔÓ¦ÉÏÃæµÄÊôĞÔ¡£
-extern char _ctmp;				// Ò»¸öÁÙÊ±×Ö·û±äÁ¿(ÔÚ lib/ctype.c ÖĞ¶¨Òå)¡£
+extern unsigned char _ctype[];	// å­—ç¬¦ç‰¹æ€§æ•°ç»„(è¡¨)ï¼Œå®šä¹‰äº†å„ä¸ªå­—ç¬¦å¯¹åº”ä¸Šé¢çš„å±æ€§ã€‚
+extern char _ctmp;				// ä¸€ä¸ªä¸´æ—¶å­—ç¬¦å˜é‡(åœ¨ lib/ctype.c ä¸­å®šä¹‰)ã€‚
 
-// ÏÂÃæÊÇÒ»Ğ©È·¶¨×Ö·ûÀàĞÍµÄºê¡£
+// ä¸‹é¢æ˜¯ä¸€äº›ç¡®å®šå­—ç¬¦ç±»å‹çš„å®ã€‚
 #define isalnum(c) ((_ctype+1)[c]&(_U|_L|_D))
 #define isalpha(c) ((_ctype+1)[c]&(_U|_L))
-#define iscntrl(c) ((_ctype+1)[c]&(_C))					// ÊÇ¿ØÖÆ×Ö·û¡£
+#define iscntrl(c) ((_ctype+1)[c]&(_C))					// æ˜¯æ§åˆ¶å­—ç¬¦ã€‚
 #define isdigit(c) ((_ctype+1)[c]&(_D))
-#define isgraph(c) ((_ctype+1)[c]&(_P|_U|_L|_D))		// ÊÇÍ¼ĞÎ×Ö·û¡£
+#define isgraph(c) ((_ctype+1)[c]&(_P|_U|_L|_D))		// æ˜¯å›¾å½¢å­—ç¬¦ã€‚
 #define islower(c) ((_ctype+1)[c]&(_L))	
-#define isprint(c) ((_ctype+1)[c]&(_P|_U|_L|_D|_SP))	// ÊÇ¿É´òÓ¡×Ö·û¡£
-#define ispunct(c) ((_ctype+1)[c]&(_P))					// ÊÇ±êµã·ûºÅ¡£
-#define isspace(c) ((_ctype+1)[c]&(_S))					// ÊÇ¿Õ°××Ö·ûÈç¿Õ¸ñ,\f,\n,\r,\t,\v¡£
+#define isprint(c) ((_ctype+1)[c]&(_P|_U|_L|_D|_SP))	// æ˜¯å¯æ‰“å°å­—ç¬¦ã€‚
+#define ispunct(c) ((_ctype+1)[c]&(_P))					// æ˜¯æ ‡ç‚¹ç¬¦å·ã€‚
+#define isspace(c) ((_ctype+1)[c]&(_S))					// æ˜¯ç©ºç™½å­—ç¬¦å¦‚ç©ºæ ¼,\f,\n,\r,\t,\vã€‚
 #define isupper(c) ((_ctype+1)[c]&(_U))
-#define isxdigit(c) ((_ctype+1)[c]&(_D|_X))				// ÊÇÊ®Áù½øÖÆÊı×Ö¡£
+#define isxdigit(c) ((_ctype+1)[c]&(_D|_X))				// æ˜¯åå…­è¿›åˆ¶æ•°å­—ã€‚
 
-#define isascii(c) (((unsigned) c)<=0x7f)				// ÊÇ ASCII ×Ö·û¡£
-#define toascii(c) (((unsigned) c)&0x7f)				// ×ª»»³É ASCII ×Ö·û¡£
+#define isascii(c) (((unsigned) c)<=0x7f)				// æ˜¯ ASCII å­—ç¬¦ã€‚
+#define toascii(c) (((unsigned) c)&0x7f)				// è½¬æ¢æˆ ASCII å­—ç¬¦ã€‚
 
-// ÒÔÉÏÁ½¸ö¶¨ÒåÖĞ£¬ºê²ÎÊıÇ°Ê¹ÓÃÁËÇ°×º(unsigned)£¬Òò´Ë c Ó¦¸Ã¼ÓÀ¨ºÅ£¬¼´±íÊ¾³É(c)¡£
-// ÒòÎªÔÚ³ÌĞòÖĞ c ¿ÉÄÜÊÇÒ»¸ö¸´ÔÓµÄ±í´ïÊ½¡£ÀıÈç£¬Èç¹û²ÎÊıÊÇ a + b£¬Èô²»¼ÓÀ¨ºÅ£¬ÔòÔÚºê¶¨ÒåÖĞ
-// ±ä³ÉÁË£º(unsigned) a + b¡£ÕâÏÔÈ»²»¶Ô¡£¼ÓÁËÀ¨ºÅ¾ÍÄÜÕıÈ·±íÊ¾³É(unsigned)(a + b)¡£
-#define tolower(c) (_ctmp=c,isupper(_ctmp)?_ctmp-('A'-'a'):_ctmp)	// ×ª»»³ÉĞ¡Ğ´
-#define toupper(c) (_ctmp=c,islower(_ctmp)?_ctmp-('a'-'A'):_ctmp)	// ×ª»»³É´óĞ´
+// ä»¥ä¸Šä¸¤ä¸ªå®šä¹‰ä¸­ï¼Œå®å‚æ•°å‰ä½¿ç”¨äº†å‰ç¼€(unsigned)ï¼Œå› æ­¤ c åº”è¯¥åŠ æ‹¬å·ï¼Œå³è¡¨ç¤ºæˆ(c)ã€‚
+// å› ä¸ºåœ¨ç¨‹åºä¸­ c å¯èƒ½æ˜¯ä¸€ä¸ªå¤æ‚çš„è¡¨è¾¾å¼ã€‚ä¾‹å¦‚ï¼Œå¦‚æœå‚æ•°æ˜¯ a + bï¼Œè‹¥ä¸åŠ æ‹¬å·ï¼Œåˆ™åœ¨å®å®šä¹‰ä¸­
+// å˜æˆäº†ï¼š(unsigned) a + bã€‚è¿™æ˜¾ç„¶ä¸å¯¹ã€‚åŠ äº†æ‹¬å·å°±èƒ½æ­£ç¡®è¡¨ç¤ºæˆ(unsigned)(a + b)ã€‚
+#define tolower(c) (_ctmp=c,isupper(_ctmp)?_ctmp-('A'-'a'):_ctmp)	// è½¬æ¢æˆå°å†™
+#define toupper(c) (_ctmp=c,islower(_ctmp)?_ctmp-('a'-'A'):_ctmp)	// è½¬æ¢æˆå¤§å†™
 
 #endif

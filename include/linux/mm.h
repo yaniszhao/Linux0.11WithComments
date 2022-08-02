@@ -1,10 +1,10 @@
-//mm.h ÊÇÄÚ´æ¹ÜÀíÍ·ÎÄ¼ş¡£ÆäÖĞÖ÷Òª¶¨ÒåÁËÄÚ´æÒ³ÃæµÄ´óĞ¡ºÍ¼¸¸öÒ³ÃæÊÍ·Åº¯ÊıÔ­ĞÍ¡£
+//mm.h æ˜¯å†…å­˜ç®¡ç†å¤´æ–‡ä»¶ã€‚å…¶ä¸­ä¸»è¦å®šä¹‰äº†å†…å­˜é¡µé¢çš„å¤§å°å’Œå‡ ä¸ªé¡µé¢é‡Šæ”¾å‡½æ•°åŸå‹ã€‚
 
 
 #ifndef _MM_H
 #define _MM_H
 
-#define PAGE_SIZE 4096		// ¶¨ÒåÄÚ´æÒ³ÃæµÄ´óĞ¡(×Ö½ÚÊı)¡£
+#define PAGE_SIZE 4096		// å®šä¹‰å†…å­˜é¡µé¢çš„å¤§å°(å­—èŠ‚æ•°)ã€‚
 
 extern unsigned long get_free_page(void);
 extern unsigned long put_page(unsigned long page,unsigned long address);

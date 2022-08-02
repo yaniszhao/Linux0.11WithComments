@@ -12,29 +12,29 @@
 
 volatile void do_exit(int error_code);
 
-// »ñÈ¡µ±Ç°ÈÎÎñĞÅºÅÆÁ±ÎÎ»Í¼(ÆÁ±ÎÂë)
+// è·å–å½“å‰ä»»åŠ¡ä¿¡å·å±è”½ä½å›¾(å±è”½ç )
 int sys_sgetmask()
 {
 	return current->blocked;
 }
 
-// ÉèÖÃĞÂµÄĞÅºÅÆÁ±ÎÎ»Í¼¡£SIGKILL ²»ÄÜ±»ÆÁ±Î¡£·µ»ØÖµÊÇÔ­ĞÅºÅÆÁ±ÎÎ»Í¼
+// è®¾ç½®æ–°çš„ä¿¡å·å±è”½ä½å›¾ã€‚SIGKILL ä¸èƒ½è¢«å±è”½ã€‚è¿”å›å€¼æ˜¯åŸä¿¡å·å±è”½ä½å›¾
 int sys_ssetmask(int newmask)
 {
 	int old=current->blocked;
 
-	//1±íÊ¾ÆÁ±Î£¬0²Å±íÊ¾ÓĞĞ§¡£killºÍstop²»ÄÜÆÁ±Î£¬ÎªÁË³¬¼¶ÓÃ»§¿ÉÒÔÉ±Í£½ø³Ì¡£
+	//1è¡¨ç¤ºå±è”½ï¼Œ0æ‰è¡¨ç¤ºæœ‰æ•ˆã€‚killå’Œstopä¸èƒ½å±è”½ï¼Œä¸ºäº†è¶…çº§ç”¨æˆ·å¯ä»¥æ€åœè¿›ç¨‹ã€‚
 	current->blocked = newmask & ~(1<<(SIGKILL-1));
 	return old;
 }
 
-// ¸´ÖÆ sigaction Êı¾İµ½ fs Êı¾İ¶Î to ´¦£¬fsÒ»°ãÖ¸ÏòÓÃ»§Ì¬Êı¾İ¶Î
+// å¤åˆ¶ sigaction æ•°æ®åˆ° fs æ•°æ®æ®µ to å¤„ï¼Œfsä¸€èˆ¬æŒ‡å‘ç”¨æˆ·æ€æ•°æ®æ®µ
 // from ==> fs:to
 static inline void save_old(char * from,char * to)
 {
 	int i;
 
-	verify_area(to, sizeof(struct sigaction));//ÅĞ¶Ï´óĞ¡ÊÇ·ñ¹»£¬ÒÔ¼°Ğ´Ê±¸´ÖÆ¡£
+	verify_area(to, sizeof(struct sigaction));//åˆ¤æ–­å¤§å°æ˜¯å¦å¤Ÿï¼Œä»¥åŠå†™æ—¶å¤åˆ¶ã€‚
 	for (i=0 ; i< sizeof(struct sigaction) ; i++) {
 		put_fs_byte(*from,to);
 		from++;
@@ -42,7 +42,7 @@ static inline void save_old(char * from,char * to)
 	}
 }
 
-// °Ñ sigaction Êı¾İ´Ó fs Êı¾İ¶Î from Î»ÖÃ¸´ÖÆµ½ to ´¦
+// æŠŠ sigaction æ•°æ®ä» fs æ•°æ®æ®µ from ä½ç½®å¤åˆ¶åˆ° to å¤„
 // fs:from ==> to
 static inline void get_new(char * from,char * to)
 {
@@ -52,13 +52,13 @@ static inline void get_new(char * from,char * to)
 		*(to++) = get_fs_byte(from++);
 }
 
-// signal()ÏµÍ³µ÷ÓÃ¡£ÀàËÆÓÚ sigaction()¡£ÎªÖ¸¶¨µÄĞÅºÅ°²×°ĞÂµÄĞÅºÅ¾ä±ú(ĞÅºÅ´¦Àí³ÌĞò)¡£
-// ĞÅºÅ¾ä±ú¿ÉÒÔÊÇÓÃ»§Ö¸¶¨µÄº¯Êı£¬Ò²¿ÉÒÔÊÇ SIG_DFL(Ä¬ÈÏ¾ä±ú)»ò SIG_IGN(ºöÂÔ)¡£
-// ²ÎÊı signum --Ö¸¶¨µÄĞÅºÅ;handler -- Ö¸¶¨µÄ¾ä±ú;restorer ¨C»Ö¸´º¯ÊıÖ¸Õë£¬
-// ¸Ãº¯ÊıÓÉ Libc¿âÌá¹©¡£
-// ÓÃÓÚÔÚĞÅºÅ´¦Àí³ÌĞò½áÊøºó»Ö¸´ÏµÍ³µ÷ÓÃ·µ»ØÊ±¼¸¸ö¼Ä´æÆ÷µÄÔ­ÓĞÖµÒÔ¼°ÏµÍ³µ÷ÓÃµÄ·µ»ØÖµ£¬
-// ¾ÍºÃÏóÏµÍ³µ÷ÓÃÃ»ÓĞÖ´ĞĞ¹ıĞÅºÅ´¦Àí³ÌĞò¶øÖ±½Ó·µ»Øµ½ÓÃ»§³ÌĞòÒ»Ñù¡£
-// º¯Êı·µ»ØÔ­ĞÅºÅ¾ä±ú¡£
+// signal()ç³»ç»Ÿè°ƒç”¨ã€‚ç±»ä¼¼äº sigaction()ã€‚ä¸ºæŒ‡å®šçš„ä¿¡å·å®‰è£…æ–°çš„ä¿¡å·å¥æŸ„(ä¿¡å·å¤„ç†ç¨‹åº)ã€‚
+// ä¿¡å·å¥æŸ„å¯ä»¥æ˜¯ç”¨æˆ·æŒ‡å®šçš„å‡½æ•°ï¼Œä¹Ÿå¯ä»¥æ˜¯ SIG_DFL(é»˜è®¤å¥æŸ„)æˆ– SIG_IGN(å¿½ç•¥)ã€‚
+// å‚æ•° signum --æŒ‡å®šçš„ä¿¡å·;handler -- æŒ‡å®šçš„å¥æŸ„;restorer æ¢å¤å‡½æ•°æŒ‡é’ˆï¼Œ
+// è¯¥å‡½æ•°ç”± Libcåº“æä¾›ã€‚
+// ç”¨äºåœ¨ä¿¡å·å¤„ç†ç¨‹åºç»“æŸåæ¢å¤ç³»ç»Ÿè°ƒç”¨è¿”å›æ—¶å‡ ä¸ªå¯„å­˜å™¨çš„åŸæœ‰å€¼ä»¥åŠç³»ç»Ÿè°ƒç”¨çš„è¿”å›å€¼ï¼Œ
+// å°±å¥½è±¡ç³»ç»Ÿè°ƒç”¨æ²¡æœ‰æ‰§è¡Œè¿‡ä¿¡å·å¤„ç†ç¨‹åºè€Œç›´æ¥è¿”å›åˆ°ç”¨æˆ·ç¨‹åºä¸€æ ·ã€‚
+// å‡½æ•°è¿”å›åŸä¿¡å·å¥æŸ„ã€‚
 int sys_signal(int signum, long handler, long restorer)
 {
 	struct sigaction tmp;
@@ -67,17 +67,17 @@ int sys_signal(int signum, long handler, long restorer)
 		return -1;
 	tmp.sa_handler = (void (*)(int)) handler;
 	tmp.sa_mask = 0;
-	// ¸Ã¾ä±úÖ»Ê¹ÓÃ 1 ´Îºó¾Í»Ö¸´µ½Ä¬ÈÏÖµ£¬²¢ÔÊĞíĞÅºÅÔÚ×Ô¼ºµÄ´¦Àí¾ä±úÖĞÊÕµ½
-	tmp.sa_flags = SA_ONESHOT | SA_NOMASK;//Ïàµ±ÓÚsys_sigactionµÄÒ»ÖÖÌØÊâµÄÇéĞÎ
+	// è¯¥å¥æŸ„åªä½¿ç”¨ 1 æ¬¡åå°±æ¢å¤åˆ°é»˜è®¤å€¼ï¼Œå¹¶å…è®¸ä¿¡å·åœ¨è‡ªå·±çš„å¤„ç†å¥æŸ„ä¸­æ”¶åˆ°
+	tmp.sa_flags = SA_ONESHOT | SA_NOMASK;//ç›¸å½“äºsys_sigactionçš„ä¸€ç§ç‰¹æ®Šçš„æƒ…å½¢
 	tmp.sa_restorer = (void (*)(void)) restorer;
-	handler = (long) current->sigaction[signum-1].sa_handler;//·µ»ØÔ­À´µÄ´¦Àíº¯ÊıµØÖ·
+	handler = (long) current->sigaction[signum-1].sa_handler;//è¿”å›åŸæ¥çš„å¤„ç†å‡½æ•°åœ°å€
 	current->sigaction[signum-1] = tmp;
-	return handler;//handlerÊÇlong°¡·µ»Øint ?
+	return handler;//handleræ˜¯longå•Šè¿”å›int ?
 }
 
-// sigaction()ÏµÍ³µ÷ÓÃ¡£¸Ä±ä½ø³ÌÔÚÊÕµ½Ò»¸öĞÅºÅÊ±µÄ²Ù×÷¡£
-// signum ÊÇ³ıÁË SIGKILL ÒÔÍâµÄÈÎºÎĞÅºÅ¡£Èç¹ûĞÂ²Ù×÷(action)²»Îª¿ÕÔòĞÂ²Ù×÷±»°²×°¡£
-// Èç¹û oldaction Ö¸Õë²»Îª¿Õ£¬ÔòÔ­²Ù×÷±»±£Áôµ½ oldaction¡£³É¹¦Ôò·µ»Ø 0£¬·ñÔòÎª-1¡£
+// sigaction()ç³»ç»Ÿè°ƒç”¨ã€‚æ”¹å˜è¿›ç¨‹åœ¨æ”¶åˆ°ä¸€ä¸ªä¿¡å·æ—¶çš„æ“ä½œã€‚
+// signum æ˜¯é™¤äº† SIGKILL ä»¥å¤–çš„ä»»ä½•ä¿¡å·ã€‚å¦‚æœæ–°æ“ä½œ(action)ä¸ä¸ºç©ºåˆ™æ–°æ“ä½œè¢«å®‰è£…ã€‚
+// å¦‚æœ oldaction æŒ‡é’ˆä¸ä¸ºç©ºï¼Œåˆ™åŸæ“ä½œè¢«ä¿ç•™åˆ° oldactionã€‚æˆåŠŸåˆ™è¿”å› 0ï¼Œå¦åˆ™ä¸º-1ã€‚
 int sys_sigaction(int signum, const struct sigaction * action,
 	struct sigaction * oldaction)
 {
@@ -88,68 +88,68 @@ int sys_sigaction(int signum, const struct sigaction * action,
 
 	tmp = current->sigaction[signum-1];
 
-	//ÎªsignumĞÅºÅÉèÖÃĞÂµÄ²Ù×÷¡£×¢ÒâactionÊÇÓÃ»§Ì¬µÄµØÖ·¡£
+	//ä¸ºsignumä¿¡å·è®¾ç½®æ–°çš„æ“ä½œã€‚æ³¨æ„actionæ˜¯ç”¨æˆ·æ€çš„åœ°å€ã€‚
 	get_new((char *) action,
 		(char *) (signum-1+current->sigaction));
 	if (oldaction)
 		save_old((char *) &tmp,(char *) oldaction);
 	if (current->sigaction[signum-1].sa_flags & SA_NOMASK)
 		current->sigaction[signum-1].sa_mask = 0;
-	else	//²»ÔÊĞí±¾½ø³ÌÔÚ´¦ÀíĞÅºÅÊ±ÔÙÊÕµ½Í¬ÑùµÄĞÅºÅ
+	else	//ä¸å…è®¸æœ¬è¿›ç¨‹åœ¨å¤„ç†ä¿¡å·æ—¶å†æ”¶åˆ°åŒæ ·çš„ä¿¡å·
 		current->sigaction[signum-1].sa_mask |= (1<<(signum-1));
 	return 0;
 }
 
 
-// ÏµÍ³µ÷ÓÃÖĞ¶Ï´¦Àí³ÌĞòÖĞÕæÕıµÄĞÅºÅ´¦Àí³ÌĞòÔÚsystem_call.s¡£ 
-// ¸Ã¶Î´úÂëµÄÖ÷Òª×÷ÓÃÊÇ½«ĞÅºÅµÄ´¦Àí¾ä±ú²åÈëµ½ÓÃ»§³ÌĞò¶ÑÕ»ÖĞ£¬
-// ²¢ÔÚ±¾ÏµÍ³µ÷ÓÃ½áÊø·µ»ØºóÁ¢¿ÌÖ´ĞĞĞÅºÅ¾ä±ú³ÌĞò£¬È»ºó¼ÌĞøÖ´ĞĞÓÃ»§µÄ³ÌĞò¡£
-// ĞÅºÅ´¦Àíº¯Êı·Åµ½ÓÃ»§Ì¬È¥Ö´ĞĞ¶ø²»ÊÇ·Åµ½ÄÚºËÌ¬Ö´ĞĞ£¬¿ÉÒÔ¼õÉÙÄÚºË´¦ÀíÊ±¼ä£¬¶øÇÒ¸ü°²È«¡£
+// ç³»ç»Ÿè°ƒç”¨ä¸­æ–­å¤„ç†ç¨‹åºä¸­çœŸæ­£çš„ä¿¡å·å¤„ç†ç¨‹åºåœ¨system_call.sã€‚ 
+// è¯¥æ®µä»£ç çš„ä¸»è¦ä½œç”¨æ˜¯å°†ä¿¡å·çš„å¤„ç†å¥æŸ„æ’å…¥åˆ°ç”¨æˆ·ç¨‹åºå †æ ˆä¸­ï¼Œ
+// å¹¶åœ¨æœ¬ç³»ç»Ÿè°ƒç”¨ç»“æŸè¿”å›åç«‹åˆ»æ‰§è¡Œä¿¡å·å¥æŸ„ç¨‹åºï¼Œç„¶åç»§ç»­æ‰§è¡Œç”¨æˆ·çš„ç¨‹åºã€‚
+// ä¿¡å·å¤„ç†å‡½æ•°æ”¾åˆ°ç”¨æˆ·æ€å»æ‰§è¡Œè€Œä¸æ˜¯æ”¾åˆ°å†…æ ¸æ€æ‰§è¡Œï¼Œå¯ä»¥å‡å°‘å†…æ ¸å¤„ç†æ—¶é—´ï¼Œè€Œä¸”æ›´å®‰å…¨ã€‚
 void do_signal(long signr,long eax, long ebx, long ecx, long edx,
 	long fs, long es, long ds,
 	long eip, long cs, long eflags,
 	unsigned long * esp, long ss)
 {
 	unsigned long sa_handler;
-	long old_eip=eip;	//ÓÃ»§Ì¬eip
+	long old_eip=eip;	//ç”¨æˆ·æ€eip
 	struct sigaction * sa = current->sigaction + signr - 1;
 	int longs;
 	unsigned long * tmp_esp;
 
 	sa_handler = (unsigned long) sa->sa_handler;
-	if (sa_handler==1)	//ĞÅºÅ¾ä±úÎª SIG_IGN(ºöÂÔ)£¬Ôò·µ»Ø
+	if (sa_handler==1)	//ä¿¡å·å¥æŸ„ä¸º SIG_IGN(å¿½ç•¥)ï¼Œåˆ™è¿”å›
 		return;
-	if (!sa_handler) {//Èç¹û¾ä±úÎª SIG_DFL(Ä¬ÈÏ´¦Àí)
-		if (signr==SIGCHLD)	//ĞÅºÅÊÇSIGCHLD Ôò·µ»Ø¡£Ó¦¸ÃÒª´¦Àí×Ó½ø³ÌÊ¬Ìå°É£¬»¹Ã»ÊµÏÖ?
+	if (!sa_handler) {//å¦‚æœå¥æŸ„ä¸º SIG_DFL(é»˜è®¤å¤„ç†)
+		if (signr==SIGCHLD)	//ä¿¡å·æ˜¯SIGCHLD åˆ™è¿”å›ã€‚åº”è¯¥è¦å¤„ç†å­è¿›ç¨‹å°¸ä½“å§ï¼Œè¿˜æ²¡å®ç°?
 			return;
-		else				//·ñÔòÖÕÖ¹½ø³ÌµÄÖ´ĞĞ
+		else				//å¦åˆ™ç»ˆæ­¢è¿›ç¨‹çš„æ‰§è¡Œ
 			do_exit(1<<(signr-1));
 	}
-	//Èç¹û¸ÃĞÅºÅ¾ä±úÖ»ĞèÊ¹ÓÃÒ»´Î£¬Ôò½«¸Ã¾ä±úÖÃ¿Õ£¬ÏÂ´ÎÊ¹ÓÃµÄÊÇÄ¬ÈÏ´¦Àí
+	//å¦‚æœè¯¥ä¿¡å·å¥æŸ„åªéœ€ä½¿ç”¨ä¸€æ¬¡ï¼Œåˆ™å°†è¯¥å¥æŸ„ç½®ç©ºï¼Œä¸‹æ¬¡ä½¿ç”¨çš„æ˜¯é»˜è®¤å¤„ç†
 	if (sa->sa_flags & SA_ONESHOT)
 		sa->sa_handler = NULL;
 
-	// ÏÂÃæÕâ¶Î´úÂë½«ĞÅºÅ´¦Àí¾ä±ú²åÈëµ½ÓÃ»§¶ÑÕ»ÖĞ£¬Í¬Ê±Ò²½« sa_restorer,signr,
-	// ½ø³ÌÆÁ±ÎÂë(Èç¹ûSA_NOMASK Ã»ÖÃÎ»),eax,ecx,edx ×÷Îª²ÎÊıÒÔ¼°Ô­µ÷ÓÃÏµÍ³µ÷ÓÃ
-	// µÄ³ÌĞò·µ»ØÖ¸Õë¼°±êÖ¾¼Ä´æÆ÷ÖµÑ¹Èë¶ÑÕ»¡£
-	// Òò´ËÔÚ±¾´ÎÏµÍ³µ÷ÓÃÖĞ¶Ï(0x80)·µ»ØÓÃ»§³ÌĞòÊ±»áÊ×ÏÈÖ´ĞĞÓÃ»§µÄĞÅºÅ¾ä±ú³ÌĞò£¬
-	// È»ºóÔÙ¼ÌĞøÖ´ĞĞÓÃ»§³ÌĞò¡£
+	// ä¸‹é¢è¿™æ®µä»£ç å°†ä¿¡å·å¤„ç†å¥æŸ„æ’å…¥åˆ°ç”¨æˆ·å †æ ˆä¸­ï¼ŒåŒæ—¶ä¹Ÿå°† sa_restorer,signr,
+	// è¿›ç¨‹å±è”½ç (å¦‚æœSA_NOMASK æ²¡ç½®ä½),eax,ecx,edx ä½œä¸ºå‚æ•°ä»¥åŠåŸè°ƒç”¨ç³»ç»Ÿè°ƒç”¨
+	// çš„ç¨‹åºè¿”å›æŒ‡é’ˆåŠæ ‡å¿—å¯„å­˜å™¨å€¼å‹å…¥å †æ ˆã€‚
+	// å› æ­¤åœ¨æœ¬æ¬¡ç³»ç»Ÿè°ƒç”¨ä¸­æ–­(0x80)è¿”å›ç”¨æˆ·ç¨‹åºæ—¶ä¼šé¦–å…ˆæ‰§è¡Œç”¨æˆ·çš„ä¿¡å·å¥æŸ„ç¨‹åºï¼Œ
+	// ç„¶åå†ç»§ç»­æ‰§è¡Œç”¨æˆ·ç¨‹åºã€‚
 	
-	*(&eip) = sa_handler;//·µ»Øµ½ÓÃ»§Ì¬È¥Ö´ĞĞ´¦Àíº¯Êı
-	// Èç¹ûÔÊĞíĞÅºÅ×Ô¼ºµÄ´¦Àí¾ä±úÊÕµ½ĞÅºÅ×Ô¼º£¬ÔòÒ²ĞèÒª½«½ø³ÌµÄ×èÈûÂëÑ¹Èë¶ÑÕ»¡£
-	// ×¢Òâ£¬ÕâÀï longs µÄ½á¹ûÓ¦¸ÃÑ¡Ôñ(7*4):(8*4)£¬ÒòÎª¶ÑÕ»ÊÇÒÔ 4 ×Ö½ÚÎªµ¥Î»²Ù×÷µÄ
+	*(&eip) = sa_handler;//è¿”å›åˆ°ç”¨æˆ·æ€å»æ‰§è¡Œå¤„ç†å‡½æ•°
+	// å¦‚æœå…è®¸ä¿¡å·è‡ªå·±çš„å¤„ç†å¥æŸ„æ”¶åˆ°ä¿¡å·è‡ªå·±ï¼Œåˆ™ä¹Ÿéœ€è¦å°†è¿›ç¨‹çš„é˜»å¡ç å‹å…¥å †æ ˆã€‚
+	// æ³¨æ„ï¼Œè¿™é‡Œ longs çš„ç»“æœåº”è¯¥é€‰æ‹©(7*4):(8*4)ï¼Œå› ä¸ºå †æ ˆæ˜¯ä»¥ 4 å­—èŠ‚ä¸ºå•ä½æ“ä½œçš„
 	longs = (sa->sa_flags & SA_NOMASK)?7:8;
-	*(&esp) -= longs;			// esp-=longs¿´³Élong*µÄ¼õÃ¿´Î¼õµÄ¾ø¶ÔÖµÎª4
-	verify_area(esp,longs*4);	// Ğ´Ç°ÑéÖ¤(ÀıÈçÈç¹ûÄÚ´æ³¬½çÔò·ÖÅäĞÂÒ³µÈ)
+	*(&esp) -= longs;			// esp-=longsçœ‹æˆlong*çš„å‡æ¯æ¬¡å‡çš„ç»å¯¹å€¼ä¸º4
+	verify_area(esp,longs*4);	// å†™å‰éªŒè¯(ä¾‹å¦‚å¦‚æœå†…å­˜è¶…ç•Œåˆ™åˆ†é…æ–°é¡µç­‰)
 	tmp_esp=esp;
-	put_fs_long((long) sa->sa_restorer,tmp_esp++);	//·Årestorer´¦Àíº¯ÊıÈë¿Ú£¬ÏÂÃæÊÇ´¦Àíº¯ÊıµÄ²ÎÊı
-	put_fs_long(signr,tmp_esp++);					//·ÅĞÅºÅÖµ£¬Í¬Ê±ÊÇsa_handlerº¯ÊıµÄ²ÎÊı
-	if (!(sa->sa_flags & SA_NOMASK))				//·ÅÆÁ±ÎÂë
+	put_fs_long((long) sa->sa_restorer,tmp_esp++);	//æ”¾restorerå¤„ç†å‡½æ•°å…¥å£ï¼Œä¸‹é¢æ˜¯å¤„ç†å‡½æ•°çš„å‚æ•°
+	put_fs_long(signr,tmp_esp++);					//æ”¾ä¿¡å·å€¼ï¼ŒåŒæ—¶æ˜¯sa_handlerå‡½æ•°çš„å‚æ•°
+	if (!(sa->sa_flags & SA_NOMASK))				//æ”¾å±è”½ç 
 		put_fs_long(current->blocked,tmp_esp++);
-	put_fs_long(eax,tmp_esp++);						//·Åeax
-	put_fs_long(ecx,tmp_esp++);						//·Åecx
-	put_fs_long(edx,tmp_esp++);						//·Åedx
-	put_fs_long(eflags,tmp_esp++);					//·Åeflags
-	put_fs_long(old_eip,tmp_esp++);					//·ÅÔ­À´µÄeip
-	current->blocked |= sa->sa_mask;				//½ø³Ì×èÈûÂë(ÆÁ±ÎÂë)ÌíÉÏ sa_mask ÖĞµÄÂëÎ»
+	put_fs_long(eax,tmp_esp++);						//æ”¾eax
+	put_fs_long(ecx,tmp_esp++);						//æ”¾ecx
+	put_fs_long(edx,tmp_esp++);						//æ”¾edx
+	put_fs_long(eflags,tmp_esp++);					//æ”¾eflags
+	put_fs_long(old_eip,tmp_esp++);					//æ”¾åŸæ¥çš„eip
+	current->blocked |= sa->sa_mask;				//è¿›ç¨‹é˜»å¡ç (å±è”½ç )æ·»ä¸Š sa_mask ä¸­çš„ç ä½
 }

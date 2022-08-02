@@ -7,8 +7,8 @@
 #define __LIBRARY__
 #include <unistd.h>
 
-// ¼ÓÔØ²¢Ö´ĞĞ×Ó½ø³Ì(ÆäËü³ÌĞò)º¯Êı¡£
-// ÏÂÃæ¸Ãµ÷ÓÃºêº¯Êı¶ÔÓ¦£ºint execve(const char * file, char ** argv, char ** envp)¡£
-// ²ÎÊı£ºfile - ±»Ö´ĞĞ³ÌĞòÎÄ¼şÃû£»argv - ÃüÁîĞĞ²ÎÊıÖ¸ÕëÊı×é£»envp - »·¾³±äÁ¿Ö¸ÕëÊı×é¡£
-// Ö±½Óµ÷ÓÃÁËÏµÍ³ÖĞ¶Ï int 0x80£¬²ÎÊıÊÇ__NR_execve¡£²Î¼û include/unistd.h ºÍ fs/exec.c ³ÌĞò¡£
+// åŠ è½½å¹¶æ‰§è¡Œå­è¿›ç¨‹(å…¶å®ƒç¨‹åº)å‡½æ•°ã€‚
+// ä¸‹é¢è¯¥è°ƒç”¨å®å‡½æ•°å¯¹åº”ï¼šint execve(const char * file, char ** argv, char ** envp)ã€‚
+// å‚æ•°ï¼šfile - è¢«æ‰§è¡Œç¨‹åºæ–‡ä»¶åï¼›argv - å‘½ä»¤è¡Œå‚æ•°æŒ‡é’ˆæ•°ç»„ï¼›envp - ç¯å¢ƒå˜é‡æŒ‡é’ˆæ•°ç»„ã€‚
+// ç›´æ¥è°ƒç”¨äº†ç³»ç»Ÿä¸­æ–­ int 0x80ï¼Œå‚æ•°æ˜¯__NR_execveã€‚å‚è§ include/unistd.h å’Œ fs/exec.c ç¨‹åºã€‚
 _syscall3(int,execve,const char *,file,char **,argv,char **,envp)

@@ -1,7 +1,7 @@
 /*
-��ͷ�ļ�������Ƕ��������ʽ�����������ַ�������������Ϊ�����ִ���ٶ�ʹ������Ƕ������
-�ڱ�׼ C ����Ҳ�ṩͬ�����Ƶ�ͷ�ļ���������ʵ�����ڱ�׼ C ���У�
-�����ļ���ֻ������غ�����������
+该头文件中以内嵌函数的形式定义了所有字符串操作函数，为了提高执行速度使用了内嵌汇编程序。
+在标准 C 库中也提供同样名称的头文件，但函数实现是在标准 C 库中，
+而该文件中只包含相关函数的声明。
 */
 
 #ifndef _STRING_H_
@@ -30,18 +30,18 @@ extern char * strerror(int errno);
  *		(C) 1991 Linus Torvalds
  */
 /*
- * ����ַ���ͷ�ļ�����Ƕ��������ʽ�����������ַ�������������ʹ�� gcc ʱ��ͬʱ
- * �ٶ��� ds=es=���ݿռ䣬��Ӧ���ǳ���ġ���������ַ����������Ǿ��ֹ����д���
- * �Ż��ģ������Ǻ��� strtok��strstr��str[c]spn������Ӧ����������������ȴ������
- * ô�������⡣���еĲ��������϶���ʹ�üĴ���������ɵģ���ʹ�ú������������ࡣ
- * ���еط���ʹ�����ַ���ָ�����ʹ�ô��롰��΢����������?
+ * 这个字符串头文件以内嵌函数的形式定义了所有字符串操作函数。使用 gcc 时，同时
+ * 假定了 ds=es=数据空间，这应该是常规的。绝大多数字符串函数都是经手工进行大量
+ * 优化的，尤其是函数 strtok、strstr、str[c]spn。它们应该能正常工作，但却不是那
+ * 么容易理解。所有的操作基本上都是使用寄存器集来完成的，这使得函数即快有整洁。
+ * 所有地方都使用了字符串指令，这又使得代码“稍微”难以理解?
  *
  * (C) 1991 Linus Torvalds
  */
 
-// ��һ���ַ���(src)��������һ���ַ���(dest)��ֱ������ NULL �ַ���ֹͣ��
-// ������dest - Ŀ���ַ���ָ�룬src - Դ�ַ���ָ�롣
-// %0 - esi(src)��%1 - edi(dest)��
+// 将一个字符串(src)拷贝到另一个字符串(dest)，直到遇到 NULL 字符后停止。
+// 参数：dest - 目的字符串指针，src - 源字符串指针。
+// %0 - esi(src)，%1 - edi(dest)。
 extern inline char * strcpy(char * dest,const char *src)
 {
 __asm__("cld\n"
@@ -53,10 +53,10 @@ __asm__("cld\n"
 return dest;
 }
 
-// ����Դ�ַ��� count ���ֽڵ�Ŀ���ַ�����
-// ���Դ������С�� count ���ֽڣ��͸��ӿ��ַ�(NULL)��Ŀ���ַ�����
-// ������dest - Ŀ���ַ���ָ�룬src - Դ�ַ���ָ�룬count - �����ֽ�����
-// %0 - esi(src)��%1 - edi(dest)��%2 - ecx(count)��
+// 拷贝源字符串 count 个字节到目的字符串。
+// 如果源串长度小于 count 个字节，就附加空字符(NULL)到目的字符串。
+// 参数：dest - 目的字符串指针，src - 源字符串指针，count - 拷贝字节数。
+// %0 - esi(src)，%1 - edi(dest)，%2 - ecx(count)。
 extern inline char * strncpy(char * dest,const char *src,int count)
 {
 __asm__("cld\n"
@@ -73,9 +73,9 @@ __asm__("cld\n"
 return dest;
 }
 
-// ��Դ�ַ���������Ŀ���ַ�����ĩβ����
-// ������dest - Ŀ���ַ���ָ�룬src - Դ�ַ���ָ�롣
-// %0 - esi(src)��%1 - edi(dest)��%2 - eax(0)��%3 - ecx(-1)��
+// 将源字符串拷贝到目的字符串的末尾处。
+// 参数：dest - 目的字符串指针，src - 源字符串指针。
+// %0 - esi(src)，%1 - edi(dest)，%2 - eax(0)，%3 - ecx(-1)。
 extern inline char * strcat(char * dest,const char * src)
 {
 __asm__("cld\n\t"
@@ -90,9 +90,9 @@ __asm__("cld\n\t"
 return dest;
 }
 
-// ��Դ�ַ����� count ���ֽڸ��Ƶ�Ŀ���ַ�����ĩβ���������һ���ַ���
-// ������dest - Ŀ���ַ�����src - Դ�ַ�����count - �����Ƶ��ֽ�����
-// %0 - esi(src)��%1 - edi(dest)��%2 - eax(0)��%3 - ecx(-1)��%4 - (count)��
+// 将源字符串的 count 个字节复制到目的字符串的末尾处，最后添一空字符。
+// 参数：dest - 目的字符串，src - 源字符串，count - 欲复制的字节数。
+// %0 - esi(src)，%1 - edi(dest)，%2 - eax(0)，%3 - ecx(-1)，%4 - (count)。
 extern inline char * strncat(char * dest,const char * src,int count)
 {
 __asm__("cld\n\t"
@@ -113,10 +113,10 @@ __asm__("cld\n\t"
 return dest;
 }
 
-// ��һ���ַ�������һ���ַ������бȽϡ�
-// ������cs - �ַ��� 1��ct - �ַ��� 2��
-// %0 - eax(__res)����ֵ��%1 - edi(cs)�ַ��� 1 ָ�룬%2 - esi(ct)�ַ��� 2 ָ�롣
-// ���أ������ 1 > �� 2���򷵻� 1���� 1 = �� 2���򷵻� 0���� 1 < �� 2���򷵻�-1��
+// 将一个字符串与另一个字符串进行比较。
+// 参数：cs - 字符串 1，ct - 字符串 2。
+// %0 - eax(__res)返回值，%1 - edi(cs)字符串 1 指针，%2 - esi(ct)字符串 2 指针。
+// 返回：如果串 1 > 串 2，则返回 1；串 1 = 串 2，则返回 0；串 1 < 串 2，则返回-1。
 extern inline int strcmp(const char * cs,const char * ct)
 {
 register int __res __asm__("ax");
@@ -136,10 +136,10 @@ __asm__("cld\n"
 return __res;
 }
 
-// �ַ��� 1 ���ַ��� 2 ��ǰ count ���ַ����бȽϡ�
-// ������cs - �ַ��� 1��ct - �ַ��� 2��count - �Ƚϵ��ַ�����
-// %0 - eax(__res)����ֵ��%1 - edi(cs)�� 1 ָ�룬%2 - esi(ct)�� 2 ָ�룬%3 - ecx(count)��
-// ���أ������ 1 > �� 2���򷵻� 1���� 1 = �� 2���򷵻� 0���� 1 < �� 2���򷵻�-1��
+// 字符串 1 与字符串 2 的前 count 个字符进行比较。
+// 参数：cs - 字符串 1，ct - 字符串 2，count - 比较的字符数。
+// %0 - eax(__res)返回值，%1 - edi(cs)串 1 指针，%2 - esi(ct)串 2 指针，%3 - ecx(count)。
+// 返回：如果串 1 > 串 2，则返回 1；串 1 = 串 2，则返回 0；串 1 < 串 2，则返回-1。
 extern inline int strncmp(const char * cs,const char * ct,int count)
 {
 register int __res __asm__("ax");
@@ -161,10 +161,10 @@ __asm__("cld\n"
 return __res;
 }
 
-// ���ַ�����Ѱ�ҵ�һ��ƥ����ַ���
-// ������s - �ַ�����c - ��Ѱ�ҵ��ַ���
-// %0 - eax(__res)��%1 - esi(�ַ���ָ�� s)��%2 - eax(�ַ� c)��
-// ���أ������ַ����е�һ�γ���ƥ���ַ���ָ�롣��û���ҵ�ƥ����ַ����򷵻ؿ�ָ�롣
+// 在字符串中寻找第一个匹配的字符。
+// 参数：s - 字符串，c - 欲寻找的字符。
+// %0 - eax(__res)，%1 - esi(字符串指针 s)，%2 - eax(字符 c)。
+// 返回：返回字符串中第一次出现匹配字符的指针。若没有找到匹配的字符，则返回空指针。
 extern inline char * strchr(const char * s,char c)
 {
 register char * __res __asm__("ax");
@@ -182,10 +182,10 @@ __asm__("cld\n\t"
 return __res;
 }
 
-// Ѱ���ַ�����ָ���ַ����һ�γ��ֵĵط��������������ַ�����
-// ������s - �ַ�����c - ��Ѱ�ҵ��ַ���
-// %0 - edx(__res)��%1 - edx(0)��%2 - esi(�ַ���ָ�� s)��%3 - eax(�ַ� c)��
-// ���أ������ַ��������һ�γ���ƥ���ַ���ָ�롣��û���ҵ�ƥ����ַ����򷵻ؿ�ָ�롣
+// 寻找字符串中指定字符最后一次出现的地方。（反向搜索字符串）
+// 参数：s - 字符串，c - 欲寻找的字符。
+// %0 - edx(__res)，%1 - edx(0)，%2 - esi(字符串指针 s)，%3 - eax(字符 c)。
+// 返回：返回字符串中最后一次出现匹配字符的指针。若没有找到匹配的字符，则返回空指针。
 extern inline char * strrchr(const char * s,char c)
 {
 register char * __res __asm__("dx");
@@ -202,10 +202,10 @@ __asm__("cld\n\t"
 return __res;
 }
 
-// ���ַ��� 1 ��Ѱ�ҵ� 1 ���ַ����У����ַ������е��κ��ַ����������ַ��� 2 �С�
-// ������cs - �ַ��� 1 ָ�룬ct - �ַ��� 2 ָ�롣
-// %0 - esi(__res)��%1 - eax(0)��%2 - ecx(-1)��%3 - esi(�� 1 ָ�� cs)��%4 - (�� 2 ָ�� ct)��
-// �����ַ��� 1 �а����ַ��� 2 ���κ��ַ����׸��ַ����еĳ���ֵ��
+// 在字符串 1 中寻找第 1 个字符序列，该字符序列中的任何字符都包含在字符串 2 中。
+// 参数：cs - 字符串 1 指针，ct - 字符串 2 指针。
+// %0 - esi(__res)，%1 - eax(0)，%2 - ecx(-1)，%3 - esi(串 1 指针 cs)，%4 - (串 2 指针 ct)。
+// 返回字符串 1 中包含字符串 2 中任何字符的首个字符序列的长度值。
 extern inline int strspn(const char * cs, const char * ct)
 {
 register char * __res __asm__("si");
@@ -230,10 +230,10 @@ __asm__("cld\n\t"
 return __res-cs;
 }
 
-// Ѱ���ַ��� 1 �в������ַ��� 2 ���κ��ַ����׸��ַ����С�
-// ������cs - �ַ��� 1 ָ�룬ct - �ַ��� 2 ָ�롣
-// %0 - esi(__res)��%1 - eax(0)��%2 - ecx(-1)��%3 - esi(�� 1 ָ�� cs)��%4 - (�� 2 ָ�� ct)��
-// �����ַ��� 1 �в������ַ��� 2 ���κ��ַ����׸��ַ����еĳ���ֵ��
+// 寻找字符串 1 中不包含字符串 2 中任何字符的首个字符序列。
+// 参数：cs - 字符串 1 指针，ct - 字符串 2 指针。
+// %0 - esi(__res)，%1 - eax(0)，%2 - ecx(-1)，%3 - esi(串 1 指针 cs)，%4 - (串 2 指针 ct)。
+// 返回字符串 1 中不包含字符串 2 中任何字符的首个字符序列的长度值。
 extern inline int strcspn(const char * cs, const char * ct)
 {
 register char * __res __asm__("si");
@@ -258,10 +258,10 @@ __asm__("cld\n\t"
 return __res-cs;
 }
 
-// ���ַ��� 1 ��Ѱ���׸��������ַ��� 2 �е��κ��ַ���
-// ������cs - �ַ��� 1 ��ָ�룬ct - �ַ��� 2 ��ָ�롣
-// %0 -esi(__res)��%1 -eax(0)��%2 -ecx(0xffffffff)��%3 -esi(�� 1 ָ�� cs)��%4 -(�� 2 ָ�� ct)��
-// �����ַ��� 1 ���׸������ַ��� 2 ���ַ���ָ�롣
+// 在字符串 1 中寻找首个包含在字符串 2 中的任何字符。
+// 参数：cs - 字符串 1 的指针，ct - 字符串 2 的指针。
+// %0 -esi(__res)，%1 -eax(0)，%2 -ecx(0xffffffff)，%3 -esi(串 1 指针 cs)，%4 -(串 2 指针 ct)。
+// 返回字符串 1 中首个包含字符串 2 中字符的指针。
 extern inline char * strpbrk(const char * cs,const char * ct)
 {
 register char * __res __asm__("si");
@@ -289,10 +289,10 @@ __asm__("cld\n\t"
 return __res;
 }
 
-// ���ַ��� 1 ��Ѱ���׸�ƥ�������ַ��� 2 ���ַ�����
-// ������cs - �ַ��� 1 ��ָ�룬ct - �ַ��� 2 ��ָ�롣
-// %0 -eax(__res)��%1 -eax(0)��%2 -ecx(0xffffffff)��%3 -esi(�� 1 ָ�� cs)��%4 -(�� 2 ָ�� ct)��
-// ���أ������ַ��� 1 ���׸�ƥ���ַ��� 2 ���ַ���ָ�롣
+// 在字符串 1 中寻找首个匹配整个字符串 2 的字符串。
+// 参数：cs - 字符串 1 的指针，ct - 字符串 2 的指针。
+// %0 -eax(__res)，%1 -eax(0)，%2 -ecx(0xffffffff)，%3 -esi(串 1 指针 cs)，%4 -(串 2 指针 ct)。
+// 返回：返回字符串 1 中首个匹配字符串 2 的字符串指针。
 extern inline char * strstr(const char * cs,const char * ct)
 {
 register char * __res __asm__("ax");
@@ -320,10 +320,10 @@ __asm__("cld\n\t" \
 return __res;
 }
 
-// �����ַ������ȡ�
-// ������s - �ַ�����
-// %0 - ecx(__res)��%1 - edi(�ַ���ָ�� s)��%2 - eax(0)��%3 - ecx(0xffffffff)��
-// ���أ������ַ����ĳ��ȡ�
+// 计算字符串长度。
+// 参数：s - 字符串。
+// %0 - ecx(__res)，%1 - edi(字符串指针 s)，%2 - eax(0)，%3 - ecx(0xffffffff)。
+// 返回：返回字符串的长度。
 extern inline int strlen(const char * s)
 {
 register int __res __asm__("cx");
@@ -336,18 +336,18 @@ __asm__("cld\n\t"
 return __res;
 }
 
-extern char * ___strtok;	// ������ʱ���ָ�����汻�����ַ��� 1(s)��ָ�롣
+extern char * ___strtok;	// 用于临时存放指向下面被分析字符串 1(s)的指针。
 
-// �����ַ��� 2 �е��ַ����ַ��� 1 �ָ�ɱ��(tokern)���С�
-// ���� 1 �����ǰ��������������(token)�����У����ɷָ���ַ��� 2 �е�һ�������ַ��ֿ���
-// ��һ�ε��� strtok()ʱ��������ָ���ַ��� 1 �е� 1 �� token ���ַ���ָ�룬���ڷ��� token ʱ��
-// һ null �ַ�д���ָ����������ʹ�� null ��Ϊ�ַ��� 1 �ĵ��ã��������ַ�������ɨ���ַ��� 1��
-// ֱ��û�� token Ϊֹ���ڲ�ͬ�ĵ��ù����У��ָ���� 2 ���Բ�ͬ��
-// ������s - ���������ַ��� 1��ct - ���������ָ�����ַ��� 2��
-// ��������%0 - ebx(__res)��%1 - esi(__strtok)��
-// ������룺%2 - ebx(__strtok)��%3 - esi(�ַ��� 1 ָ�� s)��%4 - ���ַ��� 2 ָ�� ct����
-// ���أ������ַ��� s �е� 1 �� token�����û���ҵ� token���򷵻�һ�� null ָ�롣
-// ����ʹ���ַ��� s ָ��Ϊ null �ĵ��ã�����ԭ�ַ��� s ��������һ�� token��
+// 利用字符串 2 中的字符将字符串 1 分割成标记(tokern)序列。
+// 将串 1 看作是包含零个或多个单词(token)的序列，并由分割符字符串 2 中的一个或多个字符分开。
+// 第一次调用 strtok()时，将返回指向字符串 1 中第 1 个 token 首字符的指针，并在返回 token 时将
+// 一 null 字符写到分割符处。后续使用 null 作为字符串 1 的调用，将用这种方法继续扫描字符串 1，
+// 直到没有 token 为止。在不同的调用过程中，分割符串 2 可以不同。
+// 参数：s - 待处理的字符串 1，ct - 包含各个分割符的字符串 2。
+// 汇编输出：%0 - ebx(__res)，%1 - esi(__strtok)；
+// 汇编输入：%2 - ebx(__strtok)，%3 - esi(字符串 1 指针 s)，%4 - （字符串 2 指针 ct）。
+// 返回：返回字符串 s 中第 1 个 token，如果没有找到 token，则返回一个 null 指针。
+// 后续使用字符串 s 指针为 null 的调用，将在原字符串 s 中搜索下一个 token。
 extern inline char * strtok(char * s,const char * ct)
 {
 register char * __res __asm__("si");
@@ -407,9 +407,9 @@ __asm__("testl %1,%1\n\t"
 return __res;
 }
 
-// �ڴ�鸴�ơ���Դ��ַ src ����ʼ���� n ���ֽڵ�Ŀ�ĵ�ַ dest ����
-// ������dest - ���Ƶ�Ŀ�ĵ�ַ��src - ���Ƶ�Դ��ַ��n - �����ֽ�����
-// %0 - ecx(n)��%1 - esi(src)��%2 - edi(dest)��
+// 内存块复制。从源地址 src 处开始复制 n 个字节到目的地址 dest 处。
+// 参数：dest - 复制的目的地址，src - 复制的源地址，n - 复制字节数。
+// %0 - ecx(n)，%1 - esi(src)，%2 - edi(dest)。
 extern inline void * memcpy(void * dest,const void * src, int n)
 {
 __asm__("cld\n\t"
@@ -420,11 +420,11 @@ __asm__("cld\n\t"
 return dest;
 }
 
-// �ڴ���ƶ���ͬ�ڴ�鸴�ƣ��������ƶ��ķ���
-// ������dest - ���Ƶ�Ŀ�ĵ�ַ��src - ���Ƶ�Դ��ַ��n - �����ֽ�����
-// �� dest<src ��%0 - ecx(n)��%1 - esi(src)��%2 - edi(dest)��
-// ����%0 - ecx(n)��%1 - esi(src+n-1)��%2 - edi(dest+n-1)��
-// ����������Ϊ�˷�ֹ�ڸ���ʱ������ص����ǡ�
+// 内存块移动。同内存块复制，但考虑移动的方向。
+// 参数：dest - 复制的目的地址，src - 复制的源地址，n - 复制字节数。
+// 若 dest<src 则：%0 - ecx(n)，%1 - esi(src)，%2 - edi(dest)。
+// 否则：%0 - ecx(n)，%1 - esi(src+n-1)，%2 - edi(dest+n-1)。
+// 这样操作是为了防止在复制时错误地重叠覆盖。
 extern inline void * memmove(void * dest,const void * src, int n)
 {
 if (dest<src)
@@ -442,10 +442,10 @@ __asm__("std\n\t"
 return dest;
 }
 
-// �Ƚ� n ���ֽڵ������ڴ棨�����ַ���������ʹ���� NULL �ֽ�Ҳ��ֹͣ�Ƚϡ�
-// ������cs - �ڴ�� 1 ��ַ��ct - �ڴ�� 2 ��ַ��count - �Ƚϵ��ֽ�����
-// %0 - eax(__res)��%1 - eax(0)��%2 - edi(�ڴ�� 1)��%3 - esi(�ڴ�� 2)��%4 - ecx(count)��
-// ���أ����� 1>�� 2 ���� 1���� 1<�� 2������-1���� 1==�� 2���򷵻� 0��
+// 比较 n 个字节的两块内存（两个字符串），即使遇上 NULL 字节也不停止比较。
+// 参数：cs - 内存块 1 地址，ct - 内存块 2 地址，count - 比较的字节数。
+// %0 - eax(__res)，%1 - eax(0)，%2 - edi(内存块 1)，%3 - esi(内存块 2)，%4 - ecx(count)。
+// 返回：若块 1>块 2 返回 1；块 1<块 2，返回-1；块 1==块 2，则返回 0。
 extern inline int memcmp(const void * cs,const void * ct,int count)
 {
 register int __res __asm__("ax");
@@ -462,10 +462,10 @@ __asm__("cld\n\t"
 return __res;
 }
 
-// �� n �ֽڴ�С���ڴ��(�ַ���)��Ѱ��ָ���ַ���
-// ������cs - ָ���ڴ���ַ��c - ָ�����ַ���count - �ڴ�鳤�ȡ�
-// %0 - edi(__res)��%1 - eax(�ַ� c)��%2 - edi(�ڴ���ַ cs)��%3 - ecx(�ֽ��� count)��
-// ���ص�һ��ƥ���ַ���ָ�룬���û���ҵ����򷵻� NULL �ַ���
+// 在 n 字节大小的内存块(字符串)中寻找指定字符。
+// 参数：cs - 指定内存块地址，c - 指定的字符，count - 内存块长度。
+// %0 - edi(__res)，%1 - eax(字符 c)，%2 - edi(内存块地址 cs)，%3 - ecx(字节数 count)。
+// 返回第一个匹配字符的指针，如果没有找到，则返回 NULL 字符。
 extern inline void * memchr(const void * cs,char c,int count)
 {
 register void * __res __asm__("di");
@@ -482,9 +482,9 @@ __asm__("cld\n\t"
 return __res;
 }
 
-// ���ַ���дָ�������ڴ�顣
-// ���ַ� c ��д s ָ����ڴ����򣬹��� count �ֽڡ�
-// %0 - eax(�ַ� c)��%1 - edi(�ڴ��ַ)��%2 - ecx(�ֽ��� count)��
+// 用字符填写指定长度内存块。
+// 用字符 c 填写 s 指向的内存区域，共填 count 字节。
+// %0 - eax(字符 c)，%1 - edi(内存地址)，%2 - ecx(字节数 count)。
 extern inline void * memset(void * s,char c,int count)
 {
 __asm__("cld\n\t"

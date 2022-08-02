@@ -9,22 +9,22 @@
  * to indicate a major problem.
  */
 /*
- * ¸Ãº¯ÊýÔÚÕû¸öÄÚºËÖÐÊ¹ÓÃ(°üÀ¨ÔÚ Í·ÎÄ¼þ*.h, ÄÚ´æ¹ÜÀí³ÌÐò mm ºÍÎÄ¼þÏµÍ³ fs ÖÐ)£¬
- * ÓÃÒÔÖ¸³öÖ÷ÒªµÄ³ö´íÎÊÌâ¡£ */
+ * è¯¥å‡½æ•°åœ¨æ•´ä¸ªå†…æ ¸ä¸­ä½¿ç”¨(åŒ…æ‹¬åœ¨ å¤´æ–‡ä»¶*.h, å†…å­˜ç®¡ç†ç¨‹åº mm å’Œæ–‡ä»¶ç³»ç»Ÿ fs ä¸­)ï¼Œ
+ * ç”¨ä»¥æŒ‡å‡ºä¸»è¦çš„å‡ºé”™é—®é¢˜ã€‚ */
 
-//µ±ÄÚºË³ÌÐò³ö´íÊ±£¬Ôòµ÷ÓÃº¯Êý panic()£¬ÏÔÊ¾´íÎóÐÅÏ¢²¢Ê¹ÏµÍ³½øÈëËÀÑ­»·¡£
-//ÔÚÄÚºË³ÌÐòµÄÐí¶àµØ ·½£¬Èô³öÏÖÑÏÖØ³ö´íÊ±¾ÍÒªµ÷ÓÃµ½¸Ãº¯Êý¡£
-//ÔÚºÜ¶àÇé¿öÏÂ£¬µ÷ÓÃ panic()º¯ÊýÊÇÒ»ÖÖ¼òÃ÷µÄ´¦Àí·½·¨¡£
-//Õâ Ñù×öºÜºÃµØ×ñÑ­ÁË UNIX¡°¾¡Á¿¼òÃ÷¡±µÄÔ­Ôò¡£
+//å½“å†…æ ¸ç¨‹åºå‡ºé”™æ—¶ï¼Œåˆ™è°ƒç”¨å‡½æ•° panic()ï¼Œæ˜¾ç¤ºé”™è¯¯ä¿¡æ¯å¹¶ä½¿ç³»ç»Ÿè¿›å…¥æ­»å¾ªçŽ¯ã€‚
+//åœ¨å†…æ ¸ç¨‹åºçš„è®¸å¤šåœ° æ–¹ï¼Œè‹¥å‡ºçŽ°ä¸¥é‡å‡ºé”™æ—¶å°±è¦è°ƒç”¨åˆ°è¯¥å‡½æ•°ã€‚
+//åœ¨å¾ˆå¤šæƒ…å†µä¸‹ï¼Œè°ƒç”¨ panic()å‡½æ•°æ˜¯ä¸€ç§ç®€æ˜Žçš„å¤„ç†æ–¹æ³•ã€‚
+//è¿™ æ ·åšå¾ˆå¥½åœ°éµå¾ªäº† UNIXâ€œå°½é‡ç®€æ˜Žâ€çš„åŽŸåˆ™ã€‚
 
 #include <linux/kernel.h>
 #include <linux/sched.h>
 
-void sys_sync(void);	/* it's really int */ /* Êµ¼ÊÉÏÊÇÕûÐÍ int (fs/buffer.c,44) */
+void sys_sync(void);	/* it's really int */ /* å®žé™…ä¸Šæ˜¯æ•´åž‹ int (fs/buffer.c,44) */
 
-// ¸Ãº¯ÊýÓÃÀ´ÏÔÊ¾ÄÚºËÖÐ³öÏÖµÄÖØ´ó´íÎóÐÅÏ¢£¬²¢ÔËÐÐÎÄ¼þÏµÍ³Í¬²½º¯Êý£¬
-// È»ºó½øÈëËÀÑ­»· -- ËÀ»ú¡£
-// Èç¹ûµ±Ç°½ø³ÌÊÇÈÎÎñ 0 µÄ»°£¬»¹ËµÃ÷ÊÇ½»»»ÈÎÎñ³ö´í£¬²¢ÇÒ»¹Ã»ÓÐÔËÐÐÎÄ¼þÏµÍ³Í¬²½º¯Êý¡£
+// è¯¥å‡½æ•°ç”¨æ¥æ˜¾ç¤ºå†…æ ¸ä¸­å‡ºçŽ°çš„é‡å¤§é”™è¯¯ä¿¡æ¯ï¼Œå¹¶è¿è¡Œæ–‡ä»¶ç³»ç»ŸåŒæ­¥å‡½æ•°ï¼Œ
+// ç„¶åŽè¿›å…¥æ­»å¾ªçŽ¯ -- æ­»æœºã€‚
+// å¦‚æžœå½“å‰è¿›ç¨‹æ˜¯ä»»åŠ¡ 0 çš„è¯ï¼Œè¿˜è¯´æ˜Žæ˜¯äº¤æ¢ä»»åŠ¡å‡ºé”™ï¼Œå¹¶ä¸”è¿˜æ²¡æœ‰è¿è¡Œæ–‡ä»¶ç³»ç»ŸåŒæ­¥å‡½æ•°ã€‚
 
 volatile void panic(const char * s)
 {

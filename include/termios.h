@@ -1,13 +1,13 @@
 /*
-¸ÃÎÄ¼şº¬ÓĞÖÕ¶Ë I/O ½Ó¿Ú¶¨Òå¡£°üÀ¨ termios Êı¾İ½á¹¹ºÍÒ»Ğ©¶ÔÍ¨ÓÃÖÕ¶Ë½Ó¿ÚÉèÖÃµÄº¯ÊıÔ­ĞÍ¡£
-ÕâĞ©º¯ÊıÓÃÀ´¶ÁÈ¡»òÉèÖÃÖÕ¶ËµÄÊôĞÔ¡¢ÏßÂ·¿ØÖÆ¡¢¶ÁÈ¡»òÉèÖÃ²¨ÌØÂÊÒÔ¼°¶ÁÈ¡»òÉèÖÃÖÕ¶ËÇ°¶Ë½ø³ÌµÄ×é id ¡£
-ËäÈ»ÕâÊÇ linux ÔçÆÚµÄÍ·ÎÄ¼ş£¬µ«ÒÑÍêÈ«·ûºÏÄ¿Ç°µÄ POSIX ±ê×¼£¬²¢×÷ÁËÊÊµ±µÄÀ©Õ¹¡£
+Â¸Ä‚ÃÃ„ÅºÅ£ÅŸÅ¹Ã“ÄÃ–ÅÅ›Ã‹ I/O ËÃ“Å¼ÃšÅ›Â¨Å‡ÄºÄ„ÅÂ°Ã¼Å”Â¨ termios Ä˜Ã½Å¾ÃËÃ¡Å¡Å¡ÅŸÃÅ‡Å¥ÄÅ Å›Ã”ÃÂ¨Ã“Ä‚Ã–ÅÅ›Ã‹ËÃ“Å¼ÃšÃ‰ÄÃ–Ä‚Ä¾Ã„ÅŸÅ»Ä˜Ã½Ã”Â­ÄÃÄ„Å
+ÅÃ¢ÄÅ ÅŸÅ»Ä˜Ã½Ã“Ä‚Å”Â´Å›ÃÄŒÄ„Å¥ÅˆÃ‰ÄÃ–Ä‚Ã–ÅÅ›Ã‹Ä¾Ã„Ä˜Ã´ÄÃ”Ä„Ë˜ÄÃŸÃ‚Ë‡Å¼Å˜Ã–Ä†Ä„Ë˜Å›ÃÄŒÄ„Å¥ÅˆÃ‰ÄÃ–Ä‚Ë›Â¨ÄšÅ˜Ã‚Ä˜Å‡Ã”ÅºÂ°Å›ÃÄŒÄ„Å¥ÅˆÃ‰ÄÃ–Ä‚Ã–ÅÅ›Ã‹Ã‡Â°Å›Ã‹ËÅ™Å‚ÄšÄ¾Ã„Ã—Ã© id Ä„Å
+Ã‹Ã¤ÄŒÅ¥ÅÃ¢Ä˜Ã‡ linux Ã”Ã§Ä†ÃšÄ¾Ã„ÃË‡ÃÃ„ÅºÅ£ÅÅ¹Ä¾Å¤Å‡ÅƒÃÄ™ÄŒÅ¤Ë‡Å±ÅŸÄÃ„Å¼Ã‡Â°Ä¾Ã„ POSIX Ä…Ä™Ã—ÅºÅÅ¹Ë›Ë˜Ã—Ã·ÃÃ‹Ä˜Ä˜Ä¾Ä…Ä¾Ã„Å”Å ÅÅ¡Ä„Å
 
-ÔÚ¸ÃÎÄ¼şÖĞ¶¨ÒåµÄÁ½¸öÖÕ¶ËÊı¾İ½á¹¹ termio ºÍ termios ÊÇ·Ö±ğÊôÓÚÁ½Àà UNIX ÏµÁĞ£¨»ò¿ÌÂ¡£©£¬ 
-termioÊÇÔÚ AT&T ÏµÍ³ V ÖĞ¶¨ÒåµÄ£¬¶ø termios ÊÇ POSIX ±ê×¼Ö¸¶¨µÄ¡£
-Á½¸ö½á¹¹»ù±¾Ò»Ñù£¬Ö»ÊÇ termio Ê¹ÓÃ¶ÌÕûÊıÀàĞÍ¶¨ÒåÄ£Ê½±êÖ¾¼¯£¬¶ø termios Ê¹ÓÃ³¤ÕûÊı¶¨ÒåÄ£Ê½±êÖ¾¼¯¡£
-ÓÉÓÚÄ¿Ç°ÕâÁ½ÖÖ½á¹¹¶¼ÔÚÊ¹ÓÃ£¬Òò´ËÎªÁË¼æÈİĞÔ£¬´ó¶àÊıÏµÍ³¶¼Í¬Ê±Ö§³ÖËüÃÇ¡£
-ÁíÍâ£¬ÒÔÇ°Ê¹ÓÃµÄÊÇÒ»ÀàËÆµÄ sgtty ½á¹¹£¬Ä¿Ç°ÒÑ»ù±¾²»ÓÃ¡£
+Ã”ÃšÂ¸Ä‚ÃÃ„ÅºÅ£Ã–ÄÅ›Â¨Å‡ÄºÄ¾Ã„ÃËÂ¸Ã¶Ã–ÅÅ›Ã‹Ä˜Ã½Å¾ÃËÃ¡Å¡Å¡ termio ÅŸÃ termios Ä˜Ã‡Ë‡Ã–Ä…Ä‘Ä˜Ã´Ã“ÃšÃËÅ”Å• UNIX ÄÄ¾ÃÄÅÂ¨Å¥ÅˆÅ¼ÄšÃ‚Ä„ÅÅ ÅÅ¹ 
+termioÄ˜Ã‡Ã”Ãš AT&T ÄÄ¾ÃÅ‚ V Ã–ÄÅ›Â¨Å‡ÄºÄ¾Ã„ÅÅ¹Å›Å™ termios Ä˜Ã‡ POSIX Ä…Ä™Ã—ÅºÃ–Â¸Å›Â¨Ä¾Ã„Ä„Å
+ÃËÂ¸Ã¶ËÃ¡Å¡Å¡Å¥Å¯Ä…Å¾Å‡Å¥ÅƒÅ¯ÅÅ¹Ã–Å¥Ä˜Ã‡ termio Ä˜Å¡Ã“Ä‚Å›ÄšÅÅ±Ä˜Ã½Å”Å•ÄÃÅ›Â¨Å‡ÄºÃ„ÅÄ˜ËÄ…Ä™Ã–Å¾ÅºÅ»ÅÅ¹Å›Å™ termios Ä˜Å¡Ã“Ä‚Å‚Â¤ÅÅ±Ä˜Ã½Å›Â¨Å‡ÄºÃ„ÅÄ˜ËÄ…Ä™Ã–Å¾ÅºÅ»Ä„Å
+Ã“Ã‰Ã“ÃšÃ„Å¼Ã‡Â°ÅÃ¢ÃËÃ–Ã–ËÃ¡Å¡Å¡Å›ÅºÃ”ÃšÄ˜Å¡Ã“Ä‚ÅÅ¹Å‡ÅˆÂ´Ã‹ÃÅÃÃ‹ÅºÄ‡ÄŒÃÄÃ”ÅÅ¹Â´Ã³Å›Å•Ä˜Ã½ÄÄ¾ÃÅ‚Å›ÅºÃÅ¹Ä˜Ä…Ã–Â§Å‚Ã–Ã‹Ã¼Ä‚Ã‡Ä„Å
+ÃÃ­ÃÃ¢ÅÅ¹Å‡Ã”Ã‡Â°Ä˜Å¡Ã“Ä‚Ä¾Ã„Ä˜Ã‡Å‡Å¥Å”Å•Ã‹Ä†Ä¾Ã„ sgtty ËÃ¡Å¡Å¡ÅÅ¹Ã„Å¼Ã‡Â°Å‡ÅƒÅ¥Å¯Ä…Å¾Ë›Å¥Ã“Ä‚Ä„Å
 */
 
 
@@ -17,11 +17,11 @@ termioÊÇÔÚ AT&T ÏµÍ³ V ÖĞ¶¨ÒåµÄ£¬¶ø termios ÊÇ POSIX ±ê×¼Ö¸¶¨µÄ¡£
 #define TTY_BUF_SIZE 1024
 
 /* 0x54 is just a magic number to make these relatively uniqe ('T') */
-/* 0x54 Ö»ÊÇÒ»¸öÄ§Êı£¬Ä¿µÄÊÇÎªÁËÊ¹ÕâĞ©³£ÊıÎ¨Ò»('T') */
+/* 0x54 Ã–Å¥Ä˜Ã‡Å‡Å¥Â¸Ã¶Ã„Â§Ä˜Ã½ÅÅ¹Ã„Å¼Ä¾Ã„Ä˜Ã‡ÃÅÃÃ‹Ä˜Å¡ÅÃ¢ÄÅ Å‚ÅÄ˜Ã½ÃÂ¨Å‡Å¥('T') */
 
-// tty Éè±¸µÄ ioctl µ÷ÓÃÃüÁî¼¯¡£ioctl ½«ÃüÁî±àÂëÔÚµÍÎ»×ÖÖĞ¡£
-// ÏÂÃæÃû³Æ TC[*]µÄº¬ÒåÊÇ tty ¿ØÖÆÃüÁî¡£
-// È¡ÏàÓ¦ÖÕ¶Ë termios ½á¹¹ÖĞµÄĞÅÏ¢(²Î¼û tcgetattr())
+// tty Ã‰ÄÄ…Â¸Ä¾Ã„ ioctl Ä¾Ã·Ã“Ä‚Ä‚Ã¼ÃÃ®ÅºÅ»Ä„Åioctl ËÅ¤Ä‚Ã¼ÃÃ®Ä…Å•Ã‚Ã«Ã”ÃšÄ¾ÃÃÅ¥Ã—Ã–Ã–ÄÄ„Å
+// ÄÃ‚Ä‚Ä‡Ä‚Å±Å‚Ä† TC[*]Ä¾Ã„ÅŸÅ¹Å‡ÄºÄ˜Ã‡ tty Å¼Å˜Ã–Ä†Ä‚Ã¼ÃÃ®Ä„Å
+// ÄŒÄ„ÄÅ•Ã“ÅšÃ–ÅÅ›Ã‹ termios ËÃ¡Å¡Å¡Ã–ÄÄ¾Ã„ÄÄ¹ÄË˜(Ë›ÃÅºÅ± tcgetattr())
 #define TCGETS		0x5401
 #define TCSETS		0x5402
 #define TCSETSW		0x5403
@@ -50,28 +50,28 @@ termioÊÇÔÚ AT&T ÏµÍ³ V ÖĞ¶¨ÒåµÄ£¬¶ø termios ÊÇ POSIX ±ê×¼Ö¸¶¨µÄ¡£
 #define TIOCSSOFTCAR	0x541A
 #define TIOCINQ		0x541B
 
-// ´°¿Ú´óĞ¡(Window size)ÊôĞÔ½á¹¹¡£ÔÚ´°¿Ú»·¾³ÖĞ¿ÉÓÃÓÚ»ùÓÚÆÁÄ»µÄÓ¦ÓÃ³ÌĞò¡£
-// ioctls ÖĞµÄ TIOCGWINSZ ºÍ TIOCSWINSZ ¿ÉÓÃÀ´¶ÁÈ¡»òÉèÖÃÕâĞ©ĞÅÏ¢¡£
+// Â´Â°Å¼ÃšÂ´Ã³ÄÄ„(Window size)Ä˜Ã´ÄÃ”ËÃ¡Å¡Å¡Ä„ÅÃ”ÃšÂ´Â°Å¼ÃšÅ¥Ë‡Å¾Å‚Ã–ÄÅ¼Ã‰Ã“Ä‚Ã“ÃšÅ¥Å¯Ã“ÃšÄ†ÃÃ„Å¥Ä¾Ã„Ã“ÅšÃ“Ä‚Å‚ÄšÄÅˆÄ„Å
+// ioctls Ã–ÄÄ¾Ã„ TIOCGWINSZ ÅŸÃ TIOCSWINSZ Å¼Ã‰Ã“Ä‚Å”Â´Å›ÃÄŒÄ„Å¥ÅˆÃ‰ÄÃ–Ä‚ÅÃ¢ÄÅ ÄÄ¹ÄË˜Ä„Å
 struct winsize {
-	unsigned short ws_row;		// ´°¿Ú×Ö·ûĞĞÊı¡£
-	unsigned short ws_col;		// ´°¿Ú×Ö·ûÁĞÊı¡£
-	unsigned short ws_xpixel;	// ´°¿Ú¿í¶È£¬ÏóËØÖµ¡£
-	unsigned short ws_ypixel;	// ´°¿Ú¸ß¶È£¬ÏóËØÖµ¡£
+	unsigned short ws_row;		// Â´Â°Å¼ÃšÃ—Ã–Ë‡Å±ÄÄÄ˜Ã½Ä„Å
+	unsigned short ws_col;		// Â´Â°Å¼ÃšÃ—Ã–Ë‡Å±ÃÄÄ˜Ã½Ä„Å
+	unsigned short ws_xpixel;	// Â´Â°Å¼ÃšÅ¼Ã­Å›ÄŒÅÅ¹ÄÃ³Ã‹Å˜Ã–Ä¾Ä„Å
+	unsigned short ws_ypixel;	// Â´Â°Å¼ÃšÂ¸ÃŸÅ›ÄŒÅÅ¹ÄÃ³Ã‹Å˜Ã–Ä¾Ä„Å
 };
 
-// AT&T ÏµÍ³ V µÄ termio ½á¹¹¡£
-#define NCC 8					// termio ½á¹¹ÖĞ¿ØÖÆ×Ö·ûÊı×éµÄ³¤¶È¡£
+// AT&T ÄÄ¾ÃÅ‚ V Ä¾Ã„ termio ËÃ¡Å¡Å¡Ä„Å
+#define NCC 8					// termio ËÃ¡Å¡Å¡Ã–ÄÅ¼Å˜Ã–Ä†Ã—Ã–Ë‡Å±Ä˜Ã½Ã—Ã©Ä¾Ã„Å‚Â¤Å›ÄŒÄ„Å
 struct termio {
-	unsigned short c_iflag;		/* input mode flags */		// ÊäÈëÄ£Ê½±êÖ¾¡£
-	unsigned short c_oflag;		/* output mode flags */		// Êä³öÄ£Ê½±êÖ¾¡£
-	unsigned short c_cflag;		/* control mode flags */	// ¿ØÖÆÄ£Ê½±êÖ¾¡£
-	unsigned short c_lflag;		/* local mode flags */		// ±¾µØÄ£Ê½±êÖ¾¡£
-	unsigned char c_line;		/* line discipline */		// ÏßÂ·¹æ³Ì£¨ËÙÂÊ£©¡£
-	unsigned char c_cc[NCC];	/* control characters */	// ¿ØÖÆ×Ö·ûÊı×é¡£
+	unsigned short c_iflag;		/* input mode flags */		// Ä˜Ã¤ÄŒÃ«Ã„ÅÄ˜ËÄ…Ä™Ã–Å¾Ä„Å
+	unsigned short c_oflag;		/* output mode flags */		// Ä˜Ã¤Å‚Ã¶Ã„ÅÄ˜ËÄ…Ä™Ã–Å¾Ä„Å
+	unsigned short c_cflag;		/* control mode flags */	// Å¼Å˜Ã–Ä†Ã„ÅÄ˜ËÄ…Ä™Ã–Å¾Ä„Å
+	unsigned short c_lflag;		/* local mode flags */		// Ä…Å¾Ä¾Å˜Ã„ÅÄ˜ËÄ…Ä™Ã–Å¾Ä„Å
+	unsigned char c_line;		/* line discipline */		// ÄÃŸÃ‚Ë‡Å¡Ä‡Å‚ÄšÅÂ¨Ã‹Å®Ã‚Ä˜ÅÅ Ä„Å
+	unsigned char c_cc[NCC];	/* control characters */	// Å¼Å˜Ã–Ä†Ã—Ã–Ë‡Å±Ä˜Ã½Ã—Ã©Ä„Å
 };
 
-// POSIX µÄ termios ½á¹¹¡£
-#define NCCS 17					// termios ½á¹¹ÖĞ¿ØÖÆ×Ö·ûÊı×éµÄ³¤¶È¡£
+// POSIX Ä¾Ã„ termios ËÃ¡Å¡Å¡Ä„Å
+#define NCCS 17					// termios ËÃ¡Å¡Å¡Ã–ÄÅ¼Å˜Ã–Ä†Ã—Ã–Ë‡Å±Ä˜Ã½Ã—Ã©Ä¾Ã„Å‚Â¤Å›ÄŒÄ„Å
 struct termios {
 	unsigned long c_iflag;		/* input mode flags */
 	unsigned long c_oflag;		/* output mode flags */
@@ -81,9 +81,9 @@ struct termios {
 	unsigned char c_cc[NCCS];	/* control characters */
 };
 
-/* c_cc characters */			/* c_cc Êı×éÖĞµÄ×Ö·û */
-#define VINTR 0					// c_cc[VINTR] = INTR (^C)£¬\003£¬ÖĞ¶Ï×Ö·û¡£
-#define VQUIT 1					// c_cc[VQUIT] = QUIT (^\)£¬\034£¬ÍË³ö×Ö·û¡£
+/* c_cc characters */			/* c_cc Ä˜Ã½Ã—Ã©Ã–ÄÄ¾Ã„Ã—Ã–Ë‡Å± */
+#define VINTR 0					// c_cc[VINTR] = INTR (^C)ÅÅ¹\003ÅÅ¹Ã–ÄÅ›ÄÃ—Ã–Ë‡Å±Ä„Å
+#define VQUIT 1					// c_cc[VQUIT] = QUIT (^\)ÅÅ¹\034ÅÅ¹ÃÃ‹Å‚Ã¶Ã—Ã–Ë‡Å±Ä„Å
 #define VERASE 2
 #define VKILL 3
 #define VEOF 4
@@ -100,27 +100,27 @@ struct termios {
 #define VLNEXT 15
 #define VEOL2 16
 
-/* c_iflag bits */				/* c_iflag ±ÈÌØÎ» */
-// termios ½á¹¹ÊäÈëÄ£Ê½×Ö¶Î c_iflag ¸÷ÖÖ±êÖ¾µÄ·ûºÅ³£Êı¡£
-#define IGNBRK 	0000001 // ÊäÈëÊ±ºöÂÔ BREAK Ìõ¼ş¡£
-#define BRKINT 	0000002 // ÔÚ BREAK Ê±²úÉú SIGINT ĞÅºÅ¡£
-#define IGNPAR 	0000004 // ºöÂÔÆæÅ¼Ğ£Ñé³ö´íµÄ×Ö·û¡£
-#define PARMRK 	0000010 // ±ê¼ÇÆæÅ¼Ğ£Ñé´í¡£
-#define INPCK 	0000020 // ÔÊĞíÊäÈëÆæÅ¼Ğ£Ñé¡£
-#define ISTRIP 	0000040 // ÆÁ±Î×Ö·ûµÚ 8 Î»¡£
-#define INLCR 	0000100 // ÊäÈëÊ±½«»»ĞĞ·û NL Ó³Éä³É»Ø³µ·û CR¡£
-#define IGNCR 	0000200 // ºöÂÔ»Ø³µ·û CR¡£
-#define ICRNL 	0000400 // ÔÚÊäÈëÊ±½«»Ø³µ·û CR Ó³Éä³É»»ĞĞ·û NL¡£
-#define IUCLC 	0001000 // ÔÚÊäÈëÊ±½«´óĞ´×Ö·û×ª»»³ÉĞ¡Ğ´×Ö·û¡£
-#define IXON 	0002000 // ÔÊĞí¿ªÊ¼/Í£Ö¹£¨XON/XOFF£©Êä³ö¿ØÖÆ¡£
-#define IXANY 	0004000 // ÔÊĞíÈÎºÎ×Ö·ûÖØÆôÊä³ö¡£
-#define IXOFF 	0010000 // ÔÊĞí¿ªÊ¼/Í£Ö¹£¨XON/XOFF£©ÊäÈë¿ØÖÆ¡£
-#define IMAXBEL 0020000 // ÊäÈë¶ÓÁĞÂúÊ±ÏìÁå¡£
+/* c_iflag bits */				/* c_iflag Ä…ÄŒÄšÅ˜ÃÅ¥ */
+// termios ËÃ¡Å¡Å¡Ä˜Ã¤ÄŒÃ«Ã„ÅÄ˜ËÃ—Ã–Å›Ã c_iflag Â¸Ã·Ã–Ã–Ä…Ä™Ã–Å¾Ä¾Ã„Ë‡Å±ÅŸÄ¹Å‚ÅÄ˜Ã½Ä„Å
+#define IGNBRK 	0000001 // Ä˜Ã¤ÄŒÃ«Ä˜Ä…ÅŸÃ¶Ã‚Ã” BREAK ÄšÅ‘ÅºÅ£Ä„Å
+#define BRKINT 	0000002 // Ã”Ãš BREAK Ä˜Ä…Ë›ÃºÃ‰Ãº SIGINT ÄÄ¹ÅŸÄ¹Ä„Å
+#define IGNPAR 	0000004 // ÅŸÃ¶Ã‚Ã”Ä†Ä‡Ä¹ÅºÄÅÅƒÃ©Å‚Ã¶Â´Ã­Ä¾Ã„Ã—Ã–Ë‡Å±Ä„Å
+#define PARMRK 	0000010 // Ä…Ä™ÅºÃ‡Ä†Ä‡Ä¹ÅºÄÅÅƒÃ©Â´Ã­Ä„Å
+#define INPCK 	0000020 // Ã”Ä˜ÄÃ­Ä˜Ã¤ÄŒÃ«Ä†Ä‡Ä¹ÅºÄÅÅƒÃ©Ä„Å
+#define ISTRIP 	0000040 // Ä†ÃÄ…ÃÃ—Ã–Ë‡Å±Ä¾Ãš 8 ÃÅ¥Ä„Å
+#define INLCR 	0000100 // Ä˜Ã¤ÄŒÃ«Ä˜Ä…ËÅ¤Å¥Å¥ÄÄË‡Å± NL Ã“Å‚Ã‰Ã¤Å‚Ã‰Å¥Å˜Å‚Ä¾Ë‡Å± CRÄ„Å
+#define IGNCR 	0000200 // ÅŸÃ¶Ã‚Ã”Å¥Å˜Å‚Ä¾Ë‡Å± CRÄ„Å
+#define ICRNL 	0000400 // Ã”ÃšÄ˜Ã¤ÄŒÃ«Ä˜Ä…ËÅ¤Å¥Å˜Å‚Ä¾Ë‡Å± CR Ã“Å‚Ã‰Ã¤Å‚Ã‰Å¥Å¥ÄÄË‡Å± NLÄ„Å
+#define IUCLC 	0001000 // Ã”ÃšÄ˜Ã¤ÄŒÃ«Ä˜Ä…ËÅ¤Â´Ã³ÄÂ´Ã—Ã–Ë‡Å±Ã—ÅÅ¥Å¥Å‚Ã‰ÄÄ„ÄÂ´Ã—Ã–Ë‡Å±Ä„Å
+#define IXON 	0002000 // Ã”Ä˜ÄÃ­Å¼ÅÄ˜Åº/ÃÅÃ–Å¡ÅÂ¨XON/XOFFÅÅ Ä˜Ã¤Å‚Ã¶Å¼Å˜Ã–Ä†Ä„Å
+#define IXANY 	0004000 // Ã”Ä˜ÄÃ­ÄŒÃÅŸÃÃ—Ã–Ë‡Å±Ã–Å˜Ä†Ã´Ä˜Ã¤Å‚Ã¶Ä„Å
+#define IXOFF 	0010000 // Ã”Ä˜ÄÃ­Å¼ÅÄ˜Åº/ÃÅÃ–Å¡ÅÂ¨XON/XOFFÅÅ Ä˜Ã¤ÄŒÃ«Å¼Å˜Ã–Ä†Ä„Å
+#define IMAXBEL 0020000 // Ä˜Ã¤ÄŒÃ«Å›Ã“ÃÄÃ‚ÃºÄ˜Ä…ÄÄ›ÃÄºÄ„Å
 
 
-/* c_oflag bits */			/* c_oflag ±ÈÌØÎ» */
-// termios ½á¹¹ÖĞÊä³öÄ£Ê½×Ö¶Î c_oflag ¸÷ÖÖ±êÖ¾µÄ·ûºÅ³£Êı
-#define OPOST	0000001		// Ö´ĞĞÊä³ö´¦Àí¡£
+/* c_oflag bits */			/* c_oflag Ä…ÄŒÄšÅ˜ÃÅ¥ */
+// termios ËÃ¡Å¡Å¡Ã–ÄÄ˜Ã¤Å‚Ã¶Ã„ÅÄ˜ËÃ—Ã–Å›Ã c_oflag Â¸Ã·Ã–Ã–Ä…Ä™Ã–Å¾Ä¾Ã„Ë‡Å±ÅŸÄ¹Å‚ÅÄ˜Ã½
+#define OPOST	0000001		// Ã–Â´ÄÄÄ˜Ã¤Å‚Ã¶Â´ÅšÅ”Ã­Ä„Å
 #define OLCUC	0000002
 #define ONLCR	0000004
 #define OCRNL	0000010
@@ -152,9 +152,9 @@ struct termios {
 #define   FF0	0000000
 #define   FF1	0040000
 
-/* c_cflag bit meaning */		/* c_cflag ±ÈÌØÎ»µÄº¬Òå */
-// termios ½á¹¹ÖĞ¿ØÖÆÄ£Ê½±êÖ¾×Ö¶Î c_cflag ±êÖ¾µÄ·ûºÅ³£Êı£¨8 ½øÖÆÊı£©¡£
-#define CBAUD	0000017		// ´«ÊäËÙÂÊÎ»ÆÁ±ÎÂë¡££
+/* c_cflag bit meaning */		/* c_cflag Ä…ÄŒÄšÅ˜ÃÅ¥Ä¾Ã„ÅŸÅ¹Å‡Äº */
+// termios ËÃ¡Å¡Å¡Ã–ÄÅ¼Å˜Ã–Ä†Ã„ÅÄ˜ËÄ…Ä™Ã–Å¾Ã—Ã–Å›Ã c_cflag Ä…Ä™Ã–Å¾Ä¾Ã„Ë‡Å±ÅŸÄ¹Å‚ÅÄ˜Ã½ÅÂ¨8 ËÅ™Ã–Ä†Ä˜Ã½ÅÅ Ä„Å
+#define CBAUD	0000017		// Â´Å¤Ä˜Ã¤Ã‹Å®Ã‚Ä˜ÃÅ¥Ä†ÃÄ…ÃÃ‚Ã«Ä„ÅÅ
 #define  B0	0000000		/* hang up */
 #define  B50	0000001
 #define  B75	0000002
@@ -190,9 +190,9 @@ struct termios {
 #define PARENB CPARENB
 #define PARODD CPARODD
 
-/* c_lflag bits */			/* c_lflag ±ÈÌØÎ» */
-// termios ½á¹¹ÖĞ±¾µØÄ£Ê½±êÖ¾×Ö¶Î c_lflag µÄ·ûºÅ³£Êı¡£
-#define ISIG	0000001		// µ±ÊÕµ½×Ö·û INTR¡¢QUIT¡¢SUSP »ò DSUSP£¬²úÉúÏàÓ¦µÄĞÅºÅ¡£
+/* c_lflag bits */			/* c_lflag Ä…ÄŒÄšÅ˜ÃÅ¥ */
+// termios ËÃ¡Å¡Å¡Ã–ÄÄ…Å¾Ä¾Å˜Ã„ÅÄ˜ËÄ…Ä™Ã–Å¾Ã—Ã–Å›Ã c_lflag Ä¾Ã„Ë‡Å±ÅŸÄ¹Å‚ÅÄ˜Ã½Ä„Å
+#define ISIG	0000001		// Ä¾Ä…Ä˜ÅÄ¾ËÃ—Ã–Ë‡Å± INTRÄ„Ë˜QUITÄ„Ë˜SUSP Å¥Åˆ DSUSPÅÅ¹Ë›ÃºÃ‰ÃºÄÅ•Ã“ÅšÄ¾Ã„ÄÄ¹ÅŸÄ¹Ä„Å
 #define ICANON	0000002
 #define XCASE	0000004
 #define ECHO	0000010
@@ -208,8 +208,8 @@ struct termios {
 #define PENDIN	0040000
 #define IEXTEN	0100000
 
-/* modem lines */				/* modem ÏßÂ·ĞÅºÅ·ûºÅ³£Êı */
-#define TIOCM_LE	0x001		// ÏßÂ·ÔÊĞí(Line Enable)¡£
+/* modem lines */				/* modem ÄÃŸÃ‚Ë‡ÄÄ¹ÅŸÄ¹Ë‡Å±ÅŸÄ¹Å‚ÅÄ˜Ã½ */
+#define TIOCM_LE	0x001		// ÄÃŸÃ‚Ë‡Ã”Ä˜ÄÃ­(Line Enable)Ä„Å
 #define TIOCM_DTR	0x002
 #define TIOCM_RTS	0x004
 #define TIOCM_ST	0x008
@@ -221,23 +221,23 @@ struct termios {
 #define TIOCM_CD	TIOCM_CAR
 #define TIOCM_RI	TIOCM_RNG
 
-/* tcflow() and TCXONC use these */	/* tcflow()ºÍ TCXONC Ê¹ÓÃÕâĞ©·ûºÅ³£Êı */
-#define	TCOOFF		0				// ¹ÒÆğÊä³ö¡£
+/* tcflow() and TCXONC use these */	/* tcflow()ÅŸÃ TCXONC Ä˜Å¡Ã“Ä‚ÅÃ¢ÄÅ Ë‡Å±ÅŸÄ¹Å‚ÅÄ˜Ã½ */
+#define	TCOOFF		0				// Å¡Å‡Ä†Ä‘Ä˜Ã¤Å‚Ã¶Ä„Å
 #define	TCOON		1
 #define	TCIOFF		2
 #define	TCION		3
 
-/* tcflush() and TCFLSH use these */	/* tcflush()ºÍ TCFLSH Ê¹ÓÃÕâĞ©·ûºÅ³£Êı */
-#define	TCIFLUSH	0					// Çå½ÓÊÕµ½µÄÊı¾İµ«²»¶Á¡£
+/* tcflush() and TCFLSH use these */	/* tcflush()ÅŸÃ TCFLSH Ä˜Å¡Ã“Ä‚ÅÃ¢ÄÅ Ë‡Å±ÅŸÄ¹Å‚ÅÄ˜Ã½ */
+#define	TCIFLUSH	0					// Ã‡ÄºËÃ“Ä˜ÅÄ¾ËÄ¾Ã„Ä˜Ã½Å¾ÃÄ¾Å¤Ë›Å¥Å›ÃÄ„Å
 #define	TCOFLUSH	1
 #define	TCIOFLUSH	2
 
-/* tcsetattr uses these */				/* tcsetattr()Ê¹ÓÃÕâĞ©·ûºÅ³£Êı */
-#define	TCSANOW		0					// ¸Ä±äÁ¢¼´·¢Éú¡£
+/* tcsetattr uses these */				/* tcsetattr()Ä˜Å¡Ã“Ä‚ÅÃ¢ÄÅ Ë‡Å±ÅŸÄ¹Å‚ÅÄ˜Ã½ */
+#define	TCSANOW		0					// Â¸Ã„Ä…Ã¤ÃË˜ÅºÂ´Ë‡Ë˜Ã‰ÃºÄ„Å
 #define	TCSADRAIN	1
 #define	TCSAFLUSH	2
 
-typedef int speed_t;					// ²¨ÌØÂÊÊıÖµÀàĞÍ¡£
+typedef int speed_t;					// Ë›Â¨ÄšÅ˜Ã‚Ä˜Ä˜Ã½Ã–Ä¾Å”Å•ÄÃÄ„Å
 
 extern speed_t cfgetispeed(struct termios *termios_p);
 extern speed_t cfgetospeed(struct termios *termios_p);

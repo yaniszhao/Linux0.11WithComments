@@ -2,7 +2,7 @@
  * This file has definitions for some important file table
  * structures etc.
  */
- /* ±¾ÎÄ¼şº¬ÓĞÄ³Ğ©ÖØÒªÎÄ¼ş±í½á¹¹µÄ¶¨ÒåµÈ¡£*/
+ /* æœ¬æ–‡ä»¶å«æœ‰æŸäº›é‡è¦æ–‡ä»¶è¡¨ç»“æ„çš„å®šä¹‰ç­‰ã€‚*/
 
 #ifndef _FS_H
 #define _FS_H
@@ -22,20 +22,20 @@
  * 7 - unnamed pipes
  */
 /*
- * ÏµÍ³Ëùº¬µÄÉè±¸ÈçÏÂ£º£¨Óë minix ÏµÍ³µÄÒ»Ñù£¬ËùÒÔÎÒÃÇ¿ÉÒÔÊ¹ÓÃ minix µÄ
- * ÎÄ¼şÏµÍ³¡£ÒÔÏÂÕâĞ©ÊÇÖ÷Éè±¸ºÅ¡££©
+ * ç³»ç»Ÿæ‰€å«çš„è®¾å¤‡å¦‚ä¸‹ï¼šï¼ˆä¸ minix ç³»ç»Ÿçš„ä¸€æ ·ï¼Œæ‰€ä»¥æˆ‘ä»¬å¯ä»¥ä½¿ç”¨ minix çš„
+ * æ–‡ä»¶ç³»ç»Ÿã€‚ä»¥ä¸‹è¿™äº›æ˜¯ä¸»è®¾å¤‡å·ã€‚ï¼‰
  *
- * 0 - Ã»ÓĞÓÃµ½£¨nodev£©
- * 1 - /dev/mem ÄÚ´æÉè±¸¡£
- * 2 - /dev/fd ÈíÅÌÉè±¸¡£
- * 3 - /dev/hd Ó²ÅÌÉè±¸¡£
- * 4 - /dev/ttyx tty ´®ĞĞÖÕ¶ËÉè±¸¡£
- * 5 - /dev/tty tty ÖÕ¶ËÉè±¸¡£
- * 6 - /dev/lp ´òÓ¡Éè±¸¡£
- * 7 - unnamed pipes Ã»ÓĞÃüÃûµÄ¹ÜµÀ¡£
+ * 0 - æ²¡æœ‰ç”¨åˆ°ï¼ˆnodevï¼‰
+ * 1 - /dev/mem å†…å­˜è®¾å¤‡ã€‚
+ * 2 - /dev/fd è½¯ç›˜è®¾å¤‡ã€‚
+ * 3 - /dev/hd ç¡¬ç›˜è®¾å¤‡ã€‚
+ * 4 - /dev/ttyx tty ä¸²è¡Œç»ˆç«¯è®¾å¤‡ã€‚
+ * 5 - /dev/tty tty ç»ˆç«¯è®¾å¤‡ã€‚
+ * 6 - /dev/lp æ‰“å°è®¾å¤‡ã€‚
+ * 7 - unnamed pipes æ²¡æœ‰å‘½åçš„ç®¡é“ã€‚
  */
 
-#define IS_SEEKABLE(x) ((x)>=1 && (x)<=3)	// ÊÇ·ñÊÇ¿ÉÒÔÑ°ÕÒ¶¨Î»µÄÉè±¸¡£
+#define IS_SEEKABLE(x) ((x)>=1 && (x)<=3)	// æ˜¯å¦æ˜¯å¯ä»¥å¯»æ‰¾å®šä½çš„è®¾å¤‡ã€‚
 
 #define READ 0
 #define WRITE 1
@@ -44,18 +44,18 @@
 
 void buffer_init(long buffer_end);
 
-//Éè±¸ºÅ = Ö÷Éè±¸ºÅ *256 + ´ÎÉè±¸ºÅ
-//Ò²¼´ dev_no = (major<<8) + minor
-//´Ó linux ÄÚºË 0.95 °æºóÒÑ¾­²»Ê¹ÓÃÕâÖÖ·³ËöµÄÃüÃû·½Ê½£¬¶øÊÇÊ¹ÓÃÓëÏÖÔÚÏàÍ¬µÄÃüÃû·½·¨ÁË¡£
-#define MAJOR(a) (((unsigned)(a))>>8)	// È¡¸ß×Ö½Ú£¨Ö÷Éè±¸ºÅ£©¡£
-#define MINOR(a) ((a)&0xff)				// È¡µÍ×Ö½Ú£¨´ÎÉè±¸ºÅ£©¡£
+//è®¾å¤‡å· = ä¸»è®¾å¤‡å· *256 + æ¬¡è®¾å¤‡å·
+//ä¹Ÿå³ dev_no = (major<<8) + minor
+//ä» linux å†…æ ¸ 0.95 ç‰ˆåå·²ç»ä¸ä½¿ç”¨è¿™ç§çƒ¦ççš„å‘½åæ–¹å¼ï¼Œè€Œæ˜¯ä½¿ç”¨ä¸ç°åœ¨ç›¸åŒçš„å‘½åæ–¹æ³•äº†ã€‚
+#define MAJOR(a) (((unsigned)(a))>>8)	// å–é«˜å­—èŠ‚ï¼ˆä¸»è®¾å¤‡å·ï¼‰ã€‚
+#define MINOR(a) ((a)&0xff)				// å–ä½å­—èŠ‚ï¼ˆæ¬¡è®¾å¤‡å·ï¼‰ã€‚
 
-#define NAME_LEN 14		// ÎÄ¼şÃû×Ö³¤¶ÈÖµ¡£
-#define ROOT_INO 1		// ¸ù i ½Úµã¡£
+#define NAME_LEN 14		// æ–‡ä»¶åå­—é•¿åº¦å€¼ã€‚
+#define ROOT_INO 1		// æ ¹ i èŠ‚ç‚¹ã€‚
 
-#define I_MAP_SLOTS 8		// i ½ÚµãÎ»Í¼²ÛÊı¡£
-#define Z_MAP_SLOTS 8		// Âß¼­¿é£¨Çø¶Î¿é£©Î»Í¼²ÛÊı¡£
-#define SUPER_MAGIC 0x137F	// ÎÄ¼şÏµÍ³Ä§Êı¡£
+#define I_MAP_SLOTS 8		// i èŠ‚ç‚¹ä½å›¾æ§½æ•°ã€‚
+#define Z_MAP_SLOTS 8		// é€»è¾‘å—ï¼ˆåŒºæ®µå—ï¼‰ä½å›¾æ§½æ•°ã€‚
+#define SUPER_MAGIC 0x137F	// æ–‡ä»¶ç³»ç»Ÿé­”æ•°ã€‚
 
 #define NR_OPEN 20
 #define NR_INODE 32
@@ -63,18 +63,18 @@ void buffer_init(long buffer_end);
 #define NR_SUPER 8
 #define NR_HASH 307
 #define NR_BUFFERS nr_buffers
-#define BLOCK_SIZE 1024			// Êı¾İ¿é³¤¶È¡£
-#define BLOCK_SIZE_BITS 10		// Êı¾İ¿é³¤¶ÈËùÕ¼±ÈÌØÎ»Êı¡£
+#define BLOCK_SIZE 1024			// æ•°æ®å—é•¿åº¦ã€‚
+#define BLOCK_SIZE_BITS 10		// æ•°æ®å—é•¿åº¦æ‰€å æ¯”ç‰¹ä½æ•°ã€‚
 #ifndef NULL
 #define NULL ((void *) 0)
 #endif
 
-// Ã¿¸öÂß¼­¿é¿É´æ·ÅµÄ i ½ÚµãÊı¡£
+// æ¯ä¸ªé€»è¾‘å—å¯å­˜æ”¾çš„ i èŠ‚ç‚¹æ•°ã€‚
 #define INODES_PER_BLOCK ((BLOCK_SIZE)/(sizeof (struct d_inode)))
-// Ã¿¸öÂß¼­¿é¿É´æ·ÅµÄÄ¿Â¼ÏîÊı¡£
+// æ¯ä¸ªé€»è¾‘å—å¯å­˜æ”¾çš„ç›®å½•é¡¹æ•°ã€‚
 #define DIR_ENTRIES_PER_BLOCK ((BLOCK_SIZE)/(sizeof (struct dir_entry)))
 
-// ¹ÜµÀÍ·¡¢¹ÜµÀÎ²¡¢¹ÜµÀ´óĞ¡¡¢¹ÜµÀ¿Õ£¿¡¢¹ÜµÀÂú£¿¡¢¹ÜµÀÍ·Ö¸ÕëµİÔö¡£
+// ç®¡é“å¤´ã€ç®¡é“å°¾ã€ç®¡é“å¤§å°ã€ç®¡é“ç©ºï¼Ÿã€ç®¡é“æ»¡ï¼Ÿã€ç®¡é“å¤´æŒ‡é’ˆé€’å¢ã€‚
 #define PIPE_HEAD(inode) ((inode).i_zone[0])
 #define PIPE_TAIL(inode) ((inode).i_zone[1])
 #define PIPE_SIZE(inode) ((PIPE_HEAD(inode)-PIPE_TAIL(inode))&(PAGE_SIZE-1))
@@ -83,24 +83,24 @@ void buffer_init(long buffer_end);
 #define INC_PIPE(head) \
 __asm__("incl %0\n\tandl $4095,%0"::"m" (head))
 
-typedef char buffer_block[BLOCK_SIZE];	// ¿é»º³åÇø¡£
+typedef char buffer_block[BLOCK_SIZE];	// å—ç¼“å†²åŒºã€‚
 
 struct buffer_head {
-	char * b_data;			/* pointer to data block (1024 bytes) */	//Ö¸ÏòÕæÕıµÄÊı¾İ¿é
-	unsigned long b_blocknr;	/* block number */				//¶ÔÓ¦Éè±¸µÄ¿éºÅ
-	unsigned short b_dev;		/* device (0 = free) */			//¶ÔÓ¦Éè±¸
-	unsigned char b_uptodate;									//ÊÇ·ñ´ÓÉè±¸ÖĞ¸üĞÂÊı¾İ½øbuffer
-	unsigned char b_dirt;		/* 0-clean,1-dirty */			//ÔàÎ»
-	unsigned char b_count;		/* users using this block */	//±»¶àÉÙÓÃ»§Ê¹ÓÃ
-	unsigned char b_lock;		/* 0 - ok, 1 -locked */			//ÊÇ·ñ±»Ëø¶¨
-	struct task_struct * b_wait;								//µÈ´ıÊ¹ÓÃ½ø³Ì¶ÓÁĞ
-	struct buffer_head * b_prev;								//Í¬Ò»Éè±¸ÒÑ·ÖÅäµÄÉÏÒ»¸ö¿é
-	struct buffer_head * b_next;								//Í¬Ò»Éè±¸ÒÑ·ÖÅäµÄÏÂÒ»¸ö¿é
-	struct buffer_head * b_prev_free;							//ÉÏÒ»¸ö¿ÕÏĞ¿é
-	struct buffer_head * b_next_free;							//ÏÂÒ»¸ö¿ÕÏĞ¿é
+	char * b_data;			/* pointer to data block (1024 bytes) */	//æŒ‡å‘çœŸæ­£çš„æ•°æ®å—
+	unsigned long b_blocknr;	/* block number */				//å¯¹åº”è®¾å¤‡çš„å—å·
+	unsigned short b_dev;		/* device (0 = free) */			//å¯¹åº”è®¾å¤‡
+	unsigned char b_uptodate;									//æ˜¯å¦ä»è®¾å¤‡ä¸­æ›´æ–°æ•°æ®è¿›buffer
+	unsigned char b_dirt;		/* 0-clean,1-dirty */			//è„ä½
+	unsigned char b_count;		/* users using this block */	//è¢«å¤šå°‘ç”¨æˆ·ä½¿ç”¨
+	unsigned char b_lock;		/* 0 - ok, 1 -locked */			//æ˜¯å¦è¢«é”å®š
+	struct task_struct * b_wait;								//ç­‰å¾…ä½¿ç”¨è¿›ç¨‹é˜Ÿåˆ—
+	struct buffer_head * b_prev;								//åŒä¸€è®¾å¤‡å·²åˆ†é…çš„ä¸Šä¸€ä¸ªå—
+	struct buffer_head * b_next;								//åŒä¸€è®¾å¤‡å·²åˆ†é…çš„ä¸‹ä¸€ä¸ªå—
+	struct buffer_head * b_prev_free;							//ä¸Šä¸€ä¸ªç©ºé—²å—
+	struct buffer_head * b_next_free;							//ä¸‹ä¸€ä¸ªç©ºé—²å—
 };
 
-// ´ÅÅÌÉÏµÄË÷Òı½Úµã(i ½Úµã)Êı¾İ½á¹¹¡£
+// ç£ç›˜ä¸Šçš„ç´¢å¼•èŠ‚ç‚¹(i èŠ‚ç‚¹)æ•°æ®ç»“æ„ã€‚
 struct d_inode {
 	unsigned short i_mode;
 	unsigned short i_uid;
@@ -111,63 +111,63 @@ struct d_inode {
 	unsigned short i_zone[9];
 };
 
-// ÕâÊÇÔÚÄÚ´æÖĞµÄ i ½Úµã½á¹¹¡£Ç° 7 ÏîÓë d_inode ÍêÈ«Ò»Ñù¡£
+// è¿™æ˜¯åœ¨å†…å­˜ä¸­çš„ i èŠ‚ç‚¹ç»“æ„ã€‚å‰ 7 é¡¹ä¸ d_inode å®Œå…¨ä¸€æ ·ã€‚
 struct m_inode {
-	unsigned short i_mode;			//ÎÄ¼şµÄÀàĞÍºÍÊôĞÔrwx
-	unsigned short i_uid;			//ÎÄ¼şËŞÖ÷µÄÓÃ»§id
-	unsigned long i_size;			//ÎÄ¼ş³¤¶È(×Ö½Ú)
-	unsigned long i_mtime;			//ĞŞ¸ÄÊ±¼ä(´Ó1970ÄêËãÆğ£¬µ¥Î»Ãë)
-	unsigned char i_gid;			//ÎÄ¼şËŞÖ÷µÄ×éid
-	unsigned char i_nlinks;			//Á´½ÓÊı£¬¼´¶àÉÙÎÄ¼şÄ¿Â¼ÏîÖ¸Ïò¸Ãi½áµã
-	unsigned short i_zone[9];		//ÎÄ¼şËùÕ¼ÅÌÉÏÂß¼­¿éºÅÊı×é¡£0-6Ö±½Ó¿é£»7Ò»´Î¼ä½Ó£»8¶ş´Î¼ä½Ó¡£
+	unsigned short i_mode;			//æ–‡ä»¶çš„ç±»å‹å’Œå±æ€§rwx
+	unsigned short i_uid;			//æ–‡ä»¶å®¿ä¸»çš„ç”¨æˆ·id
+	unsigned long i_size;			//æ–‡ä»¶é•¿åº¦(å­—èŠ‚)
+	unsigned long i_mtime;			//ä¿®æ”¹æ—¶é—´(ä»1970å¹´ç®—èµ·ï¼Œå•ä½ç§’)
+	unsigned char i_gid;			//æ–‡ä»¶å®¿ä¸»çš„ç»„id
+	unsigned char i_nlinks;			//é“¾æ¥æ•°ï¼Œå³å¤šå°‘æ–‡ä»¶ç›®å½•é¡¹æŒ‡å‘è¯¥iç»“ç‚¹
+	unsigned short i_zone[9];		//æ–‡ä»¶æ‰€å ç›˜ä¸Šé€»è¾‘å—å·æ•°ç»„ã€‚0-6ç›´æ¥å—ï¼›7ä¸€æ¬¡é—´æ¥ï¼›8äºŒæ¬¡é—´æ¥ã€‚
 /* these are in memory also */
-	struct task_struct * i_wait;	//µÈ´ı¸Ã i ½ÚµãµÄ½ø³Ì¡£
-	unsigned long i_atime;			//·ÃÎÊÊ±¼ä
-	unsigned long i_ctime;			//´´½¨Ê±¼ä£¬×ÔÉíĞŞ¸ÄÊ±¼ä
-	unsigned short i_dev;			//¶ÔÓ¦Éè±¸
-	unsigned short i_num;			//i½áµãºÅ
-	unsigned short i_count;			//ÔÚÄÚºËÖĞ±»´ò¿ª´ÎÊı£¬0 ±íÊ¾¸Ã i ½Úµã¿ÕÏĞ¡£
-	unsigned char i_lock;			//ÊÇ·ñÉÏËø
-	unsigned char i_dirt;			//ÔàÎ»
-	unsigned char i_pipe;			//ÊÇ·ñÊÇ¹ÜµÀÎÄ¼ş
-	unsigned char i_mount;			// °²×°±êÖ¾¡£ÊÇ·ñÊÇmountµã¡£
-	unsigned char i_seek;			// ËÑÑ°±êÖ¾(lseek Ê±)¡£
-	unsigned char i_update;			// ¸üĞÂ±êÖ¾¡£
+	struct task_struct * i_wait;	//ç­‰å¾…è¯¥ i èŠ‚ç‚¹çš„è¿›ç¨‹ã€‚
+	unsigned long i_atime;			//è®¿é—®æ—¶é—´
+	unsigned long i_ctime;			//åˆ›å»ºæ—¶é—´ï¼Œè‡ªèº«ä¿®æ”¹æ—¶é—´
+	unsigned short i_dev;			//å¯¹åº”è®¾å¤‡
+	unsigned short i_num;			//iç»“ç‚¹å·
+	unsigned short i_count;			//åœ¨å†…æ ¸ä¸­è¢«æ‰“å¼€æ¬¡æ•°ï¼Œ0 è¡¨ç¤ºè¯¥ i èŠ‚ç‚¹ç©ºé—²ã€‚
+	unsigned char i_lock;			//æ˜¯å¦ä¸Šé”
+	unsigned char i_dirt;			//è„ä½
+	unsigned char i_pipe;			//æ˜¯å¦æ˜¯ç®¡é“æ–‡ä»¶
+	unsigned char i_mount;			// å®‰è£…æ ‡å¿—ã€‚æ˜¯å¦æ˜¯mountç‚¹ã€‚
+	unsigned char i_seek;			// æœå¯»æ ‡å¿—(lseek æ—¶)ã€‚
+	unsigned char i_update;			// æ›´æ–°æ ‡å¿—ã€‚
 };
 
-// ÎÄ¼ş½á¹¹£¨ÓÃÓÚÔÚÎÄ¼ş¾ä±úÓë i ½ÚµãÖ®¼ä½¨Á¢¹ØÏµ£©
+// æ–‡ä»¶ç»“æ„ï¼ˆç”¨äºåœ¨æ–‡ä»¶å¥æŸ„ä¸ i èŠ‚ç‚¹ä¹‹é—´å»ºç«‹å…³ç³»ï¼‰
 struct file {
-	unsigned short f_mode;		//ÎÄ¼ş²Ù×÷Ä£Ê½rw
-	unsigned short f_flags;		//ÎÄ¼ş´ò¿ªºÍ¿ØÖÆµÄ±êÖ¾
-	unsigned short f_count;		//¶ÔÓ¦ÎÄ¼şÃèÊö·ûÊı
-	struct m_inode * f_inode;	//Ö¸Ïò¶ÔÓ¦i½áµã
-	off_t f_pos;				//ÎÄ¼şµ±Ç°¶ÁĞ´Ö¸ÕëÎ»ÖÃ
+	unsigned short f_mode;		//æ–‡ä»¶æ“ä½œæ¨¡å¼rw
+	unsigned short f_flags;		//æ–‡ä»¶æ‰“å¼€å’Œæ§åˆ¶çš„æ ‡å¿—
+	unsigned short f_count;		//å¯¹åº”æ–‡ä»¶æè¿°ç¬¦æ•°
+	struct m_inode * f_inode;	//æŒ‡å‘å¯¹åº”iç»“ç‚¹
+	off_t f_pos;				//æ–‡ä»¶å½“å‰è¯»å†™æŒ‡é’ˆä½ç½®
 };
 
-// ÄÚ´æÖĞ´ÅÅÌ³¬¼¶¿é½á¹¹¡£
+// å†…å­˜ä¸­ç£ç›˜è¶…çº§å—ç»“æ„ã€‚
 struct super_block {
-	unsigned short s_ninodes;				//i½áµãÊı
-	unsigned short s_nzones;				//Âß¼­¿éÊı »ò Çø¿éÊı
-	unsigned short s_imap_blocks;			//i½áµãÎ»Í¼ËùÕ¼¿éÊı
-	unsigned short s_zmap_blocks;			//Âß¼­¿éÎ»Í¼ËùÕ¼¿éÊı
-	unsigned short s_firstdatazone;			//µÚÒ»¸öÂß¼­¿éºÅ
-	unsigned short s_log_zone_size;			//log2(Êı¾İ¿éÊı/Âß¼­¿é)
-	unsigned long s_max_size;				//×î´óÎÄ¼ş³¤¶È
-	unsigned short s_magic;					//ÎÄ¼şÏµÍ³»ÃÊı
+	unsigned short s_ninodes;				//iç»“ç‚¹æ•°
+	unsigned short s_nzones;				//é€»è¾‘å—æ•° æˆ– åŒºå—æ•°
+	unsigned short s_imap_blocks;			//iç»“ç‚¹ä½å›¾æ‰€å å—æ•°
+	unsigned short s_zmap_blocks;			//é€»è¾‘å—ä½å›¾æ‰€å å—æ•°
+	unsigned short s_firstdatazone;			//ç¬¬ä¸€ä¸ªé€»è¾‘å—å·
+	unsigned short s_log_zone_size;			//log2(æ•°æ®å—æ•°/é€»è¾‘å—)
+	unsigned long s_max_size;				//æœ€å¤§æ–‡ä»¶é•¿åº¦
+	unsigned short s_magic;					//æ–‡ä»¶ç³»ç»Ÿå¹»æ•°
 /* These are only in memory */
-	struct buffer_head * s_imap[8];			//i½áµãÎ»Í¼ÔÚ¸ßËÙ»º³å¿éÖ¸ÕëÊı×é
-	struct buffer_head * s_zmap[8];			//Âß¼­¿éÎ»Í¼ÔÚ¸ßËÙ»º³å¿éÖ¸ÕëÊı×é
-	unsigned short s_dev;					//³¬¼¶¿éËùÔÚÉè±¸ºÅ
-	struct m_inode * s_isup;				//±»°²×°ÎÄ¼şÏµÍ³¸ùÄ¿Â¼i½áµã
-	struct m_inode * s_imount;				//¸ÃÎÄ¼şÏµÍ³±»°²×°µ½µÄi½áµã
-	unsigned long s_time;					//ĞŞ¸ÄÊ±¼ä
-	struct task_struct * s_wait;			//µÈ´ı±¾³¬¼¶¿ìµÄ½ø³ÌÖ¸Õë
-	unsigned char s_lock;					//Ëø¶¨±êÖ¾
-	unsigned char s_rd_only;				//Ö»¶Á±êÖ¾
-	unsigned char s_dirt;					//ÔàÎ»
+	struct buffer_head * s_imap[8];			//iç»“ç‚¹ä½å›¾åœ¨é«˜é€Ÿç¼“å†²å—æŒ‡é’ˆæ•°ç»„
+	struct buffer_head * s_zmap[8];			//é€»è¾‘å—ä½å›¾åœ¨é«˜é€Ÿç¼“å†²å—æŒ‡é’ˆæ•°ç»„
+	unsigned short s_dev;					//è¶…çº§å—æ‰€åœ¨è®¾å¤‡å·
+	struct m_inode * s_isup;				//è¢«å®‰è£…æ–‡ä»¶ç³»ç»Ÿæ ¹ç›®å½•iç»“ç‚¹
+	struct m_inode * s_imount;				//è¯¥æ–‡ä»¶ç³»ç»Ÿè¢«å®‰è£…åˆ°çš„iç»“ç‚¹
+	unsigned long s_time;					//ä¿®æ”¹æ—¶é—´
+	struct task_struct * s_wait;			//ç­‰å¾…æœ¬è¶…çº§å¿«çš„è¿›ç¨‹æŒ‡é’ˆ
+	unsigned char s_lock;					//é”å®šæ ‡å¿—
+	unsigned char s_rd_only;				//åªè¯»æ ‡å¿—
+	unsigned char s_dirt;					//è„ä½
 };
 
-// ´ÅÅÌÉÏ³¬¼¶¿é½á¹¹¡£ÉÏÃæ 125-132 ĞĞÍêÈ«Ò»Ñù¡£
+// ç£ç›˜ä¸Šè¶…çº§å—ç»“æ„ã€‚ä¸Šé¢ 125-132 è¡Œå®Œå…¨ä¸€æ ·ã€‚
 struct d_super_block {
 	unsigned short s_ninodes;
 	unsigned short s_nzones;
@@ -179,20 +179,20 @@ struct d_super_block {
 	unsigned short s_magic;
 };
 
-// ÎÄ¼şÄ¿Â¼Ïî½á¹¹¡£
-//Ä¿Â¼ÏîÖĞÖ»ÓĞÎÄ¼şÃûºÍinodeºÅ¿ÉÒÔÌá¸ß²éÕÒËÙ¶È
+// æ–‡ä»¶ç›®å½•é¡¹ç»“æ„ã€‚
+//ç›®å½•é¡¹ä¸­åªæœ‰æ–‡ä»¶åå’Œinodeå·å¯ä»¥æé«˜æŸ¥æ‰¾é€Ÿåº¦
 struct dir_entry {	
 	unsigned short inode;
 	char name[NAME_LEN];
 };
 
-extern struct m_inode inode_table[NR_INODE];		// ¶¨Òå i ½Úµã±íÊı×é£¨32 Ïî£©¡£
-extern struct file file_table[NR_FILE];				// ÎÄ¼ş±íÊı×é£¨64 Ïî£©¡£
-extern struct super_block super_block[NR_SUPER];	// ³¬¼¶¿éÊı×é£¨8 Ïî£©¡£
-extern struct buffer_head * start_buffer;			// »º³åÇøÆğÊ¼ÄÚ´æÎ»ÖÃ¡£
-extern int nr_buffers;								// »º³å¿éÊı¡£
+extern struct m_inode inode_table[NR_INODE];		// å®šä¹‰ i èŠ‚ç‚¹è¡¨æ•°ç»„ï¼ˆ32 é¡¹ï¼‰ã€‚
+extern struct file file_table[NR_FILE];				// æ–‡ä»¶è¡¨æ•°ç»„ï¼ˆ64 é¡¹ï¼‰ã€‚
+extern struct super_block super_block[NR_SUPER];	// è¶…çº§å—æ•°ç»„ï¼ˆ8 é¡¹ï¼‰ã€‚
+extern struct buffer_head * start_buffer;			// ç¼“å†²åŒºèµ·å§‹å†…å­˜ä½ç½®ã€‚
+extern int nr_buffers;								// ç¼“å†²å—æ•°ã€‚
 
-// ´ÅÅÌ²Ù×÷º¯ÊıÔ­ĞÍ¡£
+// ç£ç›˜æ“ä½œå‡½æ•°åŸå‹ã€‚
 
 extern void check_disk_change(int dev);
 extern int floppy_change(unsigned int nr);
@@ -200,7 +200,7 @@ extern int ticks_to_floppy_on(unsigned int dev);
 extern void floppy_on(unsigned int dev);
 extern void floppy_off(unsigned int dev);
 
-// ÒÔÏÂÊÇÎÄ¼şÏµÍ³²Ù×÷¹ÜÀíÓÃµÄº¯ÊıÔ­ĞÍ¡£
+// ä»¥ä¸‹æ˜¯æ–‡ä»¶ç³»ç»Ÿæ“ä½œç®¡ç†ç”¨çš„å‡½æ•°åŸå‹ã€‚
 
 extern void truncate(struct m_inode * inode);
 extern void sync_inodes(void);

@@ -4,8 +4,8 @@
  *  (C) 1991  Linus Torvalds
  */
 
- //¸Ã³ÌĞòÄ¿Ç°ÊÇ¿ÕµÄ£¬½ö¶¨ÒåÁËÎÄ¼ş±íÊı×é¡£
+ //è¯¥ç¨‹åºç›®å‰æ˜¯ç©ºçš„ï¼Œä»…å®šä¹‰äº†æ–‡ä»¶è¡¨æ•°ç»„ã€‚
 
 #include <linux/fs.h>
 
-struct file file_table[NR_FILE];	// ÎÄ¼ş±íÊı×é(64 Ïî)
+struct file file_table[NR_FILE];	// æ–‡ä»¶è¡¨æ•°ç»„(64 é¡¹)

@@ -1,4 +1,4 @@
-//sys.h Í·ÎÄ¼şÁĞ³öÁËÄÚºËÖĞËùÓĞÏµÍ³µ÷ÓÃº¯ÊıµÄÔ­ĞÍ£¬ÒÔ¼°ÏµÍ³µ÷ÓÃº¯ÊıÖ¸Õë±í¡£
+//sys.h å¤´æ–‡ä»¶åˆ—å‡ºäº†å†…æ ¸ä¸­æ‰€æœ‰ç³»ç»Ÿè°ƒç”¨å‡½æ•°çš„åŸå‹ï¼Œä»¥åŠç³»ç»Ÿè°ƒç”¨å‡½æ•°æŒ‡é’ˆè¡¨ã€‚
 
 extern int sys_setup();
 extern int sys_exit();
@@ -73,7 +73,7 @@ extern int sys_ssetmask();
 extern int sys_setreuid();
 extern int sys_setregid();
 
-// ÏµÍ³µ÷ÓÃº¯ÊıÖ¸Õë±í¡£ÓÃÓÚÏµÍ³µ÷ÓÃÖĞ¶Ï´¦Àí³ÌĞò(int 0x80)£¬×÷ÎªÌø×ª±í¡£
+// ç³»ç»Ÿè°ƒç”¨å‡½æ•°æŒ‡é’ˆè¡¨ã€‚ç”¨äºç³»ç»Ÿè°ƒç”¨ä¸­æ–­å¤„ç†ç¨‹åº(int 0x80)ï¼Œä½œä¸ºè·³è½¬è¡¨ã€‚
 fn_ptr sys_call_table[] = { sys_setup, sys_exit, sys_fork, sys_read,
 sys_write, sys_open, sys_close, sys_waitpid, sys_creat, sys_link,
 sys_unlink, sys_execve, sys_chdir, sys_time, sys_mknod, sys_chmod,

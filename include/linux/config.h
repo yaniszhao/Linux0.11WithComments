@@ -1,4 +1,4 @@
-/* ÄÚºËÅäÖÃÍ·ÎÄ¼þ¡£¶¨ÒåÊ¹ÓÃµÄ¼üÅÌÓïÑÔÀàÐÍºÍÓ²ÅÌÀàÐÍ£¨ HD_TYPE £©¿ÉÑ¡Ïî¡£*/
+/* å†…æ ¸é…ç½®å¤´æ–‡ä»¶ã€‚å®šä¹‰ä½¿ç”¨çš„é”®ç›˜è¯­è¨€ç±»åž‹å’Œç¡¬ç›˜ç±»åž‹ï¼ˆ HD_TYPE ï¼‰å¯é€‰é¡¹ã€‚*/
 
 #ifndef _CONFIG_H
 #define _CONFIG_H
@@ -8,8 +8,8 @@
  * root-device by changing the line ROOT_DEV = XXX in boot/bootsect.s
  */
 /*
- * ¸ùÎÄ¼þÏµÍ³Éè±¸ÒÑ²»ÔÙÊÇÓ²±àÂëµÄÁË¡£Í¨¹ýÐÞ¸Ä boot/bootsect.s ÎÄ¼þÖÐÐÐ
- * ROOT_DEV = XXX£¬Äã¿ÉÒÔ¸Ä±ä¸ùÉè±¸µÄÄ¬ÈÏÉèÖÃÖµ¡£
+ * æ ¹æ–‡ä»¶ç³»ç»Ÿè®¾å¤‡å·²ä¸å†æ˜¯ç¡¬ç¼–ç çš„äº†ã€‚é€šè¿‡ä¿®æ”¹ boot/bootsect.s æ–‡ä»¶ä¸­è¡Œ
+ * ROOT_DEV = XXXï¼Œä½ å¯ä»¥æ”¹å˜æ ¹è®¾å¤‡çš„é»˜è®¤è®¾ç½®å€¼ã€‚
  */
 
 /*
@@ -20,11 +20,11 @@
  * KBD_FR for Frech keyboard
  */
 /*
- * ÔÚÕâÀï¶¨ÒåÄãµÄ¼üÅÌÀàÐÍ -
- * KBD_FINNISH ÊÇ·ÒÀ¼¼üÅÌ¡£
- * KBD_US ÊÇÃÀÊ½¼üÅÌ¡£
- * KBD_GR ÊÇµÂÊ½¼üÅÌ¡£
- * KBD_FR ÊÇ·¨Ê½¼üÅÌ¡£
+ * åœ¨è¿™é‡Œå®šä¹‰ä½ çš„é”®ç›˜ç±»åž‹ -
+ * KBD_FINNISH æ˜¯èŠ¬å…°é”®ç›˜ã€‚
+ * KBD_US æ˜¯ç¾Žå¼é”®ç›˜ã€‚
+ * KBD_GR æ˜¯å¾·å¼é”®ç›˜ã€‚
+ * KBD_FR æ˜¯æ³•å¼é”®ç›˜ã€‚
  */
 /*#define KBD_US */
 /*#define KBD_GR */
@@ -47,15 +47,15 @@
  * #define HD_TYPE { h,s,c,wpcom,lz,ctl },{ h,s,c,wpcom,lz,ctl }
  */
 /*
- * Í¨³££¬Linux ÄÜ¹»ÔÚÆô¶¯Ê±´Ó BIOS ÖÐ»ñÈ¡Çý¶¯Æ÷µÂ²ÎÊý£¬µ«ÊÇÈôÓÉÓÚÎ´ÖªÔ­Òò
- * ¶øÃ»ÓÐµÃµ½ÕâÐ©²ÎÊýÊ±£¬»áÊ¹³ÌÐòÊøÊÖÎÞ²ß¡£¶ÔÓÚÕâÖÖÇé¿ö£¬Äã¿ÉÒÔ¶¨Òå HD_TYPE£¬
- * ÆäÖÐ°üÀ¨Ó²ÅÌµÄËùÓÐÐÅÏ¢¡£
+ * é€šå¸¸ï¼ŒLinux èƒ½å¤Ÿåœ¨å¯åŠ¨æ—¶ä»Ž BIOS ä¸­èŽ·å–é©±åŠ¨å™¨å¾·å‚æ•°ï¼Œä½†æ˜¯è‹¥ç”±äºŽæœªçŸ¥åŽŸå› 
+ * è€Œæ²¡æœ‰å¾—åˆ°è¿™äº›å‚æ•°æ—¶ï¼Œä¼šä½¿ç¨‹åºæŸæ‰‹æ— ç­–ã€‚å¯¹äºŽè¿™ç§æƒ…å†µï¼Œä½ å¯ä»¥å®šä¹‰ HD_TYPEï¼Œ
+ * å…¶ä¸­åŒ…æ‹¬ç¡¬ç›˜çš„æ‰€æœ‰ä¿¡æ¯ã€‚
  *
- * HD_TYPE ºêÓ¦¸ÃÏóÏÂÃæÕâÑùµÄÐÎÊ½£º
+ * HD_TYPE å®åº”è¯¥è±¡ä¸‹é¢è¿™æ ·çš„å½¢å¼ï¼š
  *
  * #define HD_TYPE { head, sect, cyl, wpcom, lzone, ctl}
  *
- * ¶ÔÓÚÓÐÁ½¸öÓ²ÅÌµÄÇé¿ö£¬²ÎÊýÐÅÏ¢ÐèÓÃ¶ººÅ·Ö¿ª£º
+ * å¯¹äºŽæœ‰ä¸¤ä¸ªç¡¬ç›˜çš„æƒ…å†µï¼Œå‚æ•°ä¿¡æ¯éœ€ç”¨é€—å·åˆ†å¼€ï¼š
  *
  * #define HD_TYPE { h,s,c,wpcom,lz,ctl }, {h,s,c,wpcom,lz,ctl }
  */
@@ -73,14 +73,14 @@
  leave HD_TYPE undefined. This is the normal thing to do.
 */
 /*
- * ÏÂÃæÊÇÒ»¸öÀý×Ó£¬Á½¸öÓ²ÅÌ£¬µÚ 1 ¸öÊÇÀàÐÍ 2£¬µÚ 2 ¸öÊÇÀàÐÍ 3£º
+ * ä¸‹é¢æ˜¯ä¸€ä¸ªä¾‹å­ï¼Œä¸¤ä¸ªç¡¬ç›˜ï¼Œç¬¬ 1 ä¸ªæ˜¯ç±»åž‹ 2ï¼Œç¬¬ 2 ä¸ªæ˜¯ç±»åž‹ 3ï¼š
  *
  * #define HD_TYPE { 4,17,615,300,615,8 }, {6,17,615,300,615,0 }
  *
- * ×¢Òâ£º¶ÔÓ¦ËùÓÐÓ²ÅÌ£¬ÈôÆä´ÅÍ·Êý<=8£¬Ôò ctl µÈÓÚ 0£¬Èô´ÅÍ·Êý¶àÓÚ 8 ¸ö£¬
- * Ôò ctl=8¡£
+ * æ³¨æ„ï¼šå¯¹åº”æ‰€æœ‰ç¡¬ç›˜ï¼Œè‹¥å…¶ç£å¤´æ•°<=8ï¼Œåˆ™ ctl ç­‰äºŽ 0ï¼Œè‹¥ç£å¤´æ•°å¤šäºŽ 8 ä¸ªï¼Œ
+ * åˆ™ ctl=8ã€‚
  *
- * Èç¹ûÄãÏëÈÃ BIOS ¸ø³öÓ²ÅÌµÄÀàÐÍ£¬ÄÇÃ´Ö»Ðè²»¶¨Òå HD_TYPE¡£ÕâÊÇÄ¬ÈÏ²Ù×÷¡£
+ * å¦‚æžœä½ æƒ³è®© BIOS ç»™å‡ºç¡¬ç›˜çš„ç±»åž‹ï¼Œé‚£ä¹ˆåªéœ€ä¸å®šä¹‰ HD_TYPEã€‚è¿™æ˜¯é»˜è®¤æ“ä½œã€‚
  */
 
 #endif

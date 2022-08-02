@@ -9,12 +9,12 @@
  * Currently only results in a signal.
  */
 /*
- * ¸ÃÄ¿Â¼ÀïÓ¦¸Ã°üº¬ÊýÑ§·ÂÕæ´úÂë¡£Ä¿Ç°½ö²úÉúÒ»¸öÐÅºÅ¡£
+ * è¯¥ç›®å½•é‡Œåº”è¯¥åŒ…å«æ•°å­¦ä»¿çœŸä»£ç ã€‚ç›®å‰ä»…äº§ç”Ÿä¸€ä¸ªä¿¡å·ã€‚
  */
 
-//ÊýÑ§Ð­´¦ÀíÆ÷·ÂÕæ´¦Àí´úÂëÎÄ¼þ¡£¸Ã³ÌÐòÄ¿Ç°»¹Ã»ÓÐÊµÏÖ¶ÔÊýÑ§Ð­´¦ÀíÆ÷µÄ·ÂÕæ´úÂë¡£
-//½öÊµÏÖÁËÐ­´¦ÀíÆ÷·¢ÉúÒì³£ÖÐ¶ÏÊ±µ÷ÓÃµÄÁ½¸ö C º¯Êý¡£ 
-// math_emulate() ½öÔÚÓÃ»§³ÌÐòÖÐ°üº¬Ð­´¦ÀíÆ÷Ö¸ÁîÊ±£¬¶Ô½ø³ÌÉèÖÃÐ­´¦ÀíÆ÷Òì³£ÐÅºÅ¡£
+//æ•°å­¦åå¤„ç†å™¨ä»¿çœŸå¤„ç†ä»£ç æ–‡ä»¶ã€‚è¯¥ç¨‹åºç›®å‰è¿˜æ²¡æœ‰å®žçŽ°å¯¹æ•°å­¦åå¤„ç†å™¨çš„ä»¿çœŸä»£ç ã€‚
+//ä»…å®žçŽ°äº†åå¤„ç†å™¨å‘ç”Ÿå¼‚å¸¸ä¸­æ–­æ—¶è°ƒç”¨çš„ä¸¤ä¸ª C å‡½æ•°ã€‚ 
+// math_emulate() ä»…åœ¨ç”¨æˆ·ç¨‹åºä¸­åŒ…å«åå¤„ç†å™¨æŒ‡ä»¤æ—¶ï¼Œå¯¹è¿›ç¨‹è®¾ç½®åå¤„ç†å™¨å¼‚å¸¸ä¿¡å·ã€‚
 
 #include <signal.h>
 
@@ -22,8 +22,8 @@
 #include <linux/kernel.h>
 #include <asm/segment.h>
 
-// Ð­´¦ÀíÆ÷·ÂÕæº¯Êý¡£
-// ÖÐ¶Ï´¦Àí³ÌÐòµ÷ÓÃµÄ C º¯Êý£¬²Î¼û(kernel/math/system_call.s£¬169 ÐÐ)¡£
+// åå¤„ç†å™¨ä»¿çœŸå‡½æ•°ã€‚
+// ä¸­æ–­å¤„ç†ç¨‹åºè°ƒç”¨çš„ C å‡½æ•°ï¼Œå‚è§(kernel/math/system_call.sï¼Œ169 è¡Œ)ã€‚
 void math_emulate(long edi, long esi, long ebp, long sys_call_ret,
 	long eax,long ebx,long ecx,long edx,
 	unsigned short fs,unsigned short es,unsigned short ds,
@@ -43,8 +43,8 @@ void math_emulate(long edi, long esi, long ebp, long sys_call_ret,
 	current->signal |= 1<<(SIGFPE-1);
 }
 
-// Ð­´¦ÀíÆ÷³ö´í´¦Àíº¯Êý¡£
-// ÖÐ¶Ï´¦Àí³ÌÐòµ÷ÓÃµÄ C º¯Êý£¬²Î¼û(kernel/math/system_call.s£¬145 ÐÐ)¡£
+// åå¤„ç†å™¨å‡ºé”™å¤„ç†å‡½æ•°ã€‚
+// ä¸­æ–­å¤„ç†ç¨‹åºè°ƒç”¨çš„ C å‡½æ•°ï¼Œå‚è§(kernel/math/system_call.sï¼Œ145 è¡Œ)ã€‚
 void math_error(void)
 {
 	__asm__("fnclex");

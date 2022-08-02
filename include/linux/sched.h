@@ -1,16 +1,16 @@
 /*
-µ÷¶È³ÌĞòÍ·ÎÄ¼ş£¬¶¨ÒåÁËÈÎÎñ½á¹¹ task_struct ¡¢³õÊ¼ÈÎÎñ 0 µÄÊı¾İ£¬
-»¹ÓĞÒ»Ğ©ÓĞ¹ØÃèÊö·û²ÎÊıÉèÖÃºÍ»ñÈ¡µÄÇ¶ÈëÊ½»ã±àº¯ÊıºêÓï¾ä¡£
+è°ƒåº¦ç¨‹åºå¤´æ–‡ä»¶ï¼Œå®šä¹‰äº†ä»»åŠ¡ç»“æ„ task_struct ã€åˆå§‹ä»»åŠ¡ 0 çš„æ•°æ®ï¼Œ
+è¿˜æœ‰ä¸€äº›æœ‰å…³æè¿°ç¬¦å‚æ•°è®¾ç½®å’Œè·å–çš„åµŒå…¥å¼æ±‡ç¼–å‡½æ•°å®è¯­å¥ã€‚
 */
 
 #ifndef _SCHED_H
 #define _SCHED_H
 
-#define NR_TASKS 64	// ÏµÍ³ÖĞÍ¬Ê±×î¶àÈÎÎñ£¨½ø³Ì£©Êı¡£
-#define HZ 100	//Ò»Ãë¶àÉÙ¸öµÎ´ğ£¬Ò»¸öµÎ´ğ10msËùÒÔÒ»Ãë¾Í100¸öµÎ´ğ
+#define NR_TASKS 64	// ç³»ç»Ÿä¸­åŒæ—¶æœ€å¤šä»»åŠ¡ï¼ˆè¿›ç¨‹ï¼‰æ•°ã€‚
+#define HZ 100	//ä¸€ç§’å¤šå°‘ä¸ªæ»´ç­”ï¼Œä¸€ä¸ªæ»´ç­”10msæ‰€ä»¥ä¸€ç§’å°±100ä¸ªæ»´ç­”
 
-#define FIRST_TASK task[0]	// ÈÎÎñ 0 ±È½ÏÌØÊâ£¬ËùÒÔÌØÒâ¸øËüµ¥¶À¶¨ÒåÒ»¸ö·ûºÅ¡£
-#define LAST_TASK task[NR_TASKS-1]	// ÈÎÎñÊı×éÖĞµÄ×îºóÒ»ÏîÈÎÎñ¡£
+#define FIRST_TASK task[0]	// ä»»åŠ¡ 0 æ¯”è¾ƒç‰¹æ®Šï¼Œæ‰€ä»¥ç‰¹æ„ç»™å®ƒå•ç‹¬å®šä¹‰ä¸€ä¸ªç¬¦å·ã€‚
+#define LAST_TASK task[NR_TASKS-1]	// ä»»åŠ¡æ•°ç»„ä¸­çš„æœ€åä¸€é¡¹ä»»åŠ¡ã€‚
 
 #include <linux/head.h>
 #include <linux/fs.h>
@@ -21,12 +21,12 @@
 #error "Currently the close-on-exec-flags are in one word, max 32 files/proc"
 #endif
 
-// ÕâÀï¶¨ÒåÁË½ø³ÌÔËĞĞ¿ÉÄÜ´¦µÄ×´Ì¬¡£
-#define TASK_RUNNING		0			//ÕâÀïÊÇ¾ÍĞ÷Ì¬£¬²»ÊÇÔËĞĞÌ¬
-#define TASK_INTERRUPTIBLE	1		// ½ø³Ì´¦ÓÚ¿ÉÖĞ¶ÏµÈ´ı×´Ì¬¡£ÊÜĞÅºÅÓ°Ïì
-#define TASK_UNINTERRUPTIBLE	2	// ½ø³Ì´¦ÓÚ²»¿ÉÖĞ¶ÏµÈ´ı×´Ì¬£¬Ö÷ÒªÓÃÓÚ I/O ²Ù×÷µÈ´ı¡£
-#define TASK_ZOMBIE		3			// ½ø³Ì´¦ÓÚ½©ËÀ×´Ì¬£¬ÒÑ¾­Í£Ö¹ÔËĞĞ£¬µ«¸¸½ø³Ì»¹Ã»·¢ĞÅºÅ¡£
-#define TASK_STOPPED		4		// ½ø³ÌÒÑÍ£Ö¹¡£
+// è¿™é‡Œå®šä¹‰äº†è¿›ç¨‹è¿è¡Œå¯èƒ½å¤„çš„çŠ¶æ€ã€‚
+#define TASK_RUNNING		0			//è¿™é‡Œæ˜¯å°±ç»ªæ€ï¼Œä¸æ˜¯è¿è¡Œæ€
+#define TASK_INTERRUPTIBLE	1		// è¿›ç¨‹å¤„äºå¯ä¸­æ–­ç­‰å¾…çŠ¶æ€ã€‚å—ä¿¡å·å½±å“
+#define TASK_UNINTERRUPTIBLE	2	// è¿›ç¨‹å¤„äºä¸å¯ä¸­æ–­ç­‰å¾…çŠ¶æ€ï¼Œä¸»è¦ç”¨äº I/O æ“ä½œç­‰å¾…ã€‚
+#define TASK_ZOMBIE		3			// è¿›ç¨‹å¤„äºåƒµæ­»çŠ¶æ€ï¼Œå·²ç»åœæ­¢è¿è¡Œï¼Œä½†çˆ¶è¿›ç¨‹è¿˜æ²¡å‘ä¿¡å·ã€‚
+#define TASK_STOPPED		4		// è¿›ç¨‹å·²åœæ­¢ã€‚
 
 #ifndef NULL
 #define NULL ((void *) 0)
@@ -41,25 +41,25 @@ extern void trap_init(void);
 extern void panic(const char * str);
 extern int tty_write(unsigned minor,char * buf,int count);
 
-typedef int (*fn_ptr)();	// ¶¨Òåº¯ÊıÖ¸ÕëÀàĞÍ¡£
+typedef int (*fn_ptr)();	// å®šä¹‰å‡½æ•°æŒ‡é’ˆç±»å‹ã€‚
 
-// ÏÂÃæÊÇÊıÑ§Ğ­´¦ÀíÆ÷Ê¹ÓÃµÄ½á¹¹£¬Ö÷ÒªÓÃÓÚ±£´æ½ø³ÌÇĞ»»Ê± i387 µÄÖ´ĞĞ×´Ì¬ĞÅÏ¢¡£
+// ä¸‹é¢æ˜¯æ•°å­¦åå¤„ç†å™¨ä½¿ç”¨çš„ç»“æ„ï¼Œä¸»è¦ç”¨äºä¿å­˜è¿›ç¨‹åˆ‡æ¢æ—¶ i387 çš„æ‰§è¡ŒçŠ¶æ€ä¿¡æ¯ã€‚
 struct i387_struct {
-	long	cwd;	// ¿ØÖÆ×Ö(Control word)¡£
-	long	swd;	// ×´Ì¬×Ö(Status word)¡£
-	long	twd;	// ±ê¼Ç×Ö(Tag word)¡£
-	long	fip;	// Ğ­´¦ÀíÆ÷´úÂëÖ¸Õë¡£
-	long	fcs;	// Ğ­´¦ÀíÆ÷´úÂë¶Î¼Ä´æÆ÷¡£
-	long	foo;	// ÄÚ´æ²Ù×÷ÊıµÄÆ«ÒÆÎ»ÖÃ¡£
-	long	fos;	// ÄÚ´æ²Ù×÷ÊıµÄ¶ÎÖµ¡£
+	long	cwd;	// æ§åˆ¶å­—(Control word)ã€‚
+	long	swd;	// çŠ¶æ€å­—(Status word)ã€‚
+	long	twd;	// æ ‡è®°å­—(Tag word)ã€‚
+	long	fip;	// åå¤„ç†å™¨ä»£ç æŒ‡é’ˆã€‚
+	long	fcs;	// åå¤„ç†å™¨ä»£ç æ®µå¯„å­˜å™¨ã€‚
+	long	foo;	// å†…å­˜æ“ä½œæ•°çš„åç§»ä½ç½®ã€‚
+	long	fos;	// å†…å­˜æ“ä½œæ•°çš„æ®µå€¼ã€‚
 	long	st_space[20];	/* 8*10 bytes for each FP-reg = 80 bytes */
-							// 8 ¸ö 10 ×Ö½ÚµÄĞ­´¦ÀíÆ÷ÀÛ¼ÓÆ÷¡£
+							// 8 ä¸ª 10 å­—èŠ‚çš„åå¤„ç†å™¨ç´¯åŠ å™¨ã€‚
 };
 
-// ÈÎÎñ×´Ì¬¶ÎÊı¾İ½á¹¹¡£
+// ä»»åŠ¡çŠ¶æ€æ®µæ•°æ®ç»“æ„ã€‚
 struct tss_struct {
-	long	back_link;	/* 16 high bits zero */	// Ç°Ò»Ö´ĞĞÈÎÎñ TSS µÄÃèÊö·û
-	long	esp0;		// ×¢Òâesp0²»»á±£´æ£¬ËùÒÔÃ¿µ±Ò»¸öÈÎÎñ½øÈëÄÚºËÌ¬Ö´ĞĞÊ±£¬ÆäÄÚºËÌ¬¶ÑÕ»×ÜÊÇ¿ÕµÄ¡£
+	long	back_link;	/* 16 high bits zero */	// å‰ä¸€æ‰§è¡Œä»»åŠ¡ TSS çš„æè¿°ç¬¦
+	long	esp0;		// æ³¨æ„esp0ä¸ä¼šä¿å­˜ï¼Œæ‰€ä»¥æ¯å½“ä¸€ä¸ªä»»åŠ¡è¿›å…¥å†…æ ¸æ€æ‰§è¡Œæ—¶ï¼Œå…¶å†…æ ¸æ€å †æ ˆæ€»æ˜¯ç©ºçš„ã€‚
 	long	ss0;		/* 16 high bits zero */
 	long	esp1;
 	long	ss1;		/* 16 high bits zero */
@@ -80,82 +80,82 @@ struct tss_struct {
 	long	fs;		/* 16 high bits zero */
 	long	gs;		/* 16 high bits zero */
 	long	ldt;		/* 16 high bits zero */
-	long	trace_bitmap;	/* bits: trace 0, bitmap 16-31 */	// I/OÓ³ÉäÍ¼»ùµØÖ·(MAPBASE) 
+	long	trace_bitmap;	/* bits: trace 0, bitmap 16-31 */	// I/Oæ˜ å°„å›¾åŸºåœ°å€(MAPBASE) 
 	struct i387_struct i387;
 };
 
-// ÕâÀïÊÇÈÎÎñ£¨½ø³Ì£©Êı¾İ½á¹¹£¬»ò³ÆÎª½ø³ÌÃèÊö·û¡£
+// è¿™é‡Œæ˜¯ä»»åŠ¡ï¼ˆè¿›ç¨‹ï¼‰æ•°æ®ç»“æ„ï¼Œæˆ–ç§°ä¸ºè¿›ç¨‹æè¿°ç¬¦ã€‚
 // ==========================
-// long state ÈÎÎñµÄÔËĞĞ×´Ì¬£¨-1 ²»¿ÉÔËĞĞ£¬0 ¿ÉÔËĞĞ(¾ÍĞ÷)£¬>0 ÒÑÍ£Ö¹£©¡£
-// long counter ÈÎÎñÔËĞĞÊ±¼ä¼ÆÊı(µİ¼õ)£¨µÎ´ğÊı£©£¬ÔËĞĞÊ±¼äÆ¬¡£
-// long priority ÔËĞĞÓÅÏÈÊı¡£ÈÎÎñ¿ªÊ¼ÔËĞĞÊ± counter = priority£¬Ô½´óÔËĞĞÔ½³¤¡£
-// long signal ĞÅºÅ¡£ÊÇÎ»Í¼£¬Ã¿¸ö±ÈÌØÎ»´ú±íÒ»ÖÖĞÅºÅ£¬ĞÅºÅÖµ=Î»Æ«ÒÆÖµ+1¡£
-// struct sigaction sigaction[32] ĞÅºÅÖ´ĞĞÊôĞÔ½á¹¹£¬¶ÔÓ¦ĞÅºÅ½«ÒªÖ´ĞĞµÄ²Ù×÷ºÍ±êÖ¾ĞÅÏ¢¡£
-// long blocked ½ø³ÌĞÅºÅÆÁ±ÎÂë£¨¶ÔÓ¦ĞÅºÅÎ»Í¼£©¡£
+// long state ä»»åŠ¡çš„è¿è¡ŒçŠ¶æ€ï¼ˆ-1 ä¸å¯è¿è¡Œï¼Œ0 å¯è¿è¡Œ(å°±ç»ª)ï¼Œ>0 å·²åœæ­¢ï¼‰ã€‚
+// long counter ä»»åŠ¡è¿è¡Œæ—¶é—´è®¡æ•°(é€’å‡)ï¼ˆæ»´ç­”æ•°ï¼‰ï¼Œè¿è¡Œæ—¶é—´ç‰‡ã€‚
+// long priority è¿è¡Œä¼˜å…ˆæ•°ã€‚ä»»åŠ¡å¼€å§‹è¿è¡Œæ—¶ counter = priorityï¼Œè¶Šå¤§è¿è¡Œè¶Šé•¿ã€‚
+// long signal ä¿¡å·ã€‚æ˜¯ä½å›¾ï¼Œæ¯ä¸ªæ¯”ç‰¹ä½ä»£è¡¨ä¸€ç§ä¿¡å·ï¼Œä¿¡å·å€¼=ä½åç§»å€¼+1ã€‚
+// struct sigaction sigaction[32] ä¿¡å·æ‰§è¡Œå±æ€§ç»“æ„ï¼Œå¯¹åº”ä¿¡å·å°†è¦æ‰§è¡Œçš„æ“ä½œå’Œæ ‡å¿—ä¿¡æ¯ã€‚
+// long blocked è¿›ç¨‹ä¿¡å·å±è”½ç ï¼ˆå¯¹åº”ä¿¡å·ä½å›¾ï¼‰ã€‚
 // --------------------------
-// int exit_code ÈÎÎñÖ´ĞĞÍ£Ö¹µÄÍË³öÂë£¬Æä¸¸½ø³Ì»áÈ¡¡£
-// unsigned long start_code ´úÂë¶ÎµØÖ·¡£
-// unsigned long end_code ´úÂë³¤¶È£¨×Ö½ÚÊı£©¡£
-// unsigned long end_data ´úÂë³¤¶È + Êı¾İ³¤¶È£¨×Ö½ÚÊı£©¡£
-// unsigned long brk ×Ü³¤¶È£¨×Ö½ÚÊı£©¡£
-// unsigned long start_stack ¶ÑÕ»¶ÎµØÖ·¡£
-// long pid ½ø³Ì±êÊ¶ºÅ(½ø³ÌºÅ)¡£
-// long father ¸¸½ø³ÌºÅ¡£
-// long pgrp ¸¸½ø³Ì×éºÅ¡£
-// long session »á»°ºÅ¡£
-// long leader »á»°Ê×Áì¡£
-// unsigned short uid ÓÃ»§±êÊ¶ºÅ£¨ÓÃ»§ id£©¡£
-// unsigned short euid ÓĞĞ§ÓÃ»§ id¡£
-// unsigned short suid ±£´æµÄÓÃ»§ id¡£
-// unsigned short gid ×é±êÊ¶ºÅ£¨×é id£©¡£
-// unsigned short egid ÓĞĞ§×é id¡£
-// unsigned short sgid ±£´æµÄ×é id¡£
-// long alarm ±¨¾¯¶¨Ê±Öµ£¨µÎ´ğÊı£©¡£
-// long utime ÓÃ»§Ì¬ÔËĞĞÊ±¼ä£¨µÎ´ğÊı£©¡£
-// long stime ÏµÍ³Ì¬ÔËĞĞÊ±¼ä£¨µÎ´ğÊı£©¡£
-// long cutime ×Ó½ø³ÌÓÃ»§Ì¬ÔËĞĞÊ±¼ä¡£
-// long cstime ×Ó½ø³ÌÏµÍ³Ì¬ÔËĞĞÊ±¼ä¡£
-// long start_time ½ø³Ì¿ªÊ¼ÔËĞĞÊ±¿Ì¡£
-// unsigned short used_math ±êÖ¾£ºÊÇ·ñÊ¹ÓÃÁËĞ­´¦ÀíÆ÷¡£
+// int exit_code ä»»åŠ¡æ‰§è¡Œåœæ­¢çš„é€€å‡ºç ï¼Œå…¶çˆ¶è¿›ç¨‹ä¼šå–ã€‚
+// unsigned long start_code ä»£ç æ®µåœ°å€ã€‚
+// unsigned long end_code ä»£ç é•¿åº¦ï¼ˆå­—èŠ‚æ•°ï¼‰ã€‚
+// unsigned long end_data ä»£ç é•¿åº¦ + æ•°æ®é•¿åº¦ï¼ˆå­—èŠ‚æ•°ï¼‰ã€‚
+// unsigned long brk æ€»é•¿åº¦ï¼ˆå­—èŠ‚æ•°ï¼‰ã€‚
+// unsigned long start_stack å †æ ˆæ®µåœ°å€ã€‚
+// long pid è¿›ç¨‹æ ‡è¯†å·(è¿›ç¨‹å·)ã€‚
+// long father çˆ¶è¿›ç¨‹å·ã€‚
+// long pgrp çˆ¶è¿›ç¨‹ç»„å·ã€‚
+// long session ä¼šè¯å·ã€‚
+// long leader ä¼šè¯é¦–é¢†ã€‚
+// unsigned short uid ç”¨æˆ·æ ‡è¯†å·ï¼ˆç”¨æˆ· idï¼‰ã€‚
+// unsigned short euid æœ‰æ•ˆç”¨æˆ· idã€‚
+// unsigned short suid ä¿å­˜çš„ç”¨æˆ· idã€‚
+// unsigned short gid ç»„æ ‡è¯†å·ï¼ˆç»„ idï¼‰ã€‚
+// unsigned short egid æœ‰æ•ˆç»„ idã€‚
+// unsigned short sgid ä¿å­˜çš„ç»„ idã€‚
+// long alarm æŠ¥è­¦å®šæ—¶å€¼ï¼ˆæ»´ç­”æ•°ï¼‰ã€‚
+// long utime ç”¨æˆ·æ€è¿è¡Œæ—¶é—´ï¼ˆæ»´ç­”æ•°ï¼‰ã€‚
+// long stime ç³»ç»Ÿæ€è¿è¡Œæ—¶é—´ï¼ˆæ»´ç­”æ•°ï¼‰ã€‚
+// long cutime å­è¿›ç¨‹ç”¨æˆ·æ€è¿è¡Œæ—¶é—´ã€‚
+// long cstime å­è¿›ç¨‹ç³»ç»Ÿæ€è¿è¡Œæ—¶é—´ã€‚
+// long start_time è¿›ç¨‹å¼€å§‹è¿è¡Œæ—¶åˆ»ã€‚
+// unsigned short used_math æ ‡å¿—ï¼šæ˜¯å¦ä½¿ç”¨äº†åå¤„ç†å™¨ã€‚
 // --------------------------
-// int tty ½ø³ÌÊ¹ÓÃ tty µÄ×ÓÉè±¸ºÅ¡£-1 ±íÊ¾Ã»ÓĞÊ¹ÓÃ¡£
-// unsigned short umask ÎÄ¼ş´´½¨ÊôĞÔÆÁ±ÎÎ»¡£
-// struct m_inode * pwd µ±Ç°¹¤×÷Ä¿Â¼ i ½Úµã½á¹¹¡£
-// struct m_inode * root ¸ùÄ¿Â¼ i ½Úµã½á¹¹¡£
-// struct m_inode * executable Ö´ĞĞÎÄ¼ş i ½Úµã½á¹¹¡£
-// unsigned long close_on_exec Ö´ĞĞÊ±¹Ø±ÕÎÄ¼ş¾ä±úÎ»Í¼±êÖ¾¡££¨²Î¼û include/fcntl.h£©
-// struct file * filp[NR_OPEN] ½ø³ÌÊ¹ÓÃµÄÎÄ¼ş±í½á¹¹¡£
+// int tty è¿›ç¨‹ä½¿ç”¨ tty çš„å­è®¾å¤‡å·ã€‚-1 è¡¨ç¤ºæ²¡æœ‰ä½¿ç”¨ã€‚
+// unsigned short umask æ–‡ä»¶åˆ›å»ºå±æ€§å±è”½ä½ã€‚
+// struct m_inode * pwd å½“å‰å·¥ä½œç›®å½• i èŠ‚ç‚¹ç»“æ„ã€‚
+// struct m_inode * root æ ¹ç›®å½• i èŠ‚ç‚¹ç»“æ„ã€‚
+// struct m_inode * executable æ‰§è¡Œæ–‡ä»¶ i èŠ‚ç‚¹ç»“æ„ã€‚
+// unsigned long close_on_exec æ‰§è¡Œæ—¶å…³é—­æ–‡ä»¶å¥æŸ„ä½å›¾æ ‡å¿—ã€‚ï¼ˆå‚è§ include/fcntl.hï¼‰
+// struct file * filp[NR_OPEN] è¿›ç¨‹ä½¿ç”¨çš„æ–‡ä»¶è¡¨ç»“æ„ã€‚
 // --------------------------
-// struct desc_struct ldt[3] ±¾ÈÎÎñµÄ¾Ö²¿±íÃèÊö·û¡£0-¿Õ£¬1-´úÂë¶Î cs£¬2-Êı¾İºÍ¶ÑÕ»¶Î ds&ss¡£
+// struct desc_struct ldt[3] æœ¬ä»»åŠ¡çš„å±€éƒ¨è¡¨æè¿°ç¬¦ã€‚0-ç©ºï¼Œ1-ä»£ç æ®µ csï¼Œ2-æ•°æ®å’Œå †æ ˆæ®µ ds&ssã€‚
 // --------------------------
-// struct tss_struct tss ±¾½ø³ÌµÄÈÎÎñ×´Ì¬¶ÎĞÅÏ¢½á¹¹¡£
+// struct tss_struct tss æœ¬è¿›ç¨‹çš„ä»»åŠ¡çŠ¶æ€æ®µä¿¡æ¯ç»“æ„ã€‚
 // ==========================
 
 struct task_struct {
 /* these are hardcoded - don't touch */
-	long state;	/* -1 unrunnable, 0 runnable, >0 stopped */	//×´Ì¬
-	long counter;	//Ê±¼äÆ¬¼ÆÊı
-	long priority;	//ÓÅÏÈ¼¶£¬ÓÃÓÚ·ÖÅäcounter£¬0ºÅ½ø³ÌÄ¬ÈÏÖµÊÇ15
-	long signal;	//ĞÅºÅÎ»Í¼
-	struct sigaction sigaction[32];	//ĞÅºÅ´¦Àí
-	long blocked;	/* bitmap of masked signals */ //Ò»±íÊ¾ÆÁ±Î£¬Áã±íÊ¾ÓĞĞ§
+	long state;	/* -1 unrunnable, 0 runnable, >0 stopped */	//çŠ¶æ€
+	long counter;	//æ—¶é—´ç‰‡è®¡æ•°
+	long priority;	//ä¼˜å…ˆçº§ï¼Œç”¨äºåˆ†é…counterï¼Œ0å·è¿›ç¨‹é»˜è®¤å€¼æ˜¯15
+	long signal;	//ä¿¡å·ä½å›¾
+	struct sigaction sigaction[32];	//ä¿¡å·å¤„ç†
+	long blocked;	/* bitmap of masked signals */ //ä¸€è¡¨ç¤ºå±è”½ï¼Œé›¶è¡¨ç¤ºæœ‰æ•ˆ
 /* various fields */
-	int exit_code;	//½ø³ÌÍË³öºóµÄÍË³öÂë£¬½»¸ø´¦ÀíËûÊ¬ÌåµÄ½ø³Ì
-	unsigned long start_code,end_code,end_data,brk,start_stack;	//ÄÚ´æ·ÖÅä
-	long pid,father,pgrp,session,leader;	//½ø³Ìid
-	unsigned short uid,euid,suid;	//ÓÃ»§È¨ÏŞid
-	unsigned short gid,egid,sgid;	//ÓÃ»§×éÈ¨ÏŞid
-	long alarm;	//¸æ¾¯¼ÆÊı
-	long utime,stime,cutime,cstime,start_time;	//ÔËĞĞÊ±¼ä
-	unsigned short used_math;	//ÊıÑ§Ğ­´¦ÀíÆ÷
+	int exit_code;	//è¿›ç¨‹é€€å‡ºåçš„é€€å‡ºç ï¼Œäº¤ç»™å¤„ç†ä»–å°¸ä½“çš„è¿›ç¨‹
+	unsigned long start_code,end_code,end_data,brk,start_stack;	//å†…å­˜åˆ†é…
+	long pid,father,pgrp,session,leader;	//è¿›ç¨‹id
+	unsigned short uid,euid,suid;	//ç”¨æˆ·æƒé™id
+	unsigned short gid,egid,sgid;	//ç”¨æˆ·ç»„æƒé™id
+	long alarm;	//å‘Šè­¦è®¡æ•°
+	long utime,stime,cutime,cstime,start_time;	//è¿è¡Œæ—¶é—´
+	unsigned short used_math;	//æ•°å­¦åå¤„ç†å™¨
 /* file system info */
 	int tty;		/* -1 if no tty, so it must be signed */
-	unsigned short umask;	//ÓÃ»§È¨ÏŞµÄÑÚÂë
-	struct m_inode * pwd;	//µ±Ç°¹¤×÷Ä¿Â¼
-	struct m_inode * root;	//ÓÃ»§µÄ¸ùÄ¿Â¼
-	struct m_inode * executable;	//Ö´ĞĞ³ÌĞòÎÄ¼şµÄinode
+	unsigned short umask;	//ç”¨æˆ·æƒé™çš„æ©ç 
+	struct m_inode * pwd;	//å½“å‰å·¥ä½œç›®å½•
+	struct m_inode * root;	//ç”¨æˆ·çš„æ ¹ç›®å½•
+	struct m_inode * executable;	//æ‰§è¡Œç¨‹åºæ–‡ä»¶çš„inode
 	unsigned long close_on_exec;	//
-	struct file * filp[NR_OPEN];	//´ò¿ªµÄÎÄ¼şÖ¸Õë
+	struct file * filp[NR_OPEN];	//æ‰“å¼€çš„æ–‡ä»¶æŒ‡é’ˆ
 /* ldt for this task 0 - zero 1 - cs 2 - ds&ss */
 	struct desc_struct ldt[3];	//cs ds ss
 /* tss for this task */
@@ -167,10 +167,10 @@ struct task_struct {
  * your own risk!. Base=0, limit=0x9ffff (=640kB)
  */
 /*
- * INIT_TASK ÓÃÓÚÉèÖÃµÚ 1 ¸öÈÎÎñ±í£¬ÈôÏëĞŞ¸Ä£¬ÔğÈÎ×Ô¸º?£¡
- * »ùÖ· Base = 0£¬¶Î³¤ limit = 0x9ffff£¨=640kB£©¡£
+ * INIT_TASK ç”¨äºè®¾ç½®ç¬¬ 1 ä¸ªä»»åŠ¡è¡¨ï¼Œè‹¥æƒ³ä¿®æ”¹ï¼Œè´£ä»»è‡ªè´Ÿ?ï¼
+ * åŸºå€ Base = 0ï¼Œæ®µé•¿ limit = 0x9ffffï¼ˆ=640kBï¼‰ã€‚
  */
-// ¶ÔÓ¦ÉÏÃæÈÎÎñ½á¹¹µÄµÚ 1 ¸öÈÎÎñµÄĞÅÏ¢¡£
+// å¯¹åº”ä¸Šé¢ä»»åŠ¡ç»“æ„çš„ç¬¬ 1 ä¸ªä»»åŠ¡çš„ä¿¡æ¯ã€‚
 #define INIT_TASK \
 /* state etc */	{ 0,15,15, \
 /* signals */	0,{{},},0, \
@@ -194,13 +194,13 @@ struct task_struct {
 	}, \
 }
 
-extern struct task_struct *task[NR_TASKS];		// ÈÎÎñÊı×é¡£
-extern struct task_struct *last_task_used_math;	// ÉÏÒ»¸öÊ¹ÓÃ¹ıĞ­´¦ÀíÆ÷µÄ½ø³Ì¡£
-extern struct task_struct *current;				// µ±Ç°½ø³Ì½á¹¹Ö¸Õë±äÁ¿¡£
-extern long volatile jiffies;					// ´Ó¿ª»ú¿ªÊ¼ËãÆğµÄµÎ´ğÊı£¨10ms/µÎ´ğ£©¡£
-extern long startup_time;						// ¿ª»úÊ±¼ä¡£´Ó 1970:0:0:0 ¿ªÊ¼¼ÆÊ±µÄÃëÊı¡£
+extern struct task_struct *task[NR_TASKS];		// ä»»åŠ¡æ•°ç»„ã€‚
+extern struct task_struct *last_task_used_math;	// ä¸Šä¸€ä¸ªä½¿ç”¨è¿‡åå¤„ç†å™¨çš„è¿›ç¨‹ã€‚
+extern struct task_struct *current;				// å½“å‰è¿›ç¨‹ç»“æ„æŒ‡é’ˆå˜é‡ã€‚
+extern long volatile jiffies;					// ä»å¼€æœºå¼€å§‹ç®—èµ·çš„æ»´ç­”æ•°ï¼ˆ10ms/æ»´ç­”ï¼‰ã€‚
+extern long startup_time;						// å¼€æœºæ—¶é—´ã€‚ä» 1970:0:0:0 å¼€å§‹è®¡æ—¶çš„ç§’æ•°ã€‚
 
-#define CURRENT_TIME (startup_time+jiffies/HZ)	// µ±Ç°Ê±¼ä£¨ÃëÊı£©¡£
+#define CURRENT_TIME (startup_time+jiffies/HZ)	// å½“å‰æ—¶é—´ï¼ˆç§’æ•°ï¼‰ã€‚
 
 extern void add_timer(long jiffies, void (*fn)(void));
 extern void sleep_on(struct task_struct ** p);
@@ -212,25 +212,25 @@ extern void wake_up(struct task_struct ** p);
  * 4-TSS0, 5-LDT0, 6-TSS1 etc ...
  */
 /*
- * Ñ°ÕÒµÚ 1 ¸ö TSS ÔÚÈ«¾Ö±íÖĞµÄÈë¿Ú¡£0-Ã»ÓĞÓÃ nul£¬1-´úÂë¶Î cs£¬2-Êı¾İ¶Î ds£¬3-ÏµÍ³¶Î syscall
- * 4-ÈÎÎñ×´Ì¬¶Î TSS0£¬5-¾Ö²¿±í LTD0£¬6-ÈÎÎñ×´Ì¬¶Î TSS1£¬µÈ¡£
+ * å¯»æ‰¾ç¬¬ 1 ä¸ª TSS åœ¨å…¨å±€è¡¨ä¸­çš„å…¥å£ã€‚0-æ²¡æœ‰ç”¨ nulï¼Œ1-ä»£ç æ®µ csï¼Œ2-æ•°æ®æ®µ dsï¼Œ3-ç³»ç»Ÿæ®µ syscall
+ * 4-ä»»åŠ¡çŠ¶æ€æ®µ TSS0ï¼Œ5-å±€éƒ¨è¡¨ LTD0ï¼Œ6-ä»»åŠ¡çŠ¶æ€æ®µ TSS1ï¼Œç­‰ã€‚
  */
-// È«¾Ö±íÖĞµÚ 1 ¸öÈÎÎñ×´Ì¬¶Î(TSS)ÃèÊö·ûµÄÑ¡Ôñ·ûË÷ÒıºÅ¡£
+// å…¨å±€è¡¨ä¸­ç¬¬ 1 ä¸ªä»»åŠ¡çŠ¶æ€æ®µ(TSS)æè¿°ç¬¦çš„é€‰æ‹©ç¬¦ç´¢å¼•å·ã€‚
 #define FIRST_TSS_ENTRY 4
-// È«¾Ö±íÖĞµÚ 1 ¸ö¾Ö²¿ÃèÊö·û±í(LDT)ÃèÊö·ûµÄÑ¡Ôñ·ûË÷ÒıºÅ¡£
+// å…¨å±€è¡¨ä¸­ç¬¬ 1 ä¸ªå±€éƒ¨æè¿°ç¬¦è¡¨(LDT)æè¿°ç¬¦çš„é€‰æ‹©ç¬¦ç´¢å¼•å·ã€‚
 #define FIRST_LDT_ENTRY (FIRST_TSS_ENTRY+1)
-// ºê¶¨Òå£¬¼ÆËãÔÚÈ«¾Ö±íÖĞµÚ n ¸öÈÎÎñµÄ TSS ÃèÊö·ûµÄË÷ÒıºÅ£¨Ñ¡Ôñ·û£©¡£
-// ¸Ğ¾õËãµÄÊÇgdtÉÏµÄµÚ¼¸¸ö×Ö½Ú¡£µ«ÊÇÆäÊµ¾ÍÊÇindex x xxµÄĞÎÊ½¡£
+// å®å®šä¹‰ï¼Œè®¡ç®—åœ¨å…¨å±€è¡¨ä¸­ç¬¬ n ä¸ªä»»åŠ¡çš„ TSS æè¿°ç¬¦çš„ç´¢å¼•å·ï¼ˆé€‰æ‹©ç¬¦ï¼‰ã€‚
+// æ„Ÿè§‰ç®—çš„æ˜¯gdtä¸Šçš„ç¬¬å‡ ä¸ªå­—èŠ‚ã€‚ä½†æ˜¯å…¶å®å°±æ˜¯index x xxçš„å½¢å¼ã€‚
 #define _TSS(n) ((((unsigned long) n)<<4)+(FIRST_TSS_ENTRY<<3))
-// ºê¶¨Òå£¬¼ÆËãÔÚÈ«¾Ö±íÖĞµÚ n ¸öÈÎÎñµÄ LDT ÃèÊö·ûµÄË÷ÒıºÅ¡£
-// ¸Ğ¾õËãµÄÊÇgdtÉÏµÄµÚ¼¸¸ö×Ö½Ú¡£µ«ÊÇÆäÊµ¾ÍÊÇindex x xxµÄĞÎÊ½¡£
+// å®å®šä¹‰ï¼Œè®¡ç®—åœ¨å…¨å±€è¡¨ä¸­ç¬¬ n ä¸ªä»»åŠ¡çš„ LDT æè¿°ç¬¦çš„ç´¢å¼•å·ã€‚
+// æ„Ÿè§‰ç®—çš„æ˜¯gdtä¸Šçš„ç¬¬å‡ ä¸ªå­—èŠ‚ã€‚ä½†æ˜¯å…¶å®å°±æ˜¯index x xxçš„å½¢å¼ã€‚
 #define _LDT(n) ((((unsigned long) n)<<4)+(FIRST_LDT_ENTRY<<3))
-// ºê¶¨Òå£¬¼ÓÔØµÚ n ¸öÈÎÎñµÄÈÎÎñ¼Ä´æÆ÷ tr¡£
+// å®å®šä¹‰ï¼ŒåŠ è½½ç¬¬ n ä¸ªä»»åŠ¡çš„ä»»åŠ¡å¯„å­˜å™¨ trã€‚
 #define ltr(n) __asm__("ltr %%ax"::"a" (_TSS(n)))
-// ºê¶¨Òå£¬¼ÓÔØµÚ n ¸öÈÎÎñµÄ¾Ö²¿ÃèÊö·û±í¼Ä´æÆ÷ ldtr¡£
+// å®å®šä¹‰ï¼ŒåŠ è½½ç¬¬ n ä¸ªä»»åŠ¡çš„å±€éƒ¨æè¿°ç¬¦è¡¨å¯„å­˜å™¨ ldtrã€‚
 #define lldt(n) __asm__("lldt %%ax"::"a" (_LDT(n)))
-// È¡µ±Ç°ÔËĞĞÈÎÎñµÄÈÎÎñºÅ£¨ÊÇÈÎÎñÊı×éÖĞµÄË÷ÒıÖµ£¬Óë½ø³ÌºÅ pid ²»Í¬£©¡£
-// ·µ»Ø£ºn - µ±Ç°ÈÎÎñºÅ¡£
+// å–å½“å‰è¿è¡Œä»»åŠ¡çš„ä»»åŠ¡å·ï¼ˆæ˜¯ä»»åŠ¡æ•°ç»„ä¸­çš„ç´¢å¼•å€¼ï¼Œä¸è¿›ç¨‹å· pid ä¸åŒï¼‰ã€‚
+// è¿”å›ï¼šn - å½“å‰ä»»åŠ¡å·ã€‚
 #define str(n) \
 __asm__("str %%ax\n\t" \
 	"subl %2,%%eax\n\t" \
@@ -244,69 +244,69 @@ __asm__("str %%ax\n\t" \
  * tha math co-processor latest.
  */
 /*
- * switch_to(n)½«ÇĞ»»µ±Ç°ÈÎÎñµ½ÈÎÎñ nr£¬¼´ n¡£Ê×ÏÈ¼ì²âÈÎÎñ n ²»ÊÇµ±Ç°ÈÎÎñ£¬
- * Èç¹ûÊÇÔòÊ²Ã´Ò²²»×öÍË³ö¡£Èç¹ûÎÒÃÇÇĞ»»µ½µÄÈÎÎñ×î½ü£¨ÉÏ´ÎÔËĞĞ£©Ê¹ÓÃ¹ıÊıÑ§
- * Ğ­´¦ÀíÆ÷µÄ»°£¬Ôò»¹Ğè¸´Î»¿ØÖÆ¼Ä´æÆ÷ cr0 ÖĞµÄ TS ±êÖ¾¡£
+ * switch_to(n)å°†åˆ‡æ¢å½“å‰ä»»åŠ¡åˆ°ä»»åŠ¡ nrï¼Œå³ nã€‚é¦–å…ˆæ£€æµ‹ä»»åŠ¡ n ä¸æ˜¯å½“å‰ä»»åŠ¡ï¼Œ
+ * å¦‚æœæ˜¯åˆ™ä»€ä¹ˆä¹Ÿä¸åšé€€å‡ºã€‚å¦‚æœæˆ‘ä»¬åˆ‡æ¢åˆ°çš„ä»»åŠ¡æœ€è¿‘ï¼ˆä¸Šæ¬¡è¿è¡Œï¼‰ä½¿ç”¨è¿‡æ•°å­¦
+ * åå¤„ç†å™¨çš„è¯ï¼Œåˆ™è¿˜éœ€å¤ä½æ§åˆ¶å¯„å­˜å™¨ cr0 ä¸­çš„ TS æ ‡å¿—ã€‚
  */
-// Ìø×ªµ½Ò»¸öÈÎÎñµÄ TSS ¶ÎÑ¡Ôñ·û×é³ÉµÄµØÖ·´¦»áÔì³É CPU ½øĞĞÈÎÎñÇĞ»»²Ù×÷¡£
-// ljmp»á±£´æµ±Ç°µÄTSSÈ»ºó¸üĞÂĞÂµÄTSS£¬ÔÙÌø×ªµ½tssµÄip´¦Ö´ĞĞ´úÂë¡£
+// è·³è½¬åˆ°ä¸€ä¸ªä»»åŠ¡çš„ TSS æ®µé€‰æ‹©ç¬¦ç»„æˆçš„åœ°å€å¤„ä¼šé€ æˆ CPU è¿›è¡Œä»»åŠ¡åˆ‡æ¢æ“ä½œã€‚
+// ljmpä¼šä¿å­˜å½“å‰çš„TSSç„¶åæ›´æ–°æ–°çš„TSSï¼Œå†è·³è½¬åˆ°tssçš„ipå¤„æ‰§è¡Œä»£ç ã€‚
 #define switch_to(n) {\
 struct {long a,b;} __tmp; \
-__asm__("cmpl %%ecx,_current\n\t" \	// ÈÎÎñ n ÊÇµ±Ç°ÈÎÎñÂğ?(current ==task[n]?)
-	"je 1f\n\t" \					// ÊÇ£¬ÔòÊ²Ã´¶¼²»×ö£¬ÍË³ö¡£
-	"movw %%dx,%1\n\t" \			// ½«ĞÂÈÎÎñ 16 Î»Ñ¡Ôñ·û´æÈë__tmp.b ÖĞ¡£
-	"xchgl %%ecx,_current\n\t" \	// current = task[n]£»ecx = ±»ÇĞ»»³öµÄÈÎÎñ¡£
-	"ljmp %0\n\t" \					// Ö´ĞĞ³¤Ìø×ªÖÁ*&__tmp.a£¬Ôì³ÉÈÎÎñÇĞ»»¡£
-									// ÔÚÈÎÎñÇĞ»»»ØÀ´ºó²Å»á¼ÌĞøÖ´ĞĞÏÂÃæµÄÓï¾ä¡£
-	"cmpl %%ecx,_last_task_used_math\n\t" \	// ĞÂÈÎÎñÉÏ´ÎÊ¹ÓÃ¹ıĞ­´¦ÀíÆ÷Âğ£¿
-	"jne 1f\n\t" \							// Ã»ÓĞÔòÌø×ª£¬ÍË³ö¡£
-	"clts\n" \								// ĞÂÈÎÎñÉÏ´ÎÊ¹ÓÃ¹ıĞ­´¦ÀíÆ÷£¬ÔòÇå cr0 µÄ TS ±êÖ¾¡£
+__asm__("cmpl %%ecx,_current\n\t" \	// ä»»åŠ¡ n æ˜¯å½“å‰ä»»åŠ¡å—?(current ==task[n]?)
+	"je 1f\n\t" \					// æ˜¯ï¼Œåˆ™ä»€ä¹ˆéƒ½ä¸åšï¼Œé€€å‡ºã€‚
+	"movw %%dx,%1\n\t" \			// å°†æ–°ä»»åŠ¡ 16 ä½é€‰æ‹©ç¬¦å­˜å…¥__tmp.b ä¸­ã€‚
+	"xchgl %%ecx,_current\n\t" \	// current = task[n]ï¼›ecx = è¢«åˆ‡æ¢å‡ºçš„ä»»åŠ¡ã€‚
+	"ljmp %0\n\t" \					// æ‰§è¡Œé•¿è·³è½¬è‡³*&__tmp.aï¼Œé€ æˆä»»åŠ¡åˆ‡æ¢ã€‚
+									// åœ¨ä»»åŠ¡åˆ‡æ¢å›æ¥åæ‰ä¼šç»§ç»­æ‰§è¡Œä¸‹é¢çš„è¯­å¥ã€‚
+	"cmpl %%ecx,_last_task_used_math\n\t" \	// æ–°ä»»åŠ¡ä¸Šæ¬¡ä½¿ç”¨è¿‡åå¤„ç†å™¨å—ï¼Ÿ
+	"jne 1f\n\t" \							// æ²¡æœ‰åˆ™è·³è½¬ï¼Œé€€å‡ºã€‚
+	"clts\n" \								// æ–°ä»»åŠ¡ä¸Šæ¬¡ä½¿ç”¨è¿‡åå¤„ç†å™¨ï¼Œåˆ™æ¸… cr0 çš„ TS æ ‡å¿—ã€‚
 	"1:" \
 	::"m" (*&__tmp.a),"m" (*&__tmp.b), \
 	"d" (_TSS(n)),"c" ((long) task[n])); \
 }
 
-// Ò³ÃæµØÖ·¶Ô×¼¡££¨ÔÚÄÚºË´úÂëÖĞÃ»ÓĞÈÎºÎµØ·½ÒıÓÃ!!£©
+// é¡µé¢åœ°å€å¯¹å‡†ã€‚ï¼ˆåœ¨å†…æ ¸ä»£ç ä¸­æ²¡æœ‰ä»»ä½•åœ°æ–¹å¼•ç”¨!!ï¼‰
 #define PAGE_ALIGN(n) (((n)+0xfff)&0xfffff000)
 
-//Í¨¹ı¶Î»ùÖ·ÉèÖÃgdt»òldt
+//é€šè¿‡æ®µåŸºå€è®¾ç½®gdtæˆ–ldt
 #define _set_base(addr,base) \
-__asm__("movw %%dx,%0\n\t" \	// »ùÖ· base µÍ 16 Î»(Î» 15-0)-->[addr+2]¡£
-	"rorl $16,%%edx\n\t" \		// edx ÖĞ»ùÖ·¸ß 16 Î»(Î» 31-16)-->dx¡£
-	"movb %%dl,%1\n\t" \		// »ùÖ·¸ß 16 Î»ÖĞµÄµÍ 8 Î»(Î» 23-16)-->[addr+4]¡£
-	"movb %%dh,%2" \			// »ùÖ·¸ß 16 Î»ÖĞµÄ¸ß 8 Î»(Î» 31-24)-->[addr+7]¡£
+__asm__("movw %%dx,%0\n\t" \	// åŸºå€ base ä½ 16 ä½(ä½ 15-0)-->[addr+2]ã€‚
+	"rorl $16,%%edx\n\t" \		// edx ä¸­åŸºå€é«˜ 16 ä½(ä½ 31-16)-->dxã€‚
+	"movb %%dl,%1\n\t" \		// åŸºå€é«˜ 16 ä½ä¸­çš„ä½ 8 ä½(ä½ 23-16)-->[addr+4]ã€‚
+	"movb %%dh,%2" \			// åŸºå€é«˜ 16 ä½ä¸­çš„é«˜ 8 ä½(ä½ 31-24)-->[addr+7]ã€‚
 	::"m" (*((addr)+2)), \
 	  "m" (*((addr)+4)), \
 	  "m" (*((addr)+7)), \
 	  "d" (base) \
 	:"dx")
 
-//Í¨¹ı¶Î»ùÖ·ÉèÖÃgdt»òldt
+//é€šè¿‡æ®µåŸºå€è®¾ç½®gdtæˆ–ldt
 #define _set_limit(addr,limit) \
-__asm__("movw %%dx,%0\n\t" \		// ¶Î³¤ limit µÍ 16 Î»(Î» 15-0)-->[addr]¡£
-	"rorl $16,%%edx\n\t" \			// edx ÖĞµÄ¶Î³¤¸ß 4 Î»(Î» 19-16)-->dl¡£
-	"movb %1,%%dh\n\t" \			// È¡Ô­[addr+6]×Ö½Ú-->dh£¬ÆäÖĞ¸ß 4 Î»ÊÇĞ©±êÖ¾¡£
-	"andb $0xf0,%%dh\n\t" \			// Çå dh µÄµÍ 4 Î»(½«´æ·Å¶Î³¤µÄÎ» 19-16)¡£
-	"orb %%dh,%%dl\n\t" \			// ½«Ô­¸ß 4 Î»±êÖ¾ºÍ¶Î³¤µÄ¸ß 4 Î»(Î» 19-16)ºÏ³É 1 ×Ö½Ú£¬
-	"movb %%dl,%1" \				// ²¢·Å»á[addr+6]´¦¡£
+__asm__("movw %%dx,%0\n\t" \		// æ®µé•¿ limit ä½ 16 ä½(ä½ 15-0)-->[addr]ã€‚
+	"rorl $16,%%edx\n\t" \			// edx ä¸­çš„æ®µé•¿é«˜ 4 ä½(ä½ 19-16)-->dlã€‚
+	"movb %1,%%dh\n\t" \			// å–åŸ[addr+6]å­—èŠ‚-->dhï¼Œå…¶ä¸­é«˜ 4 ä½æ˜¯äº›æ ‡å¿—ã€‚
+	"andb $0xf0,%%dh\n\t" \			// æ¸… dh çš„ä½ 4 ä½(å°†å­˜æ”¾æ®µé•¿çš„ä½ 19-16)ã€‚
+	"orb %%dh,%%dl\n\t" \			// å°†åŸé«˜ 4 ä½æ ‡å¿—å’Œæ®µé•¿çš„é«˜ 4 ä½(ä½ 19-16)åˆæˆ 1 å­—èŠ‚ï¼Œ
+	"movb %%dl,%1" \				// å¹¶æ”¾ä¼š[addr+6]å¤„ã€‚
 	::"m" (*(addr)), \
 	  "m" (*((addr)+6)), \
 	  "d" (limit) \
 	:"dx")
 
-// ÉèÖÃ¾Ö²¿ÃèÊö·û±íÖĞ ldt ÃèÊö·ûµÄ»ùµØÖ·×Ö¶Î¡£
+// è®¾ç½®å±€éƒ¨æè¿°ç¬¦è¡¨ä¸­ ldt æè¿°ç¬¦çš„åŸºåœ°å€å­—æ®µã€‚
 #define set_base(ldt,base) _set_base( ((char *)&(ldt)) , base )
-// ÉèÖÃ¾Ö²¿ÃèÊö·û±íÖĞ ldt ÃèÊö·ûµÄ¶Î³¤×Ö¶Î¡£
+// è®¾ç½®å±€éƒ¨æè¿°ç¬¦è¡¨ä¸­ ldt æè¿°ç¬¦çš„æ®µé•¿å­—æ®µã€‚
 #define set_limit(ldt,limit) _set_limit( ((char *)&(ldt)) , (limit-1)>>12 )
 
-//µÃµ½¶Î»ùÖ·£¬¹¦ÄÜÓë_set_base()ÕıºÃÏà·´¡£
+//å¾—åˆ°æ®µåŸºå€ï¼ŒåŠŸèƒ½ä¸_set_base()æ­£å¥½ç›¸åã€‚
 #define _get_base(addr) ({\
 unsigned long __base; \
-__asm__("movb %3,%%dh\n\t" \	// È¡[addr+7]´¦»ùÖ·¸ß 16 Î»µÄ¸ß 8 Î»(Î» 31-24)-->dh¡£
-	"movb %2,%%dl\n\t" \		// È¡[addr+4]´¦»ùÖ·¸ß 16 Î»µÄµÍ 8 Î»(Î» 23-16)-->dl¡£
-	"shll $16,%%edx\n\t" \		// »ùµØÖ·¸ß 16 Î»ÒÆµ½ edx ÖĞ¸ß 16 Î»´¦¡£
-	"movw %1,%%dx" \			// È¡[addr+2]´¦»ùÖ·µÍ 16 Î»(Î» 15-0)-->dx¡£
-	:"=d" (__base) \			// ´Ó¶ø edx ÖĞº¬ÓĞ 32 Î»µÄ¶Î»ùµØÖ·¡£
+__asm__("movb %3,%%dh\n\t" \	// å–[addr+7]å¤„åŸºå€é«˜ 16 ä½çš„é«˜ 8 ä½(ä½ 31-24)-->dhã€‚
+	"movb %2,%%dl\n\t" \		// å–[addr+4]å¤„åŸºå€é«˜ 16 ä½çš„ä½ 8 ä½(ä½ 23-16)-->dlã€‚
+	"shll $16,%%edx\n\t" \		// åŸºåœ°å€é«˜ 16 ä½ç§»åˆ° edx ä¸­é«˜ 16 ä½å¤„ã€‚
+	"movw %1,%%dx" \			// å–[addr+2]å¤„åŸºå€ä½ 16 ä½(ä½ 15-0)-->dxã€‚
+	:"=d" (__base) \			// ä»è€Œ edx ä¸­å«æœ‰ 32 ä½çš„æ®µåŸºåœ°å€ã€‚
 	:"m" (*((addr)+2)), \
 	 "m" (*((addr)+4)), \
 	 "m" (*((addr)+7))); \
@@ -314,10 +314,10 @@ __base;})
 
 #define get_base(ldt) _get_base( ((char *)&(ldt)) )
 
-//µÃµ½¶ÎÏŞ³¤
-// Ö¸Áî lsl ÊÇ Load Segment Limit ËõĞ´¡£Ëü´ÓÖ¸¶¨¶ÎÃèÊö·ûÖĞÈ¡³ö·ÖÉ¢µÄÏŞ³¤±ÈÌØÎ»Æ´³ÉÍêÕûµÄ
-// ¶ÎÏŞ³¤Öµ·ÅÈëÖ¸¶¨¼Ä´æÆ÷ÖĞ¡£ËùµÃµÄ¶ÎÏŞ³¤ÊÇÊµ¼Ê×Ö½ÚÊı¼õ 1£¬Òò´ËÕâÀï»¹ĞèÒª¼Ó 1 ºó²Å·µ»Ø¡£
-// %0 - ´æ·Å¶Î³¤Öµ(×Ö½ÚÊı)£»%1 - ¶ÎÑ¡Ôñ·û segment¡£
+//å¾—åˆ°æ®µé™é•¿
+// æŒ‡ä»¤ lsl æ˜¯ Load Segment Limit ç¼©å†™ã€‚å®ƒä»æŒ‡å®šæ®µæè¿°ç¬¦ä¸­å–å‡ºåˆ†æ•£çš„é™é•¿æ¯”ç‰¹ä½æ‹¼æˆå®Œæ•´çš„
+// æ®µé™é•¿å€¼æ”¾å…¥æŒ‡å®šå¯„å­˜å™¨ä¸­ã€‚æ‰€å¾—çš„æ®µé™é•¿æ˜¯å®é™…å­—èŠ‚æ•°å‡ 1ï¼Œå› æ­¤è¿™é‡Œè¿˜éœ€è¦åŠ  1 åæ‰è¿”å›ã€‚
+// %0 - å­˜æ”¾æ®µé•¿å€¼(å­—èŠ‚æ•°)ï¼›%1 - æ®µé€‰æ‹©ç¬¦ segmentã€‚
 #define get_limit(segment) ({ \
 unsigned long __limit; \
 __asm__("lsll %1,%0\n\tincl %0":"=r" (__limit):"r" (segment)); \

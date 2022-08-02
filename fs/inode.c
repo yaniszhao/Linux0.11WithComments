@@ -12,13 +12,13 @@
 #include <linux/mm.h>
 #include <asm/system.h>
 
-struct m_inode inode_table[NR_INODE]={{0,},};	// �ڴ��� i �ڵ����NR_INODE=32 �
+struct m_inode inode_table[NR_INODE]={{0,},};	// 内存中 i 节点表（NR_INODE=32 项）
 
 static void read_inode(struct m_inode * inode);
 static void write_inode(struct m_inode * inode);
 
-// �ȴ�ָ���� i �ڵ���á�
-// ��� i �ڵ��ѱ��������򽫵�ǰ������Ϊ�����жϵĵȴ�״̬��ֱ���� i �ڵ������
+// 等待指定的 i 节点可用。
+// 如果 i 节点已被锁定，则将当前任务置为不可中断的等待状态。直到该 i 节点解锁。
 static inline void wait_on_inode(struct m_inode * inode)
 {
 	cli();
@@ -27,27 +27,27 @@ static inline void wait_on_inode(struct m_inode * inode)
 	sti();
 }
 
-// ��ָ���� i �ڵ�����������ָ���� i �ڵ㣩��
-// ��� i �ڵ��ѱ��������򽫵�ǰ������Ϊ�����жϵĵȴ�״̬��ֱ���� i �ڵ������Ȼ�����������
+// 对指定的 i 节点上锁（锁定指定的 i 节点）。
+// 如果 i 节点已被锁定，则将当前任务置为不可中断的等待状态。直到该 i 节点解锁，然后对其上锁。
 static inline void lock_inode(struct m_inode * inode)
 {
 	cli();
 	while (inode->i_lock)
 		sleep_on(&inode->i_wait);
-	inode->i_lock=1;	// ����
+	inode->i_lock=1;	// 上锁
 	sti();
 }
 
-// ��ָ���� i �ڵ������
-// ��λ i �ڵ��������־������ȷ�ػ��ѵȴ��� i �ڵ�Ľ��̡�
+// 对指定的 i 节点解锁。
+// 复位 i 节点的锁定标志，并明确地唤醒等待此 i 节点的进程。
 static inline void unlock_inode(struct m_inode * inode)
 {
 	inode->i_lock=0;
 	wake_up(&inode->i_wait);
 }
 
-// �ͷ��ڴ����豸 dev ������ i �ڵ㡣
-// ɨ���ڴ��е� i �ڵ�����飬�����ָ���豸ʹ�õ� i �ڵ���ͷ�֮��
+// 释放内存中设备 dev 的所有 i 节点。
+// 扫描内存中的 i 节点表数组，如果是指定设备使用的 i 节点就释放之。
 void invalidate_inodes(int dev)
 {
 	int i;
@@ -57,15 +57,15 @@ void invalidate_inodes(int dev)
 	for(i=0 ; i<NR_INODE ; i++,inode++) {
 		wait_on_inode(inode);
 		if (inode->i_dev == dev) {
-			if (inode->i_count)	// �������������Ϊ 0������ʾ�������棻
+			if (inode->i_count)	// 如果其引用数不为 0，则显示出错警告；
 				printk("inode in use on removed disk\n\r");
 			inode->i_dev = inode->i_dirt = 0;
 		}
 	}
 }
 
-// ͬ������ i �ڵ㡣�� i �ڵ�����д����ٻ��塣
-// ͬ���ڴ����豸�ϵ����� i �ڵ���Ϣ��
+// 同步所有 i 节点。将 i 节点数据写入高速缓冲。
+// 同步内存与设备上的所有 i 节点信息。
 void sync_inodes(void)
 {
 	int i;
@@ -74,30 +74,30 @@ void sync_inodes(void)
 	inode = 0+inode_table;
 	for(i=0 ; i<NR_INODE ; i++,inode++) {
 		wait_on_inode(inode);
-		if (inode->i_dirt && !inode->i_pipe)	// ����� i �ڵ����޸��Ҳ��ǹܵ��ڵ㣬
-			write_inode(inode);					// ��д
+		if (inode->i_dirt && !inode->i_pipe)	// 如果该 i 节点已修改且不是管道节点，
+			write_inode(inode);					// 回写
 	}
 }
 
-// �ļ����ݿ�ӳ�䵽�̿�Ĵ���������(block λͼ����������bmap - block map)
-// ������inode �C �ļ��� i �ڵ㣻block �C �ļ��е����ݿ�ţ�create - ������־��
-// ���������־��λ�����ڶ�Ӧ�߼��鲻����ʱ�������´��̿顣
-// ���� block ���ݿ��Ӧ���豸�ϵ��߼���ţ��̿�ţ���
+// 文件数据块映射到盘块的处理操作。(block 位图处理函数，bmap - block map)
+// 参数：inode  文件的 i 节点；block  文件中的数据块号；create - 创建标志。
+// 如果创建标志置位，则在对应逻辑块不存在时就申请新磁盘块。
+// 返回 block 数据块对应在设备上的逻辑块号（盘块号）。
 static int _bmap(struct m_inode * inode,int block,int create)
 {
 	struct buffer_head * bh;
 	int i;
 
-	if (block<0)	//���block���ļ����ݶ�Ӧ���߼����
+	if (block<0)	//这个block是文件内容对应的逻辑块号
 		panic("_bmap: block<0");
-	// �����Ŵ���ֱ�ӿ��� + ��ӿ��� + ���μ�ӿ����������ļ�ϵͳ��ʾ��Χ����������
+	// 如果块号大于直接块数 + 间接块数 + 二次间接块数，超出文件系统表示范围，则死机。
 	if (block >= 7+512+512*512)	
 		panic("_bmap: block>big");
-	// ����ÿ��С�� 7����ʹ��ֱ�ӿ��ʾ��
+	// 如果该块号小于 7，则使用直接块表示。
 	if (block<7) {
-		// ���������־��λ������ i �ڵ��ж�Ӧ�ÿ���߼��飨���Σ��ֶ�Ϊ 0��
-		// ������Ӧ�豸����һ���̿飨�߼��飬���飩�����������߼���ţ��̿�ţ������߼����ֶ��С�
-		// Ȼ������ i �ڵ��޸�ʱ�䣬�� i �ڵ����޸ı�־����󷵻��߼���š�
+		// 如果创建标志置位，并且 i 节点中对应该块的逻辑块（区段）字段为 0，
+		// 则向相应设备申请一磁盘块（逻辑块，区块），并将盘上逻辑块号（盘块号）填入逻辑块字段中。
+		// 然后设置 i 节点修改时间，置 i 节点已修改标志。最后返回逻辑块号。
 		if (create && !inode->i_zone[block])
 			if (inode->i_zone[block]=new_block(inode->i_dev)) {
 				inode->i_ctime=CURRENT_TIME;
@@ -105,95 +105,95 @@ static int _bmap(struct m_inode * inode,int block,int create)
 			}
 		return inode->i_zone[block];
 	}
-	// ����ÿ��>=7������С�� 7+512����˵����һ�μ�ӿ顣�����һ�μ�ӿ���д�����
+	// 如果该块号>=7，并且小于 7+512，则说明是一次间接块。下面对一次间接块进行处理。
 	block -= 7;
 	if (block<512) {
-		// ����Ǵ��������Ҹ� i �ڵ��ж�Ӧ��ӿ��ֶ�Ϊ 0�������ļ����״�ʹ�ü�ӿ飬��������
-		// һ���̿����ڴ�ż�ӿ���Ϣ��������ʵ�ʴ��̿�������ӿ��ֶ��С�Ȼ������ i �ڵ�
-		// ���޸ı�־���޸�ʱ�䡣
+		// 如果是创建，并且该 i 节点中对应间接块字段为 0，表明文件是首次使用间接块，则需申请
+		// 一磁盘块用于存放间接块信息，并将此实际磁盘块号填入间接块字段中。然后设置 i 节点
+		// 已修改标志和修改时间。
 		if (create && !inode->i_zone[7])
 			if (inode->i_zone[7]=new_block(inode->i_dev)) {
 				inode->i_dirt=1;
 				inode->i_ctime=CURRENT_TIME;
 			}
-		// ����ʱ i �ڵ��ӿ��ֶ���Ϊ 0������������̿�ʧ�ܣ����� 0 �˳���
+		// 若此时 i 节点间接块字段中为 0，表明申请磁盘块失败，返回 0 退出。
 		if (!inode->i_zone[7])
 			return 0;
-		// ��ȡ�豸�ϵ�һ�μ�ӿ顣
+		// 读取设备上的一次间接块。
 		if (!(bh = bread(inode->i_dev,inode->i_zone[7])))
 			return 0;
-		// ȡ�ü�ӿ��ϵ� block ���е��߼���ţ��̿�ţ���
+		// 取该间接块上第 block 项中的逻辑块号（盘块号）。
 		i = ((unsigned short *) (bh->b_data))[block];
-		// ����Ǵ������Ҽ�ӿ�ĵ� block ���е��߼����Ϊ 0 �Ļ���������һ���̿飨�߼��飩��
-		// ���ü�ӿ��еĵ� block ����ڸ����߼����š�Ȼ����λ��ӿ�����޸ı�־��
+		// 如果是创建并且间接块的第 block 项中的逻辑块号为 0 的话，则申请一磁盘块（逻辑块），
+		// 并让间接块中的第 block 项等于该新逻辑块块号。然后置位间接块的已修改标志。
 		if (create && !i)
 			if (i=new_block(inode->i_dev)) {
 				((unsigned short *) (bh->b_data))[block]=i;
 				bh->b_dirt=1;
 			}
-		// ����ͷŸü�ӿ飬���ش�����������Ķ�Ӧ block ���߼���Ŀ�š�
+		// 最后释放该间接块，返回磁盘上新申请的对应 block 的逻辑块的块号。
 		brelse(bh);
 		return i;
 	}
-	// �������е��ˣ��������ݿ��Ƕ��μ�ӿ飬����������һ�μ�ӿ����ơ�
-	// �����ǶԶ��μ�ӿ�Ĵ������� block �ټ�ȥ��ӿ������ɵĿ���(512)��
+	// 程序运行到此，表明数据块是二次间接块，处理过程与一次间接块类似。
+	// 下面是对二次间接块的处理。将 block 再减去间接块所容纳的块数(512)。
 	block -= 512;
-	// ������´������� i �ڵ�Ķ��μ�ӿ��ֶ�Ϊ 0����������һ���̿����ڴ�Ŷ��μ�ӿ��һ����
-	// ��Ϣ��������ʵ�ʴ��̿��������μ�ӿ��ֶ��С�֮���� i �ڵ����޸ı��ƺ��޸�ʱ�䡣
+	// 如果是新创建并且 i 节点的二次间接块字段为 0，则需申请一磁盘块用于存放二次间接块的一级块
+	// 信息，并将此实际磁盘块号填入二次间接块字段中。之后，置 i 节点已修改编制和修改时间。
 	if (create && !inode->i_zone[8])
 		if (inode->i_zone[8]=new_block(inode->i_dev)) {
 			inode->i_dirt=1;
 			inode->i_ctime=CURRENT_TIME;
 		}
-	// ����ʱ i �ڵ���μ�ӿ��ֶ�Ϊ 0������������̿�ʧ�ܣ����� 0 �˳���
+	// 若此时 i 节点二次间接块字段为 0，表明申请磁盘块失败，返回 0 退出。
 	if (!inode->i_zone[8])
 		return 0;
-	// ��ȡ�ö��μ�ӿ��һ���顣
+	// 读取该二次间接块的一级块。
 	if (!(bh=bread(inode->i_dev,inode->i_zone[8])))
 		return 0;
-	// ȡ�ö��μ�ӿ��һ�����ϵ�(block/512)���е��߼���š�
+	// 取该二次间接块的一级块上第(block/512)项中的逻辑块号。
 	i = ((unsigned short *)bh->b_data)[block>>9];
-	// ����Ǵ������Ҷ��μ�ӿ��һ�����ϵ�(block/512)���е��߼����Ϊ 0 �Ļ�����������һ����
-	// �飨�߼��飩��Ϊ���μ�ӿ�Ķ����飬���ö��μ�ӿ��һ�����е�(block/512)����ڸö���
-	// ��Ŀ�š�Ȼ����λ���μ�ӿ��һ�������޸ı�־�����ͷŶ��μ�ӿ��һ���顣
+	// 如果是创建并且二次间接块的一级块上第(block/512)项中的逻辑块号为 0 的话，则需申请一磁盘
+	// 块（逻辑块）作为二次间接块的二级块，并让二次间接块的一级块中第(block/512)项等于该二级
+	// 块的块号。然后置位二次间接块的一级块已修改标志。并释放二次间接块的一级块。
 	if (create && !i)
 		if (i=new_block(inode->i_dev)) {
 			((unsigned short *) (bh->b_data))[block>>9]=i;
 			bh->b_dirt=1;
 		}
 	brelse(bh);
-	if (!i)	// ������μ�ӿ�Ķ�������Ϊ 0����ʾ������̿�ʧ�ܣ����� 0 �˳���
+	if (!i)	// 如果二次间接块的二级块块号为 0，表示申请磁盘块失败，返回 0 退出。
 		return 0;
-	if (!(bh=bread(inode->i_dev,i)))	// ��ȡ���μ�ӿ�Ķ����顣
+	if (!(bh=bread(inode->i_dev,i)))	// 读取二次间接块的二级块。
 		return 0;
-	// ȡ�ö������ϵ� block ���е��߼���š�(���� 511 ��Ϊ���޶� block ֵ������ 511)
+	// 取该二级块上第 block 项中的逻辑块号。(与上 511 是为了限定 block 值不超过 511)
 	i = ((unsigned short *)bh->b_data)[block&511];
-	// ����Ǵ������Ҷ�����ĵ� block ���е��߼����Ϊ 0 �Ļ���������һ���̿飨�߼��飩��
-	// ��Ϊ���մ��������Ϣ�Ŀ顣���ö������еĵ� block ����ڸ����߼�����(i)��
-	// Ȼ����λ����������޸ı�־��
+	// 如果是创建并且二级块的第 block 项中的逻辑块号为 0 的话，则申请一磁盘块（逻辑块），
+	// 作为最终存放数据信息的块。并让二级块中的第 block 项等于该新逻辑块块号(i)。
+	// 然后置位二级块的已修改标志。
 	if (create && !i)
 		if (i=new_block(inode->i_dev)) {
 			((unsigned short *) (bh->b_data))[block&511]=i;
 			bh->b_dirt=1;
 		}
-	// ����ͷŸö��μ�ӿ�Ķ����飬���ش�����������Ķ�Ӧ block ���߼���Ŀ�š�
+	// 最后释放该二次间接块的二级块，返回磁盘上新申请的对应 block 的逻辑块的块号。
 	brelse(bh);
 	return i;
 }
 
-// ���� i �ڵ���Ϣȡ�ļ����ݿ� block ���豸�϶�Ӧ���߼���š�
+// 根据 i 节点信息取文件数据块 block 在设备上对应的逻辑块号。
 int bmap(struct m_inode * inode,int block)
 {
 	return _bmap(inode,block,0);
 }
 
-// �����ļ����ݿ� block ���豸�϶�Ӧ���߼��飬�������豸�϶�Ӧ���߼���š�
+// 创建文件数据块 block 在设备上对应的逻辑块，并返回设备上对应的逻辑块号。
 int create_block(struct m_inode * inode, int block)
 {
 	return _bmap(inode,block,1);
 }
 
-// �ͷ�һ�� i �ڵ�(��д���豸)��	
+// 释放一个 i 节点(回写入设备)。	
 void iput(struct m_inode * inode)
 {
 	if (!inode)
@@ -201,9 +201,9 @@ void iput(struct m_inode * inode)
 	wait_on_inode(inode);
 	if (!inode->i_count)
 		panic("iput: trying to free free inode");
-	// ����ǹܵ� i �ڵ㣬���ѵȴ��ùܵ��Ľ��̣����ô����� 1��������������򷵻ء�
-	// �����ͷŹܵ�ռ�õ��ڴ�ҳ�棬����λ�ýڵ�����ü���ֵ�����޸ı�־�͹ܵ���־�������ء�
-	// ���� pipe �ڵ㣬inode->i_size ����������ڴ�ҳ��ַ��
+	// 如果是管道 i 节点，则唤醒等待该管道的进程，引用次数减 1，如果还有引用则返回。
+	// 否则释放管道占用的内存页面，并复位该节点的引用计数值、已修改标志和管道标志，并返回。
+	// 对于 pipe 节点，inode->i_size 存放着物理内存页地址。
 	if (inode->i_pipe) {
 		wake_up(&inode->i_wait);
 		if (--inode->i_count)
@@ -214,41 +214,41 @@ void iput(struct m_inode * inode)
 		inode->i_pipe=0;
 		return;
 	}
-	// ��� i �ڵ��Ӧ���豸��=0���򽫴˽ڵ�����ü����ݼ� 1�����ء�
+	// 如果 i 节点对应的设备号=0，则将此节点的引用计数递减 1，返回。
 	if (!inode->i_dev) {
 		inode->i_count--;
 		return;
 	}
-	// ����ǿ��豸�ļ��� i �ڵ㣬��ʱ�߼����ֶ� 0 �����豸�ţ���ˢ�¸��豸�����ȴ� i �ڵ������
+	// 如果是块设备文件的 i 节点，此时逻辑块字段 0 中是设备号，则刷新该设备。并等待 i 节点解锁。
 	if (S_ISBLK(inode->i_mode)) {
 		sync_dev(inode->i_zone[0]);
 		wait_on_inode(inode);
 	}
 repeat:
-	// ��� i �ڵ�����ü������� 1����ݼ� 1��
+	// 如果 i 节点的引用计数大于 1，则递减 1。
 	if (inode->i_count>1) {
 		inode->i_count--;
 		return;
 	}
-	// ��� i �ڵ��������Ϊ 0�����ͷŸ� i �ڵ�������߼��飬���ͷŸ� i �ڵ㡣
+	// 如果 i 节点的链接数为 0，则释放该 i 节点的所有逻辑块，并释放该 i 节点。
 	if (!inode->i_nlinks) {
 		truncate(inode);
 		free_inode(inode);
 		return;
 	}
-	// ����� i �ڵ��������޸ģ�����¸� i �ڵ㣬���ȴ��� i �ڵ������
+	// 如果该 i 节点已作过修改，则更新该 i 节点，并等待该 i 节点解锁。
 	if (inode->i_dirt) {
 		write_inode(inode);	/* we can sleep - so do again */
 		wait_on_inode(inode);
 		goto repeat;
 	}
-	// i �ڵ����ü����ݼ� 1��
+	// i 节点引用计数递减 1。
 	inode->i_count--;
 	return;
 }
 
-// �� i �ڵ��(inode_table)�л�ȡһ������ i �ڵ��
-// Ѱ�����ü��� count Ϊ 0 �� i �ڵ㣬������д�̺����㣬������ָ�롣
+// 从 i 节点表(inode_table)中获取一个空闲 i 节点项。
+// 寻找引用计数 count 为 0 的 i 节点，并将其写盘后清零，返回其指针。
 struct m_inode * get_empty_inode(void)
 {
 	struct m_inode * inode;
@@ -258,19 +258,19 @@ struct m_inode * get_empty_inode(void)
 	do {
 		inode = NULL;
 		for (i = NR_INODE; i ; i--) {
-			// �ﵽѭ����Ŀ��
+			// 达到循环的目的
 			if (++last_inode >= inode_table + NR_INODE)
 				last_inode = inode_table;
-			// ��� last_inode ��ָ��� i �ڵ�ļ���ֵΪ 0����˵�������ҵ����� i �ڵ��
-			// �� inode ָ��� i �ڵ㡣����� i �ڵ�����޸ı�־��������־��Ϊ 0��
-			// �����ǿ���ʹ�ø� i �ڵ㣬�����˳�ѭ����
+			// 如果 last_inode 所指向的 i 节点的计数值为 0，则说明可能找到空闲 i 节点项。
+			// 让 inode 指向该 i 节点。如果该 i 节点的已修改标志和锁定标志均为 0，
+			// 则我们可以使用该 i 节点，于是退出循环。
 			if (!last_inode->i_count) {
 				inode = last_inode;
 				if (!inode->i_dirt && !inode->i_lock)
 					break;
 			}
 		}
-		// ���û���ҵ����� i �ڵ�(inode=NULL)�������� i �ڵ����ӡ����������ʹ�ã���������
+		// 如果没有找到空闲 i 节点(inode=NULL)，则将整个 i 节点表打印出来供调试使用，并死机。
 		if (!inode) {
 			for (i=0 ; i<NR_INODE ; i++)
 				printk("%04x: %6d\t",inode_table[i].i_dev,
@@ -278,8 +278,8 @@ struct m_inode * get_empty_inode(void)
 			panic("No free inodes in mem");
 		}
 		wait_on_inode(inode);
-		// ����� i �ڵ����޸ı�־����λ�Ļ����򽫸� i �ڵ�ˢ�£����ȴ��� i �ڵ������
-		// ��� i �ڵ��ֱ�����ռ�õĻ���������Ѱ�ҿ��� i �ڵ㡣
+		// 如果该 i 节点已修改标志被置位的话，则将该 i 节点刷新，并等待该 i 节点解锁。
+		// 如果 i 节点又被其它占用的话，则重新寻找空闲 i 节点。
 		while (inode->i_dirt) {
 			write_inode(inode);
 			wait_on_inode(inode);
@@ -290,45 +290,45 @@ struct m_inode * get_empty_inode(void)
 	return inode;
 }
 
-// ��ȡ�ܵ��ڵ㡣����Ϊ i �ڵ�ָ�루����� NULL ��ʧ�ܣ���
-// ����ɨ�� i �ڵ����Ѱ��һ������ i �ڵ��Ȼ��ȡ��һҳ�����ڴ湩�ܵ�ʹ�á�
-// Ȼ�󽫵õ��� i �ڵ�����ü�����Ϊ 2(���ߺ�д��)����ʼ���ܵ�ͷ��β���� i �ڵ�Ĺܵ����ͱ�ʾ��
+// 获取管道节点。返回为 i 节点指针（如果是 NULL 则失败）。
+// 首先扫描 i 节点表，寻找一个空闲 i 节点项，然后取得一页空闲内存供管道使用。
+// 然后将得到的 i 节点的引用计数置为 2(读者和写者)，初始化管道头和尾，置 i 节点的管道类型表示。
 struct m_inode * get_pipe_inode(void)
-{// ���������Ӧ���������ܵ�
+{// 这个创建的应该是无名管道
 	struct m_inode * inode;
 
-	if (!(inode = get_empty_inode()))			// ����Ҳ������� i �ڵ��򷵻� NULL��
+	if (!(inode = get_empty_inode()))			// 如果找不到空闲 i 节点则返回 NULL。
 		return NULL;
-	if (!(inode->i_size=get_free_page())) {		// �ڵ�� i_size �ֶ�ָ�򻺳�����
-		inode->i_count = 0;						// �����û�п����ڴ棬
-		return NULL;							// ���ͷŸ� i �ڵ㣬������ NULL��
+	if (!(inode->i_size=get_free_page())) {		// 节点的 i_size 字段指向缓冲区。
+		inode->i_count = 0;						// 如果已没有空闲内存，
+		return NULL;							// 则释放该 i 节点，并返回 NULL。
 	}
 	inode->i_count = 2;	/* sum of readers/writers */
-	PIPE_HEAD(*inode) = PIPE_TAIL(*inode) = 0;	// ��λ�ܵ�ͷβָ�롣
-	inode->i_pipe = 1;							// �ýڵ�Ϊ�ܵ�ʹ�õı�־��
-	return inode;								// ���� i �ڵ�ָ�롣
+	PIPE_HEAD(*inode) = PIPE_TAIL(*inode) = 0;	// 复位管道头尾指针。
+	inode->i_pipe = 1;							// 置节点为管道使用的标志。
+	return inode;								// 返回 i 节点指针。
 }
 
-// ���豸�϶�ȡָ���ڵ�ŵ� i �ڵ㡣
-// nr - i �ڵ�š�
+// 从设备上读取指定节点号的 i 节点。
+// nr - i 节点号。
 struct m_inode * iget(int dev,int nr)
 {
 	struct m_inode * inode, * empty;
 
 	if (!dev)
 		panic("iget with dev==0");
-	empty = get_empty_inode();	// �� i �ڵ����ȡһ������ i �ڵ㡣
-	inode = inode_table;		// ɨ�� i �ڵ����Ѱ��ָ���ڵ�ŵ� i �ڵ㡣�������ýڵ�����ô�����
+	empty = get_empty_inode();	// 从 i 节点表中取一个空闲 i 节点。
+	inode = inode_table;		// 扫描 i 节点表。寻找指定节点号的 i 节点。并递增该节点的引用次数。
 	while (inode < NR_INODE+inode_table) {
-		// �����ǰɨ��� i �ڵ���豸�Ų�����ָ�����豸�Ż��߽ڵ�Ų�����ָ���Ľڵ�ţ�
-		// �����ɨ�衣
+		// 如果当前扫描的 i 节点的设备号不等于指定的设备号或者节点号不等于指定的节点号，
+		// 则继续扫描。
 		if (inode->i_dev != dev || inode->i_num != nr) {
 			inode++;
 			continue;
 		}
 		wait_on_inode(inode);
-		// �ڵȴ��ýڵ�����Ľ׶Σ��ڵ�����ܻᷢ���仯�������ٴ��жϣ�
-		// ��������˱仯�����ٴ�����ɨ������ i �ڵ����
+		// 在等待该节点解锁的阶段，节点表可能会发生变化，所以再次判断，
+		// 如果发生了变化，则再次重新扫描整个 i 节点表。
 		if (inode->i_dev != dev || inode->i_num != nr) {
 			inode = inode_table;
 			continue;
@@ -336,8 +336,8 @@ struct m_inode * iget(int dev,int nr)
 		inode->i_count++;
 		if (inode->i_mount) {
 			int i;
-			// ����� i �ڵ��������ļ�ϵͳ�İ�װ�㣬���ڳ����������Ѱ��װ�ڴ� i �ڵ�ĳ����顣
-			// ���û���ҵ�������ʾ������Ϣ�����ͷź�����ʼ��ȡ�Ŀ��нڵ㣬���ظ� i �ڵ�ָ�롣
+			// 如果该 i 节点是其它文件系统的安装点，则在超级块表中搜寻安装在此 i 节点的超级块。
+			// 如果没有找到，则显示出错信息，并释放函数开始获取的空闲节点，返回该 i 节点指针。
 			for (i = 0 ; i<NR_SUPER ; i++)
 				if (super_block[i].s_imount==inode)
 					break;
@@ -347,20 +347,20 @@ struct m_inode * iget(int dev,int nr)
 					iput(empty);
 				return inode;
 			}
-			// ���� i �ڵ�д�̡��Ӱ�װ�ڴ� i �ڵ��ļ�ϵͳ�ĳ�������ȡ�豸�ţ����� i �ڵ��Ϊ 1��
-			// Ȼ������ɨ������ i �ڵ����ȡ�ñ���װ�ļ�ϵͳ�ĸ��ڵ㡣
+			// 将该 i 节点写盘。从安装在此 i 节点文件系统的超级块上取设备号，并令 i 节点号为 1。
+			// 然后重新扫描整个 i 节点表，取该被安装文件系统的根节点。
 			iput(inode);
 			dev = super_block[i].s_dev;
 			nr = ROOT_INO;
 			inode = inode_table;
 			continue;
 		}
-		if (empty)	// �Ѿ��ҵ���Ӧ�� i �ڵ㣬��˷�����ʱ����Ŀ��нڵ㣬���ظ��ҵ��� i �ڵ㡣
+		if (empty)	// 已经找到相应的 i 节点，因此放弃临时申请的空闲节点，返回该找到的 i 节点。
 			iput(empty);
 		return inode;
 	}
-	// ����� i �ڵ����û���ҵ�ָ���� i �ڵ㣬������ǰ������Ŀ��� i �ڵ��� i �ڵ���н����ýڵ㡣
-	// ������Ӧ�豸�϶�ȡ�� i �ڵ���Ϣ�����ظ� i �ڵ㡣
+	// 如果在 i 节点表中没有找到指定的 i 节点，则利用前面申请的空闲 i 节点在 i 节点表中建立该节点。
+	// 并从相应设备上读取该 i 节点信息。返回该 i 节点。
 	if (!empty)
 		return (NULL);
 	inode=empty;
@@ -370,22 +370,22 @@ struct m_inode * iget(int dev,int nr)
 	return inode;
 }
 
-// ���豸�϶�ȡָ�� i �ڵ����Ϣ���ڴ��У��������У���
+// 从设备上读取指定 i 节点的信息到内存中（缓冲区中）。
 static void read_inode(struct m_inode * inode)
 {
 	struct super_block * sb;
 	struct buffer_head * bh;
 	int block;
 	
-	// ���������� i �ڵ㣬ȡ�ýڵ������豸�ĳ����顣
+	// 首先锁定该 i 节点，取该节点所在设备的超级块。
 	lock_inode(inode);
 	if (!(sb=get_super(inode->i_dev)))
 		panic("trying to read inode without dev");
-	// �� i �ڵ����ڵ��߼���� = (������+������) + i �ڵ�λͼռ�õĿ��� + �߼���λͼռ�õĿ��� +
-	// (i �ڵ��-1)/ÿ�麬�е� i �ڵ�����
+	// 该 i 节点所在的逻辑块号 = (启动块+超级块) + i 节点位图占用的块数 + 逻辑块位图占用的块数 +
+	// (i 节点号-1)/每块含有的 i 节点数。
 	block = 2 + sb->s_imap_blocks + sb->s_zmap_blocks +
 		(inode->i_num-1)/INODES_PER_BLOCK;
-	// ���豸�϶�ȡ�� i �ڵ����ڵ��߼��飬������ inode ָ��ָ���Ӧ i �ڵ���Ϣ��
+	// 从设备上读取该 i 节点所在的逻辑块，并将该 inode 指针指向对应 i 节点信息。
 	if (!(bh=bread(inode->i_dev,block)))
 		panic("unable to read i-node block");
 	*(struct d_inode *)inode =
@@ -395,35 +395,35 @@ static void read_inode(struct m_inode * inode)
 	unlock_inode(inode);
 }
 
-// ��ָ�� i �ڵ���Ϣд���豸��д�뻺������Ӧ�Ļ�����У���������ˢ��ʱ��д�����У���
+// 将指定 i 节点信息写入设备（写入缓冲区相应的缓冲块中，待缓冲区刷新时会写入盘中）。
 static void write_inode(struct m_inode * inode)
 {
 	struct super_block * sb;
 	struct buffer_head * bh;
 	int block;
 
-	// ���������� i �ڵ㣬����� i �ڵ�û�б��޸Ĺ����߸� i �ڵ���豸�ŵ����㣬
-	// ������� i �ڵ㣬���˳���
+	// 首先锁定该 i 节点，如果该 i 节点没有被修改过或者该 i 节点的设备号等于零，
+	// 则解锁该 i 节点，并退出。
 	lock_inode(inode);
 	if (!inode->i_dirt || !inode->i_dev) {
 		unlock_inode(inode);
 		return;
 	}
-	// ��ȡ�� i �ڵ�ĳ����顣
+	// 获取该 i 节点的超级块。
 	if (!(sb=get_super(inode->i_dev)))
 		panic("trying to write inode without device");
-	// �� i �ڵ����ڵ��߼���� = (������+������) + i �ڵ�λͼռ�õĿ��� + �߼���λͼռ�õĿ��� +
-	// (i �ڵ��-1)/ÿ�麬�е� i �ڵ�����
+	// 该 i 节点所在的逻辑块号 = (启动块+超级块) + i 节点位图占用的块数 + 逻辑块位图占用的块数 +
+	// (i 节点号-1)/每块含有的 i 节点数。
 	block = 2 + sb->s_imap_blocks + sb->s_zmap_blocks +
 		(inode->i_num-1)/INODES_PER_BLOCK;
-	// ���豸�϶�ȡ�� i �ڵ����ڵ��߼��顣
+	// 从设备上读取该 i 节点所在的逻辑块。
 	if (!(bh=bread(inode->i_dev,block)))
 		panic("unable to read i-node block");
-	// ���� i �ڵ���Ϣ���Ƶ��߼����Ӧ�� i �ڵ�����С�
+	// 将该 i 节点信息复制到逻辑块对应该 i 节点的项中。
 	((struct d_inode *)bh->b_data)
 		[(inode->i_num-1)%INODES_PER_BLOCK] =
 			*(struct d_inode *)inode;
-	// �û��������޸ı�־���� i �ڵ��޸ı�־���㡣Ȼ���ͷŸú��� i �ڵ�Ļ��������������� i �ڵ㡣
+	// 置缓冲区已修改标志，而 i 节点修改标志置零。然后释放该含有 i 节点的缓冲区，并解锁该 i 节点。
 	bh->b_dirt=1;
 	inode->i_dirt=0;
 	brelse(bh);

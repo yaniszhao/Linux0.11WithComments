@@ -3,7 +3,7 @@
 ! 0x3000 is 0x30000 bytes = 196kB, more than enough for current
 ! versions of linux
 !
-SYSSIZE = 0x3000	//;ÄÚºËµÄ´óĞ¡×î´óÎª196KB
+SYSSIZE = 0x3000	//;å†…æ ¸çš„å¤§å°æœ€å¤§ä¸º196KB
 !
 !	bootsect.s		(C) 1991 Linus Torvalds
 !
@@ -31,66 +31,66 @@ begdata:
 begbss:
 .text
 
-SETUPLEN = 4			! nr of setup-sectors //;setupÕ¼ËÄ¸ö´ÅÅÌ¿é
-BOOTSEG  = 0x07c0		! original address of boot-sector //;´ÓµÚ31KBµÄµØ·½¿ªÊ¼
-INITSEG  = 0x9000		! we move boot here - out of the way //;bootsect.sÒª±»ÒÆµ½576K£¬²î64Kµ½640K
-SETUPSEG = 0x9020		! setup starts here //;setup.sÒª±»ÒÆµ½Õâ£¬ÒòÎªbootsectÖ»Õ¼512B
-SYSSEG   = 0x1000		! system loaded at 0x10000 (65536). //;ÄÚºË±»ÒÆµ½64KµÄµØ·½
-ENDSEG   = SYSSEG + SYSSIZE	! where to stop loading //;ÄÚºË×î¶àÄÜÕ¼ÓÃµ½µÄµØ·½
+SETUPLEN = 4			! nr of setup-sectors //;setupå å››ä¸ªç£ç›˜å—
+BOOTSEG  = 0x07c0		! original address of boot-sector //;ä»ç¬¬31KBçš„åœ°æ–¹å¼€å§‹
+INITSEG  = 0x9000		! we move boot here - out of the way //;bootsect.sè¦è¢«ç§»åˆ°576Kï¼Œå·®64Kåˆ°640K
+SETUPSEG = 0x9020		! setup starts here //;setup.sè¦è¢«ç§»åˆ°è¿™ï¼Œå› ä¸ºbootsectåªå 512B
+SYSSEG   = 0x1000		! system loaded at 0x10000 (65536). //;å†…æ ¸è¢«ç§»åˆ°64Kçš„åœ°æ–¹
+ENDSEG   = SYSSEG + SYSSIZE	! where to stop loading //;å†…æ ¸æœ€å¤šèƒ½å ç”¨åˆ°çš„åœ°æ–¹
 
 ! ROOT_DEV:	0x000 - same type of floppy as boot.
 !		0x301 - first partition on first drive etc
-ROOT_DEV = 0x306 //;µÚ¶ş¿éÓ²ÅÌµÚÒ»¸ö·ÖÇø
+ROOT_DEV = 0x306 //;ç¬¬äºŒå—ç¡¬ç›˜ç¬¬ä¸€ä¸ªåˆ†åŒº
 
 entry start
 start:
 	mov	ax,#BOOTSEG //;31K
-	mov	ds,ax //;ÒÆ¶¯Ç°µÄ¶Î
+	mov	ds,ax //;ç§»åŠ¨å‰çš„æ®µ
 	mov	ax,#INITSEG //;576K
-	mov	es,ax //;ÒÆ¶¯ºóµÄ¶Î
+	mov	es,ax //;ç§»åŠ¨åçš„æ®µ
 	mov	cx,#256
 	sub	si,si
 	sub	di,di
-	rep //;ÖØ¸´ÒÆ¶¯bootsectÃ¿´ÎÒÆ¶¯2¸ö×Ö½Ú? 
+	rep //;é‡å¤ç§»åŠ¨bootsectæ¯æ¬¡ç§»åŠ¨2ä¸ªå­—èŠ‚? 
 	movw
-	jmpi	go,INITSEG //;¶Î¼äÌø×ª£¬´úÂë¶Î»á±äcs=INITSEG£¬µ½cs+goµÄÎ»ÖÃ
+	jmpi	go,INITSEG //;æ®µé—´è·³è½¬ï¼Œä»£ç æ®µä¼šå˜cs=INITSEGï¼Œåˆ°cs+goçš„ä½ç½®
 go:	mov	ax,cs
 	mov	ds,ax
 	mov	es,ax
 ! put stack at 0x9ff00.
-	mov	ss,ax	//;ÉèÖÃÕ»µÄ¶Î
+	mov	ss,ax	//;è®¾ç½®æ ˆçš„æ®µ
 	mov	sp,#0xFF00		! arbitrary value >>512
-					//;ÉèÖÃÒ»¸öÔ¶´óÓÚ512µÄÖµ¾ÍĞĞÁË£¬ÕâÀï²î256Bµ½64K
+					//;è®¾ç½®ä¸€ä¸ªè¿œå¤§äº512çš„å€¼å°±è¡Œäº†ï¼Œè¿™é‡Œå·®256Båˆ°64K
 
 ! load the setup-sectors directly after the bootblock.
 ! Note that 'es' is already set up.
 
-load_setup: //;¶ÁÈ¡setupµ½ÄÚ´æ
+load_setup: //;è¯»å–setupåˆ°å†…å­˜
 	mov	dx,#0x0000		! drive 0, head 0
 	mov	cx,#0x0002		! sector 2, track 0
 	mov	bx,#0x0200		! address = 512, in INITSEG
 	mov	ax,#0x0200+SETUPLEN	! service 2, nr of sectors
-	int	0x13			! read it 	//;ÀûÓÃBIOSµÄÖĞ¶Ï
-	jnc	ok_load_setup		! ok - continue //;³É¹¦ÔòÈ¥½øĞĞÏÂÃæµÄ²Ù×÷
-	mov	dx,#0x0000				//;²»³É¹¦ÔòÖØĞÂ¶Á
+	int	0x13			! read it 	//;åˆ©ç”¨BIOSçš„ä¸­æ–­
+	jnc	ok_load_setup		! ok - continue //;æˆåŠŸåˆ™å»è¿›è¡Œä¸‹é¢çš„æ“ä½œ
+	mov	dx,#0x0000				//;ä¸æˆåŠŸåˆ™é‡æ–°è¯»
 	mov	ax,#0x0000		! reset the diskette
 	int	0x13
 	j	load_setup
 
 ok_load_setup:
 
-! Get disk drive parameters, specifically nr of sectors/track //;»ñµÃ´ÅÅÌµÄ²ÎÊı
+! Get disk drive parameters, specifically nr of sectors/track //;è·å¾—ç£ç›˜çš„å‚æ•°
 
 	mov	dl,#0x00
 	mov	ax,#0x0800		! AH=8 is get drive parameters
 	int	0x13
 	mov	ch,#0x00
-	seg cs	//;Ö»Ó°ÏìÏÂÒ»Ìõ´úÂëµÄÊı¾İ¶Î
+	seg cs	//;åªå½±å“ä¸‹ä¸€æ¡ä»£ç çš„æ•°æ®æ®µ
 	mov	sectors,cx
 	mov	ax,#INITSEG
 	mov	es,ax
 
-! Print some inane message //;´òÓ¡ĞÅÏ¢£¬×¼±¸¼ÓÔØÄÚºË
+! Print some inane message //;æ‰“å°ä¿¡æ¯ï¼Œå‡†å¤‡åŠ è½½å†…æ ¸
 
 	mov	ah,#0x03		! read cursor pos
 	xor	bh,bh
@@ -107,18 +107,18 @@ ok_load_setup:
 
 	mov	ax,#SYSSEG
 	mov	es,ax		! segment of 0x010000
-	call	read_it	//;¼ÓÔØÄÚºË
-	call	kill_motor //;¹Ø±ÕÂí´ï£¬ÒÔºó¾ÍÄÜÈ·¶¨ËüµÄ×´Ì¬ÁË
+	call	read_it	//;åŠ è½½å†…æ ¸
+	call	kill_motor //;å…³é—­é©¬è¾¾ï¼Œä»¥åå°±èƒ½ç¡®å®šå®ƒçš„çŠ¶æ€äº†
 
 ! After that we check which root-device to use. If the device is
 ! defined (!= 0), nothing is done and the given device is used.
 ! Otherwise, either /dev/PS0 (2,28) or /dev/at0 (2,8), depending
 ! on the number of sectors that the BIOS reports currently.
-	//;ÎªÁËµÃµ½¸ùÉè±¸
-	seg cs	//;Ö»Ó°ÏìÏÂÒ»Ìõ´úÂëµÄÊı¾İ¶Î
+	//;ä¸ºäº†å¾—åˆ°æ ¹è®¾å¤‡
+	seg cs	//;åªå½±å“ä¸‹ä¸€æ¡ä»£ç çš„æ•°æ®æ®µ
 	mov	ax,root_dev
 	cmp	ax,#0
-	jne	root_defined //;ax²»Îª0
+	jne	root_defined //;axä¸ä¸º0
 	seg cs
 	mov	bx,sectors
 	mov	ax,#0x0208		! /dev/ps0 - 1.2Mb
@@ -130,14 +130,14 @@ ok_load_setup:
 undef_root:
 	jmp undef_root
 root_defined:
-	seg cs	//;Ö»Ó°ÏìÏÂÒ»Ìõ´úÂëµÄÊı¾İ¶Î
+	seg cs	//;åªå½±å“ä¸‹ä¸€æ¡ä»£ç çš„æ•°æ®æ®µ
 	mov	root_dev,ax
 
 ! after that (everyting loaded), we jump to
 ! the setup-routine loaded directly after
 ! the bootblock:
 
-	jmpi	0,SETUPSEG //;¶Î¼äÌø×ª£¬È¥Ö´ĞĞsetupµÄ´úÂë
+	jmpi	0,SETUPSEG //;æ®µé—´è·³è½¬ï¼Œå»æ‰§è¡Œsetupçš„ä»£ç 
 
 ! This routine loads the system at address 0x10000, making sure
 ! no 64kB boundaries are crossed. We try to load it as fast as
@@ -149,7 +149,7 @@ sread:	.word 1+SETUPLEN	! sectors read of current track
 head:	.word 0			! current head
 track:	.word 0			! current track
 
-read_it:	//;´Ó´ÅÅÌ¶ÁÄÚºË´úÂëµ½ÄÚ´æ£¬ÓĞµã¸´ÔÓ
+read_it:	//;ä»ç£ç›˜è¯»å†…æ ¸ä»£ç åˆ°å†…å­˜ï¼Œæœ‰ç‚¹å¤æ‚
 	mov ax,es
 	test ax,#0x0fff
 die:	jne die			! es must be at 64kB boundary
@@ -231,7 +231,7 @@ bad_rt:	mov ax,#0
  * that we enter the kernel in a known state, and
  * dont have to worry about it later.
  */
-kill_motor:	//;¹Ø±ÕÂí´ï
+kill_motor:	//;å…³é—­é©¬è¾¾
 	push dx
 	mov dx,#0x3f2
 	mov al,#0
@@ -239,18 +239,18 @@ kill_motor:	//;¹Ø±ÕÂí´ï
 	pop dx
 	ret
 
-sectors:	//;Ò»¸ö´ÅµÀµÄÉÈÇøÊı
+sectors:	//;ä¸€ä¸ªç£é“çš„æ‰‡åŒºæ•°
 	.word 0
 
-msg1:	//;´òÓ¡×¼±¸¼ÓÔØÄÚºËµÄ×Ö·û´®
+msg1:	//;æ‰“å°å‡†å¤‡åŠ è½½å†…æ ¸çš„å­—ç¬¦ä¸²
 	.byte 13,10
 	.ascii "Loading system ..."
 	.byte 13,10,13,10
 
 .org 508
-root_dev:	//;¸ùÉè±¸
+root_dev:	//;æ ¹è®¾å¤‡
 	.word ROOT_DEV
-boot_flag:	//;MBRµÄÄ§Êı
+boot_flag:	//;MBRçš„é­”æ•°
 	.word 0xAA55
 
 .text

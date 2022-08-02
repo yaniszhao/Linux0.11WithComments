@@ -1,46 +1,46 @@
 
 /*
-C ÓïÑÔµÄ×î´óÌØµãÖ®Ò»ÊÇÔÊĞí±à³ÌÈËÔ±×Ô¶¨Òå²ÎÊıÊıÄ¿¿É±äµÄº¯Êı¡£
-ÎªÁË·ÃÎÊÕâĞ©¿É±ä²ÎÊıÁĞ±íÖĞµÄ²ÎÊı£¬¾ÍĞèÒªÓÃµ½ stdarg.h ÎÄ¼şÖĞµÄºê¡£ 
-stdarg.h Í·ÎÄ¼şÊÇ C ±ê×¼»¯×éÖ¯¸ù¾İ BSD ÏµÍ³µÄ varargs.h ÎÄ¼şĞŞ¸Ä¶ø³É¡£
+C è¯­è¨€çš„æœ€å¤§ç‰¹ç‚¹ä¹‹ä¸€æ˜¯å…è®¸ç¼–ç¨‹äººå‘˜è‡ªå®šä¹‰å‚æ•°æ•°ç›®å¯å˜çš„å‡½æ•°ã€‚
+ä¸ºäº†è®¿é—®è¿™äº›å¯å˜å‚æ•°åˆ—è¡¨ä¸­çš„å‚æ•°ï¼Œå°±éœ€è¦ç”¨åˆ° stdarg.h æ–‡ä»¶ä¸­çš„å®ã€‚ 
+stdarg.h å¤´æ–‡ä»¶æ˜¯ C æ ‡å‡†åŒ–ç»„ç»‡æ ¹æ® BSD ç³»ç»Ÿçš„ varargs.h æ–‡ä»¶ä¿®æ”¹è€Œæˆã€‚
 */
 
 
 #ifndef _STDARG_H
 #define _STDARG_H
 
-typedef char *va_list;		// ¶¨Òå va_list ÊÇÒ»¸ö×Ö·ûÖ¸ÕëÀàĞÍ¡£
+typedef char *va_list;		// å®šä¹‰ va_list æ˜¯ä¸€ä¸ªå­—ç¬¦æŒ‡é’ˆç±»å‹ã€‚
 
 /* Amount of space required in an argument list for an arg of type TYPE.
    TYPE may alternatively be an expression whose type is used.  */
-/* ÏÂÃæ¸ø³öÁËÀàĞÍÎª TYPE µÄ arg ²ÎÊıÁĞ±íËùÒªÇóµÄ¿Õ¼äÈİÁ¿¡£
- * TYPE Ò²¿ÉÒÔÊÇÊ¹ÓÃ¸ÃÀàĞÍµÄÒ»¸ö±í´ïÊ½ */
+/* ä¸‹é¢ç»™å‡ºäº†ç±»å‹ä¸º TYPE çš„ arg å‚æ•°åˆ—è¡¨æ‰€è¦æ±‚çš„ç©ºé—´å®¹é‡ã€‚
+ * TYPE ä¹Ÿå¯ä»¥æ˜¯ä½¿ç”¨è¯¥ç±»å‹çš„ä¸€ä¸ªè¡¨è¾¾å¼ */
 
-// ÏÂÃæÕâ¾ä¶¨ÒåÁËÈ¡ÕûºóµÄ TYPE ÀàĞÍµÄ×Ö½Ú³¤¶ÈÖµ¡£ÊÇ int ³¤¶È(4)µÄ±¶Êı¡£
+// ä¸‹é¢è¿™å¥å®šä¹‰äº†å–æ•´åçš„ TYPE ç±»å‹çš„å­—èŠ‚é•¿åº¦å€¼ã€‚æ˜¯ int é•¿åº¦(4)çš„å€æ•°ã€‚
 #define __va_rounded_size(TYPE)  \
   (((sizeof (TYPE) + sizeof (int) - 1) / sizeof (int)) * sizeof (int))
 
-// ÏÂÃæÕâ¸öº¯Êı£¨ÓÃºêÊµÏÖ£©Ê¹ AP Ö¸Ïò´«¸øº¯ÊıµÄ¿É±ä²ÎÊı±íµÄµÚÒ»¸ö²ÎÊı¡£
-// ÔÚµÚÒ»´Îµ÷ÓÃ va_arg »ò va_end Ö®Ç°£¬±ØĞëÊ×ÏÈµ÷ÓÃ¸Ãº¯Êı¡£
-// 17 ĞĞÉÏµÄ__builtin_saveregs()ÊÇÔÚ gcc µÄ¿â³ÌĞò libgcc2.c ÖĞ¶¨ÒåµÄ£¬ÓÃÓÚ±£´æ¼Ä´æÆ÷¡£
-// ËüµÄËµÃ÷¿É²Î¼û gcc ÊÖ²áÕÂ½Ú¡°Target Description Macros¡±ÖĞµÄ
-// ¡°Implementing the Varargs Macros¡±Ğ¡½Ú¡£
+// ä¸‹é¢è¿™ä¸ªå‡½æ•°ï¼ˆç”¨å®å®ç°ï¼‰ä½¿ AP æŒ‡å‘ä¼ ç»™å‡½æ•°çš„å¯å˜å‚æ•°è¡¨çš„ç¬¬ä¸€ä¸ªå‚æ•°ã€‚
+// åœ¨ç¬¬ä¸€æ¬¡è°ƒç”¨ va_arg æˆ– va_end ä¹‹å‰ï¼Œå¿…é¡»é¦–å…ˆè°ƒç”¨è¯¥å‡½æ•°ã€‚
+// 17 è¡Œä¸Šçš„__builtin_saveregs()æ˜¯åœ¨ gcc çš„åº“ç¨‹åº libgcc2.c ä¸­å®šä¹‰çš„ï¼Œç”¨äºä¿å­˜å¯„å­˜å™¨ã€‚
+// å®ƒçš„è¯´æ˜å¯å‚è§ gcc æ‰‹å†Œç« èŠ‚â€œTarget Description Macrosâ€ä¸­çš„
+// â€œImplementing the Varargs Macrosâ€å°èŠ‚ã€‚
 #ifndef __sparc__
 #define va_start(AP, LASTARG) 						\
  (AP = ((char *) &(LASTARG) + __va_rounded_size (LASTARG)))
 #else
-//__builtin_saveregsÊÇ°Ñ·Å¼Ä´æÆ÷µÄÖµ·Åµ½ÄÚ´æ
+//__builtin_saveregsæ˜¯æŠŠæ”¾å¯„å­˜å™¨çš„å€¼æ”¾åˆ°å†…å­˜
 #define va_start(AP, LASTARG) 						\
  (__builtin_saveregs (),						\
   AP = ((char *) &(LASTARG) + __va_rounded_size (LASTARG)))
 #endif
 
-// ÏÂÃæ¸ÃºêÓÃÓÚ±»µ÷ÓÃº¯ÊıÍê³ÉÒ»´ÎÕı³£·µ»Ø¡£va_end ¿ÉÒÔĞŞ¸Ä AP Ê¹ÆäÔÚÖØĞÂµ÷ÓÃ
-// va_start Ö®Ç°²»ÄÜ±»Ê¹ÓÃ¡£va_end ±ØĞëÔÚ va_arg ¶ÁÍêËùÓĞµÄ²ÎÊıºóÔÙ±»µ÷ÓÃ¡£
+// ä¸‹é¢è¯¥å®ç”¨äºè¢«è°ƒç”¨å‡½æ•°å®Œæˆä¸€æ¬¡æ­£å¸¸è¿”å›ã€‚va_end å¯ä»¥ä¿®æ”¹ AP ä½¿å…¶åœ¨é‡æ–°è°ƒç”¨
+// va_start ä¹‹å‰ä¸èƒ½è¢«ä½¿ç”¨ã€‚va_end å¿…é¡»åœ¨ va_arg è¯»å®Œæ‰€æœ‰çš„å‚æ•°åå†è¢«è°ƒç”¨ã€‚
 void va_end (va_list);		/* Defined in gnulib */
 #define va_end(AP)
 
-//APºóÒÆ£¬²¢·µ»ØAPÖ®Ç°µØÖ·Àï¶ÔÓ¦µÄÖµ
+//APåç§»ï¼Œå¹¶è¿”å›APä¹‹å‰åœ°å€é‡Œå¯¹åº”çš„å€¼
 #define va_arg(AP, TYPE)						\
  (AP += __va_rounded_size (TYPE),					\
   *((TYPE *) (AP - __va_rounded_size (TYPE))))

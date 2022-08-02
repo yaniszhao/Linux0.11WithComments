@@ -1,5 +1,5 @@
-//´Ó Linux 0.9x °æÄÚºË¿ªÊ¼£¨´Ó 0.96 ¿ªÊ¼£©£¬ÏµÍ³Ö±½Ó²ÉÓÃÁË GNU µÄÍ·ÎÄ¼ş a.out.h ¡£
-//Òò´ËÔì³ÉÔÚ Linux0.9x ÏÂ±àÒëµÄ³ÌĞò²»ÄÜÔÚ Linux 0.1x ÏµÍ³ÉÏÔËĞĞ¡£
+//ä» Linux 0.9x ç‰ˆå†…æ ¸å¼€å§‹ï¼ˆä» 0.96 å¼€å§‹ï¼‰ï¼Œç³»ç»Ÿç›´æ¥é‡‡ç”¨äº† GNU çš„å¤´æ–‡ä»¶ a.out.h ã€‚
+//å› æ­¤é€ æˆåœ¨ Linux0.9x ä¸‹ç¼–è¯‘çš„ç¨‹åºä¸èƒ½åœ¨ Linux 0.1x ç³»ç»Ÿä¸Šè¿è¡Œã€‚
 
 #ifndef _A_OUT_H
 #define _A_OUT_H
@@ -7,39 +7,39 @@
 #define __GNU_EXEC_MACROS__
 
 struct exec {
-  unsigned long a_magic;	/* Use macros N_MAGIC, etc for access */	//Ä§Êı
-  unsigned a_text;		/* length of text, in bytes */					//´úÂë¶Î³¤¶È
-  unsigned a_data;		/* length of data, in bytes */					//Êı¾İ¶Î³¤¶È
-  unsigned a_bss;		/* length of uninitialized data area for file, in bytes */	//bss³¤¶È
-  unsigned a_syms;		/* length of symbol table data in file, in bytes */			//·ûºÅ±í³¤¶È
-  unsigned a_entry;		/* start address */											//Èë¿ÚµØÖ·
-  unsigned a_trsize;		/* length of relocation info for text, in bytes */	//´úÂë¶ÎÖØ¶¨Î»³¤¶È
-  unsigned a_drsize;		/* length of relocation info for data, in bytes */	//Êı¾İ¶ÎÖØ¶¨Î»³¤¶È
+  unsigned long a_magic;	/* Use macros N_MAGIC, etc for access */	//é­”æ•°
+  unsigned a_text;		/* length of text, in bytes */					//ä»£ç æ®µé•¿åº¦
+  unsigned a_data;		/* length of data, in bytes */					//æ•°æ®æ®µé•¿åº¦
+  unsigned a_bss;		/* length of uninitialized data area for file, in bytes */	//bssé•¿åº¦
+  unsigned a_syms;		/* length of symbol table data in file, in bytes */			//ç¬¦å·è¡¨é•¿åº¦
+  unsigned a_entry;		/* start address */											//å…¥å£åœ°å€
+  unsigned a_trsize;		/* length of relocation info for text, in bytes */	//ä»£ç æ®µé‡å®šä½é•¿åº¦
+  unsigned a_drsize;		/* length of relocation info for data, in bytes */	//æ•°æ®æ®µé‡å®šä½é•¿åº¦
 };
 
-// ÓÃÓÚÈ¡Ö´ĞĞ½á¹¹ÖĞµÄÄ§Êı¡£
+// ç”¨äºå–æ‰§è¡Œç»“æ„ä¸­çš„é­”æ•°ã€‚
 #ifndef N_MAGIC
 #define N_MAGIC(exec) ((exec).a_magic)
 #endif
 
 #ifndef OMAGIC
 /* Code indicating object file or impure executable.  */
-/* Ö¸Ã÷ÎªÄ¿±êÎÄ¼ş»òÕß²»´¿µÄ¿ÉÖ´ĞĞÎÄ¼şµÄ´úºÅ */
-// ÀúÊ·ÉÏ£¬×îÔçÔÚ PDP-11 ¼ÆËã»úÉÏ£¬Ä§Êı£¨»ÃÊı£©ÊÇ°Ë½øÖÆÊı 0407¡£ËüÎ»ÓÚÖ´ĞĞ³ÌĞòÍ·½á¹¹µÄ¿ªÊ¼´¦¡£
-// Ô­±¾ÊÇ PDP-11 µÄÒ»ÌõÌø×ªÖ¸Áî£¬±íÊ¾Ìø×ªµ½Ëæºó 7 ¸ö×ÖºóµÄ´úÂë¿ªÊ¼´¦¡£
-// ÕâÑù£¬¼ÓÔØ³ÌĞò(loader)¾Í¿ÉÒÔÔÚ°ÑÖ´ĞĞÎÄ¼ş·ÅÈëÄÚ´æºóÖ±½ÓÌø×ªµ½Ö¸Áî¿ªÊ¼´¦ÔËĞĞ¡£
-// ÏÖÔÚÒÑ¾­Ã»ÓĞ³ÌĞòÊ¹ÓÃÕâÖÖ·½·¨ÁË£¬µ«Õâ¸ö°Ë½øÖÆÊıÈ´×÷ÎªÊ¶±ğÎÄ¼şÀàĞÍµÄ±êÖ¾£¨Ä§Êı£©±£ÁôÁËÏÂÀ´¡£
-// OMAGIC ¿ÉÒÔÈÏÎªÊÇ Old Magic µÄÒâË¼¡£
+/* æŒ‡æ˜ä¸ºç›®æ ‡æ–‡ä»¶æˆ–è€…ä¸çº¯çš„å¯æ‰§è¡Œæ–‡ä»¶çš„ä»£å· */
+// å†å²ä¸Šï¼Œæœ€æ—©åœ¨ PDP-11 è®¡ç®—æœºä¸Šï¼Œé­”æ•°ï¼ˆå¹»æ•°ï¼‰æ˜¯å…«è¿›åˆ¶æ•° 0407ã€‚å®ƒä½äºæ‰§è¡Œç¨‹åºå¤´ç»“æ„çš„å¼€å§‹å¤„ã€‚
+// åŸæœ¬æ˜¯ PDP-11 çš„ä¸€æ¡è·³è½¬æŒ‡ä»¤ï¼Œè¡¨ç¤ºè·³è½¬åˆ°éšå 7 ä¸ªå­—åçš„ä»£ç å¼€å§‹å¤„ã€‚
+// è¿™æ ·ï¼ŒåŠ è½½ç¨‹åº(loader)å°±å¯ä»¥åœ¨æŠŠæ‰§è¡Œæ–‡ä»¶æ”¾å…¥å†…å­˜åç›´æ¥è·³è½¬åˆ°æŒ‡ä»¤å¼€å§‹å¤„è¿è¡Œã€‚
+// ç°åœ¨å·²ç»æ²¡æœ‰ç¨‹åºä½¿ç”¨è¿™ç§æ–¹æ³•äº†ï¼Œä½†è¿™ä¸ªå…«è¿›åˆ¶æ•°å´ä½œä¸ºè¯†åˆ«æ–‡ä»¶ç±»å‹çš„æ ‡å¿—ï¼ˆé­”æ•°ï¼‰ä¿ç•™äº†ä¸‹æ¥ã€‚
+// OMAGIC å¯ä»¥è®¤ä¸ºæ˜¯ Old Magic çš„æ„æ€ã€‚
 #define OMAGIC 0407
 /* Code indicating pure executable.  */
-/* Ö¸Ã÷Îª´¿¿ÉÖ´ĞĞÎÄ¼şµÄ´úºÅ */ 		// New Magic£¬1975 ÄêÒÔºó¿ªÊ¼Ê¹ÓÃ¡£Éæ¼°Ğé´æ»úÖÆ¡£
+/* æŒ‡æ˜ä¸ºçº¯å¯æ‰§è¡Œæ–‡ä»¶çš„ä»£å· */ 		// New Magicï¼Œ1975 å¹´ä»¥åå¼€å§‹ä½¿ç”¨ã€‚æ¶‰åŠè™šå­˜æœºåˆ¶ã€‚
 #define NMAGIC 0410
 /* Code indicating demand-paged executable.  */
-/* Ö¸Ã÷ÎªĞèÇó·ÖÒ³´¦ÀíµÄ¿ÉÖ´ĞĞÎÄ¼ş */ // ÆäÍ·½á¹¹Õ¼ÓÃÒ»Ò³£¨4K£©¡£
+/* æŒ‡æ˜ä¸ºéœ€æ±‚åˆ†é¡µå¤„ç†çš„å¯æ‰§è¡Œæ–‡ä»¶ */ // å…¶å¤´ç»“æ„å ç”¨ä¸€é¡µï¼ˆ4Kï¼‰ã€‚
 #define ZMAGIC 0413
 #endif /* not OMAGIC */
-// ÁíÍâ»¹ÓĞÒ»¸ö QMAGIC£¬ÊÇÎªÁË½ÚÔ¼´ÅÅÌÈİÁ¿£¬°ÑÅÌÉÏÖ´ĞĞÎÄ¼şµÄÍ·½á¹¹Óë´úÂë½ô´Õ´æ·Å¡£
-// Èç¹ûÄ§Êı²»ÄÜ±»Ê¶±ğ£¬Ôò·µ»ØÕæ¡£
+// å¦å¤–è¿˜æœ‰ä¸€ä¸ª QMAGICï¼Œæ˜¯ä¸ºäº†èŠ‚çº¦ç£ç›˜å®¹é‡ï¼ŒæŠŠç›˜ä¸Šæ‰§è¡Œæ–‡ä»¶çš„å¤´ç»“æ„ä¸ä»£ç ç´§å‡‘å­˜æ”¾ã€‚
+// å¦‚æœé­”æ•°ä¸èƒ½è¢«è¯†åˆ«ï¼Œåˆ™è¿”å›çœŸã€‚
 
 #ifndef N_BADMAG
 #define N_BADMAG(x)					\
@@ -51,42 +51,42 @@ struct exec {
  (N_MAGIC(x) != OMAGIC && N_MAGIC(x) != NMAGIC		\
   && N_MAGIC(x) != ZMAGIC)
 
-// ³ÌĞòÍ·ÔÚÄÚ´æÖĞµÄÆ«ÒÆÎ»ÖÃ¡£
+// ç¨‹åºå¤´åœ¨å†…å­˜ä¸­çš„åç§»ä½ç½®ã€‚
 #define _N_HDROFF(x) (SEGMENT_SIZE - sizeof (struct exec))
 
-// ´úÂëÆğÊ¼Æ«ÒÆÖµ¡£
+// ä»£ç èµ·å§‹åç§»å€¼ã€‚
 #ifndef N_TXTOFF
 #define N_TXTOFF(x) \
  (N_MAGIC(x) == ZMAGIC ? _N_HDROFF((x)) + sizeof (struct exec) : sizeof (struct exec))
 #endif
 
-// Êı¾İÆğÊ¼Æ«ÒÆÖµ¡£
+// æ•°æ®èµ·å§‹åç§»å€¼ã€‚
 #ifndef N_DATOFF
 #define N_DATOFF(x) (N_TXTOFF(x) + (x).a_text)
 #endif
 
-// ´úÂëÖØ¶¨Î»ĞÅÏ¢Æ«ÒÆÖµ¡£
+// ä»£ç é‡å®šä½ä¿¡æ¯åç§»å€¼ã€‚
 #ifndef N_TRELOFF
 #define N_TRELOFF(x) (N_DATOFF(x) + (x).a_data)
 #endif
 
-// Êı¾İÖØ¶¨Î»ĞÅÏ¢Æ«ÒÆÖµ¡£
+// æ•°æ®é‡å®šä½ä¿¡æ¯åç§»å€¼ã€‚
 #ifndef N_DRELOFF
 #define N_DRELOFF(x) (N_TRELOFF(x) + (x).a_trsize)
 #endif
 
-// ·ûºÅ±íÆ«ÒÆÖµ¡£
+// ç¬¦å·è¡¨åç§»å€¼ã€‚
 #ifndef N_SYMOFF
 #define N_SYMOFF(x) (N_DRELOFF(x) + (x).a_drsize)
 #endif
 
-// ×Ö·û´®ĞÅÏ¢Æ«ÒÆÖµ¡£
+// å­—ç¬¦ä¸²ä¿¡æ¯åç§»å€¼ã€‚
 #ifndef N_STROFF
 #define N_STROFF(x) (N_SYMOFF(x) + (x).a_syms)
 #endif
 
 /* Address of text segment in memory after it is loaded.  */
-/* ´úÂë¶Î¼ÓÔØµ½ÄÚ´æÖĞºóµÄµØÖ· */
+/* ä»£ç æ®µåŠ è½½åˆ°å†…å­˜ä¸­åçš„åœ°å€ */
 #ifndef N_TXTADDR
 #define N_TXTADDR(x) 0
 #endif
@@ -94,8 +94,8 @@ struct exec {
 /* Address of data segment in memory after it is loaded.
    Note that it is up to you to define SEGMENT_SIZE
    on machines not listed here.  */
-/* Êı¾İ¶Î¼ÓÔØµ½ÄÚ´æÖĞºóµÄµØÖ·¡£
- * ×¢Òâ£¬¶ÔÓÚÏÂÃæÃ»ÓĞÁĞ³öÃû³ÆµÄ»úÆ÷£¬ĞèÒªÄã×Ô¼ºÀ´¶¨Òå¶ÔÓ¦µÄ SEGMENT_SIZE */
+/* æ•°æ®æ®µåŠ è½½åˆ°å†…å­˜ä¸­åçš„åœ°å€ã€‚
+ * æ³¨æ„ï¼Œå¯¹äºä¸‹é¢æ²¡æœ‰åˆ—å‡ºåç§°çš„æœºå™¨ï¼Œéœ€è¦ä½ è‡ªå·±æ¥å®šä¹‰å¯¹åº”çš„ SEGMENT_SIZE */
 #if defined(vax) || defined(hp300) || defined(pyr)
 #define SEGMENT_SIZE PAGE_SIZE
 #endif
@@ -116,13 +116,13 @@ struct exec {
 #define PAGE_SIZE 4096
 #define SEGMENT_SIZE 1024
 
-// ÒÔ¶ÎÎª½çµÄ´óĞ¡¡£
+// ä»¥æ®µä¸ºç•Œçš„å¤§å°ã€‚
 #define _N_SEGMENT_ROUND(x) (((x) + SEGMENT_SIZE - 1) & ~(SEGMENT_SIZE - 1))
 
-// ´úÂë¶ÎÎ²µØÖ·¡£
+// ä»£ç æ®µå°¾åœ°å€ã€‚
 #define _N_TXTENDADDR(x) (N_TXTADDR(x)+(x).a_text)
 
-// Êı¾İ¿ªÊ¼µØÖ·¡£
+// æ•°æ®å¼€å§‹åœ°å€ã€‚
 #ifndef N_DATADDR
 #define N_DATADDR(x) \
     (N_MAGIC(x)==OMAGIC? (_N_TXTENDADDR(x)) \
@@ -130,12 +130,12 @@ struct exec {
 #endif
 
 /* Address of bss segment in memory after it is loaded.  */
-/* bss ¶Î¼ÓÔØµ½ÄÚ´æÒÔºóµÄµØÖ· */
+/* bss æ®µåŠ è½½åˆ°å†…å­˜ä»¥åçš„åœ°å€ */
 #ifndef N_BSSADDR
 #define N_BSSADDR(x) (N_DATADDR(x) + (x).a_data)
 #endif
 
-// nlist ½á¹¹¡£·ûºÅ±í¼ÇÂ¼½á¹¹¡£
+// nlist ç»“æ„ã€‚ç¬¦å·è¡¨è®°å½•ç»“æ„ã€‚
 #ifndef N_NLIST_DECLARED
 struct nlist {
   union {
@@ -143,14 +143,14 @@ struct nlist {
     struct nlist *n_next;
     long n_strx;
   } n_un;
-  unsigned char n_type;	// ¸Ã×Ö½Ú·Ö³É 3 ¸ö×Ö¶Î
+  unsigned char n_type;	// è¯¥å­—èŠ‚åˆ†æˆ 3 ä¸ªå­—æ®µ
   char n_other;
   short n_desc;
   unsigned long n_value;
 };
 #endif
 
-// ÏÂÃæ¶¨Òå exec ½á¹¹ÖĞµÄ±äÁ¿Æ«ÒÆÖµ¡£
+// ä¸‹é¢å®šä¹‰ exec ç»“æ„ä¸­çš„å˜é‡åç§»å€¼ã€‚
 #ifndef N_UNDF
 #define N_UNDF 0
 #endif
@@ -173,7 +173,7 @@ struct nlist {
 #define N_FN 15
 #endif
 
-// ÒÔÏÂ 3 ¸ö³£Á¿¶¨ÒåÊÇ nlist ½á¹¹ÖĞ n_type ±äÁ¿µÄÆÁ±ÎÂë£¨°Ë½ø³Ì±íÊ¾£©¡£
+// ä»¥ä¸‹ 3 ä¸ªå¸¸é‡å®šä¹‰æ˜¯ nlist ç»“æ„ä¸­ n_type å˜é‡çš„å±è”½ç ï¼ˆå…«è¿›ç¨‹è¡¨ç¤ºï¼‰ã€‚
 #ifndef N_EXT
 #define N_EXT 1
 #endif
@@ -192,11 +192,11 @@ struct nlist {
    to satisfy requests for the indirect symbol, but not vice versa.
    If the other symbol does not have a definition, libraries will
    be searched to find a definition.  */
-/* ÏÂÃæµÄÀàĞÍÖ¸Ã÷ÁË·ûºÅµÄ¶¨Òå×÷Îª¶ÔÁíÒ»¸ö·ûºÅµÄ¼ä½ÓÒıÓÃ¡£½ô½Ó¸Ã·ûºÅµÄÆäËü
- * µÄ·ûºÅ³ÊÏÖÎªÎ´¶¨ÒåµÄÒıÓÃ¡£
+/* ä¸‹é¢çš„ç±»å‹æŒ‡æ˜äº†ç¬¦å·çš„å®šä¹‰ä½œä¸ºå¯¹å¦ä¸€ä¸ªç¬¦å·çš„é—´æ¥å¼•ç”¨ã€‚ç´§æ¥è¯¥ç¬¦å·çš„å…¶å®ƒ
+ * çš„ç¬¦å·å‘ˆç°ä¸ºæœªå®šä¹‰çš„å¼•ç”¨ã€‚
  *
- * ¼ä½ÓĞÔÊÇ²»¶Ô³ÆµÄ¡£ÆäËü·ûºÅµÄÖµ½«±»ÓÃÓÚÂú×ã¼ä½Ó·ûºÅµÄÇëÇó£¬µ«·´Ö®²»È»¡£
- * Èç¹ûÆäËü·ûºÅ²¢Ã»ÓĞ¶¨Òå£¬Ôò½«ËÑË÷¿âÀ´Ñ°ÕÒÒ»¸ö¶¨Òå */
+ * é—´æ¥æ€§æ˜¯ä¸å¯¹ç§°çš„ã€‚å…¶å®ƒç¬¦å·çš„å€¼å°†è¢«ç”¨äºæ»¡è¶³é—´æ¥ç¬¦å·çš„è¯·æ±‚ï¼Œä½†åä¹‹ä¸ç„¶ã€‚
+ * å¦‚æœå…¶å®ƒç¬¦å·å¹¶æ²¡æœ‰å®šä¹‰ï¼Œåˆ™å°†æœç´¢åº“æ¥å¯»æ‰¾ä¸€ä¸ªå®šä¹‰ */
 #define N_INDR 0xa
 
 /* The following symbols refer to set elements.
@@ -209,22 +209,22 @@ struct nlist {
    whose name is the same as the name of the set.
    This symbol acts like a N_DATA global symbol
    in that it can satisfy undefined external references.  */
-/* ÏÂÃæµÄ·ûºÅÓë¼¯ºÏÔªËØÓĞ¹Ø¡£ËùÓĞ¾ßÓĞÏàÍ¬Ãû³Æ N_SET[ATDB]µÄ·ûºÅ
-ĞÎ³ÉÒ»¸ö¼¯ºÏ¡£ÔÚ´úÂë²¿·ÖÖĞÒÑÎª¼¯ºÏ·ÖÅäÁË¿Õ¼ä£¬²¢ÇÒÃ¿¸ö¼¯ºÏÔªËØ
-µÄÖµ´æ·ÅÔÚÒ»¸ö×Ö£¨word£©µÄ¿Õ¼ä¡£¿Õ¼äµÄµÚÒ»¸ö×Ö´æÓĞ¼¯ºÏµÄ³¤¶È£¨¼¯ºÏÔªËØÊıÄ¿£©¡£
-¼¯ºÏµÄµØÖ·±»·ÅÈëÒ»¸ö N_SETV ·ûºÅ£¬ËüµÄÃû³ÆÓë¼¯ºÏÍ¬Ãû¡£
-ÔÚÂú×ãÎ´¶¨ÒåµÄÍâ²¿ÒıÓÃ·½Ãæ£¬¸Ã·ûºÅµÄĞĞÎªÏóÒ»¸ö N_DATA È«¾Ö·ûºÅ¡£*/
+/* ä¸‹é¢çš„ç¬¦å·ä¸é›†åˆå…ƒç´ æœ‰å…³ã€‚æ‰€æœ‰å…·æœ‰ç›¸åŒåç§° N_SET[ATDB]çš„ç¬¦å·
+å½¢æˆä¸€ä¸ªé›†åˆã€‚åœ¨ä»£ç éƒ¨åˆ†ä¸­å·²ä¸ºé›†åˆåˆ†é…äº†ç©ºé—´ï¼Œå¹¶ä¸”æ¯ä¸ªé›†åˆå…ƒç´ 
+çš„å€¼å­˜æ”¾åœ¨ä¸€ä¸ªå­—ï¼ˆwordï¼‰çš„ç©ºé—´ã€‚ç©ºé—´çš„ç¬¬ä¸€ä¸ªå­—å­˜æœ‰é›†åˆçš„é•¿åº¦ï¼ˆé›†åˆå…ƒç´ æ•°ç›®ï¼‰ã€‚
+é›†åˆçš„åœ°å€è¢«æ”¾å…¥ä¸€ä¸ª N_SETV ç¬¦å·ï¼Œå®ƒçš„åç§°ä¸é›†åˆåŒåã€‚
+åœ¨æ»¡è¶³æœªå®šä¹‰çš„å¤–éƒ¨å¼•ç”¨æ–¹é¢ï¼Œè¯¥ç¬¦å·çš„è¡Œä¸ºè±¡ä¸€ä¸ª N_DATA å…¨å±€ç¬¦å·ã€‚*/
 
 /* These appear as input to LD, in a .o file.  */
-/* ÒÔÏÂÕâĞ©·ûºÅÔÚÄ¿±êÎÄ¼şÖĞÊÇ×÷ÎªÁ´½Ó³ÌĞò LD µÄÊäÈë¡£*/
-#define	N_SETA	0x14		/* Absolute set element symbol */	/* ¾ø¶Ô¼¯ºÏÔªËØ·ûºÅ */
-#define	N_SETT	0x16		/* Text set element symbol */		/* ´úÂë¼¯ºÏÔªËØ·ûºÅ */
-#define	N_SETD	0x18		/* Data set element symbol */		/* Êı¾İ¼¯ºÏÔªËØ·ûºÅ */
-#define	N_SETB	0x1A		/* Bss set element symbol */		/* Bss ¼¯ºÏÔªËØ·ûºÅ */
+/* ä»¥ä¸‹è¿™äº›ç¬¦å·åœ¨ç›®æ ‡æ–‡ä»¶ä¸­æ˜¯ä½œä¸ºé“¾æ¥ç¨‹åº LD çš„è¾“å…¥ã€‚*/
+#define	N_SETA	0x14		/* Absolute set element symbol */	/* ç»å¯¹é›†åˆå…ƒç´ ç¬¦å· */
+#define	N_SETT	0x16		/* Text set element symbol */		/* ä»£ç é›†åˆå…ƒç´ ç¬¦å· */
+#define	N_SETD	0x18		/* Data set element symbol */		/* æ•°æ®é›†åˆå…ƒç´ ç¬¦å· */
+#define	N_SETB	0x1A		/* Bss set element symbol */		/* Bss é›†åˆå…ƒç´ ç¬¦å· */
 
 /* This is output from LD.  */
-/* ÏÂÃæÊÇ LD µÄÊä³ö¡£*/
-#define N_SETV	0x1C		/* Pointer to set vector in data area.  */	/* Ö¸ÏòÊı¾İÇøÖĞ¼¯ºÏÏòÁ¿¡£*/
+/* ä¸‹é¢æ˜¯ LD çš„è¾“å‡ºã€‚*/
+#define N_SETV	0x1C		/* Pointer to set vector in data area.  */	/* æŒ‡å‘æ•°æ®åŒºä¸­é›†åˆå‘é‡ã€‚*/
 
 #ifndef N_RELOCATION_INFO_DECLARED
 

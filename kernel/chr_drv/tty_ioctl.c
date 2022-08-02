@@ -4,8 +4,8 @@
  *  (C) 1991  Linus Torvalds
  */
 
-// ±¾ÎÄ¼şÓÃÓÚ×Ö·ûÉè±¸µÄ¿ØÖÆ²Ù×÷£¬ÊµÏÖÁËº¯Êı£¨ÏµÍ³µ÷ÓÃ£© tty_ioctl() ¡£
-// ³ÌĞòÍ¨¹ıÊ¹ÓÃ¸Ãº¯Êı¿ÉÒÔĞŞ¸ÄÖ¸¶¨ÖÕ¶Ë termios ½á¹¹ÖĞµÄÉèÖÃ±êÖ¾µÈĞÅÏ¢¡£
+// æœ¬æ–‡ä»¶ç”¨äºå­—ç¬¦è®¾å¤‡çš„æ§åˆ¶æ“ä½œï¼Œå®ç°äº†å‡½æ•°ï¼ˆç³»ç»Ÿè°ƒç”¨ï¼‰ tty_ioctl() ã€‚
+// ç¨‹åºé€šè¿‡ä½¿ç”¨è¯¥å‡½æ•°å¯ä»¥ä¿®æ”¹æŒ‡å®šç»ˆç«¯ termios ç»“æ„ä¸­çš„è®¾ç½®æ ‡å¿—ç­‰ä¿¡æ¯ã€‚
 
 #include <errno.h>
 #include <termios.h>
@@ -18,17 +18,17 @@
 #include <asm/segment.h>
 #include <asm/system.h>
 
-// ÕâÊÇ²¨ÌØÂÊÒò×ÓÊı×é£¨»ò³ÆÎª³ıÊıÊı×é£©¡£²¨ÌØÂÊÓë²¨ÌØÂÊÒò×ÓµÄ¶ÔÓ¦¹ØÏµ²Î¼ûÁĞ±íºóµÄËµÃ÷¡£
+// è¿™æ˜¯æ³¢ç‰¹ç‡å› å­æ•°ç»„ï¼ˆæˆ–ç§°ä¸ºé™¤æ•°æ•°ç»„ï¼‰ã€‚æ³¢ç‰¹ç‡ä¸æ³¢ç‰¹ç‡å› å­çš„å¯¹åº”å…³ç³»å‚è§åˆ—è¡¨åçš„è¯´æ˜ã€‚
 static unsigned short quotient[] = {
 	0, 2304, 1536, 1047, 857,
 	768, 576, 384, 192, 96,
 	64, 48, 24, 12, 6, 3
 };
 
-// ĞŞ¸Ä´«ÊäËÙÂÊ¡£
-// ²ÎÊı£ºtty - ÖÕ¶Ë¶ÔÓ¦µÄ tty Êı¾İ½á¹¹¡£
-// ÔÚ³ıÊıËø´æ±êÖ¾ DLAB(ÏßÂ·¿ØÖÆ¼Ä´æÆ÷Î» 7)ÖÃÎ»Çé¿öÏÂ£¬Í¨¹ı¶Ë¿Ú 0x3f8 ºÍ 0x3f9 Ïò UART ·Ö±ğĞ´Èë
-// ²¨ÌØÂÊÒò×ÓµÍ×Ö½ÚºÍ¸ß×Ö½Ú¡£
+// ä¿®æ”¹ä¼ è¾“é€Ÿç‡ã€‚
+// å‚æ•°ï¼štty - ç»ˆç«¯å¯¹åº”çš„ tty æ•°æ®ç»“æ„ã€‚
+// åœ¨é™¤æ•°é”å­˜æ ‡å¿— DLAB(çº¿è·¯æ§åˆ¶å¯„å­˜å™¨ä½ 7)ç½®ä½æƒ…å†µä¸‹ï¼Œé€šè¿‡ç«¯å£ 0x3f8 å’Œ 0x3f9 å‘ UART åˆ†åˆ«å†™å…¥
+// æ³¢ç‰¹ç‡å› å­ä½å­—èŠ‚å’Œé«˜å­—èŠ‚ã€‚
 static void change_speed(struct tty_struct * tty)
 {
 	unsigned short port,quot;
@@ -44,9 +44,9 @@ static void change_speed(struct tty_struct * tty)
 	sti();
 }
 
-// Ë¢ĞÂ tty »º³å¶ÓÁĞ¡£
-// ²ÎÊı£ºgueue - Ö¸¶¨µÄ»º³å¶ÓÁĞÖ¸Õë¡£
-// Áî»º³å¶ÓÁĞµÄÍ·Ö¸ÕëµÈÓÚÎ²Ö¸Õë£¬´Ó¶ø´ïµ½Çå¿Õ»º³åÇø(Áã×Ö·û)µÄÄ¿µÄ¡£
+// åˆ·æ–° tty ç¼“å†²é˜Ÿåˆ—ã€‚
+// å‚æ•°ï¼šgueue - æŒ‡å®šçš„ç¼“å†²é˜Ÿåˆ—æŒ‡é’ˆã€‚
+// ä»¤ç¼“å†²é˜Ÿåˆ—çš„å¤´æŒ‡é’ˆç­‰äºå°¾æŒ‡é’ˆï¼Œä»è€Œè¾¾åˆ°æ¸…ç©ºç¼“å†²åŒº(é›¶å­—ç¬¦)çš„ç›®çš„ã€‚
 static void flush(struct tty_queue * queue)
 {
 	cli();
@@ -54,21 +54,21 @@ static void flush(struct tty_queue * queue)
 	sti();
 }
 
-// µÈ´ı×Ö·û·¢ËÍ³öÈ¥¡£
+// ç­‰å¾…å­—ç¬¦å‘é€å‡ºå»ã€‚
 static void wait_until_sent(struct tty_struct * tty)
 {
 	/* do nothing - not implemented */
 }
 
-// ·¢ËÍ BREAK ¿ØÖÆ·û¡£
+// å‘é€ BREAK æ§åˆ¶ç¬¦ã€‚
 static void send_break(struct tty_struct * tty)
 {
 	/* do nothing - not implemented */
 }
 
-// È¡ÖÕ¶Ë termios ½á¹¹ĞÅÏ¢¡£
-// ²ÎÊı£ºtty - Ö¸¶¨ÖÕ¶ËµÄ tty ½á¹¹Ö¸Õë£»termios - ÓÃ»§Êı¾İÇø termios ½á¹¹»º³åÇøÖ¸Õë¡£
-// ·µ»Ø 0 ¡£
+// å–ç»ˆç«¯ termios ç»“æ„ä¿¡æ¯ã€‚
+// å‚æ•°ï¼štty - æŒ‡å®šç»ˆç«¯çš„ tty ç»“æ„æŒ‡é’ˆï¼›termios - ç”¨æˆ·æ•°æ®åŒº termios ç»“æ„ç¼“å†²åŒºæŒ‡é’ˆã€‚
+// è¿”å› 0 ã€‚
 static int get_termios(struct tty_struct * tty, struct termios * termios)
 {
 	int i;
@@ -79,9 +79,9 @@ static int get_termios(struct tty_struct * tty, struct termios * termios)
 	return 0;
 }
 
-// ÉèÖÃÖÕ¶Ë termios ½á¹¹ĞÅÏ¢¡£
-// ²ÎÊı£ºtty - Ö¸¶¨ÖÕ¶ËµÄ tty ½á¹¹Ö¸Õë£»termios - ÓÃ»§Êı¾İÇø termios ½á¹¹Ö¸Õë¡£
-// ·µ»Ø 0 ¡£
+// è®¾ç½®ç»ˆç«¯ termios ç»“æ„ä¿¡æ¯ã€‚
+// å‚æ•°ï¼štty - æŒ‡å®šç»ˆç«¯çš„ tty ç»“æ„æŒ‡é’ˆï¼›termios - ç”¨æˆ·æ•°æ®åŒº termios ç»“æ„æŒ‡é’ˆã€‚
+// è¿”å› 0 ã€‚
 static int set_termios(struct tty_struct * tty, struct termios * termios)
 {
 	int i;
@@ -92,9 +92,9 @@ static int set_termios(struct tty_struct * tty, struct termios * termios)
 	return 0;
 }
 
-// ¶ÁÈ¡ termio ½á¹¹ÖĞµÄĞÅÏ¢¡£
-// ²ÎÊı£ºtty - Ö¸¶¨ÖÕ¶ËµÄ tty ½á¹¹Ö¸Õë£»termio - ÓÃ»§Êı¾İÇø termio ½á¹¹»º³åÇøÖ¸Õë¡£
-// ·µ»Ø 0¡£
+// è¯»å– termio ç»“æ„ä¸­çš„ä¿¡æ¯ã€‚
+// å‚æ•°ï¼štty - æŒ‡å®šç»ˆç«¯çš„ tty ç»“æ„æŒ‡é’ˆï¼›termio - ç”¨æˆ·æ•°æ®åŒº termio ç»“æ„ç¼“å†²åŒºæŒ‡é’ˆã€‚
+// è¿”å› 0ã€‚
 static int get_termio(struct tty_struct * tty, struct termio * termio)
 {
 	int i;
@@ -115,10 +115,10 @@ static int get_termio(struct tty_struct * tty, struct termio * termio)
 
 /*
  * This only works as the 386 is low-byt-first
- */ /* ÏÂÃæµÄ termio ÉèÖÃº¯Êı½öÔÚ 386 µÍ×Ö½ÚÔÚÇ°µÄ·½Ê½ÏÂ¿ÉÓÃ¡£*/
-// ÉèÖÃÖÕ¶Ë termio ½á¹¹ĞÅÏ¢¡£
-// ²ÎÊı£ºtty - Ö¸¶¨ÖÕ¶ËµÄ tty ½á¹¹Ö¸Õë£»termio - ÓÃ»§Êı¾İÇø termio ½á¹¹Ö¸Õë¡£
-// ½«ÓÃ»§»º³åÇø termio µÄĞÅÏ¢¸´ÖÆµ½ÖÕ¶ËµÄ termios ½á¹¹ÖĞ¡£·µ»Ø 0 ¡£
+ */ /* ä¸‹é¢çš„ termio è®¾ç½®å‡½æ•°ä»…åœ¨ 386 ä½å­—èŠ‚åœ¨å‰çš„æ–¹å¼ä¸‹å¯ç”¨ã€‚*/
+// è®¾ç½®ç»ˆç«¯ termio ç»“æ„ä¿¡æ¯ã€‚
+// å‚æ•°ï¼štty - æŒ‡å®šç»ˆç«¯çš„ tty ç»“æ„æŒ‡é’ˆï¼›termio - ç”¨æˆ·æ•°æ®åŒº termio ç»“æ„æŒ‡é’ˆã€‚
+// å°†ç”¨æˆ·ç¼“å†²åŒº termio çš„ä¿¡æ¯å¤åˆ¶åˆ°ç»ˆç«¯çš„ termios ç»“æ„ä¸­ã€‚è¿”å› 0 ã€‚
 static int set_termio(struct tty_struct * tty, struct termio * termio)
 {
 	int i;
@@ -137,8 +137,8 @@ static int set_termio(struct tty_struct * tty, struct termio * termio)
 	return 0;
 }
 
-// tty ÖÕ¶ËÉè±¸µÄ ioctl º¯Êı¡£
-// ²ÎÊı£ºdev - Éè±¸ºÅ£»cmd - ioctl ÃüÁî£»arg - ²Ù×÷²ÎÊıÖ¸Õë¡£
+// tty ç»ˆç«¯è®¾å¤‡çš„ ioctl å‡½æ•°ã€‚
+// å‚æ•°ï¼šdev - è®¾å¤‡å·ï¼›cmd - ioctl å‘½ä»¤ï¼›arg - æ“ä½œå‚æ•°æŒ‡é’ˆã€‚
 int tty_ioctl(int dev, int cmd, int arg)
 {
 	struct tty_struct * tty;

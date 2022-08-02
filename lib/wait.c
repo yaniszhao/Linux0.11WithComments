@@ -1,7 +1,7 @@
 /*
-¸Ã³ÌÐò°üÀ¨º¯Êý waitpid() ºÍ wait() ¡£ÕâÁ½¸öº¯ÊýÔÊÐí½ø³Ì»ñÈ¡ÓëÆä×Ó½ø³ÌÖ®Ò»µÄ×´Ì¬ÐÅÏ¢¡£¸÷ÖÖÑ¡
-ÏîÔÊÐí»ñÈ¡ÒÑ¾­ÖÕÖ¹»òÍ£Ö¹µÄ×Ó½ø³Ì×´Ì¬ÐÅÏ¢¡£Èç¹û´æÔÚÁ½¸ö»òÁ½¸öÒÔÉÏ×Ó½ø³ÌµÄ×´Ì¬ÐÅÏ¢£¬Ôò±¨¸æµÄ
-Ë³ÐòÊÇ²»Ö¸¶¨µÄ¡£
+è¯¥ç¨‹åºåŒ…æ‹¬å‡½æ•° waitpid() å’Œ wait() ã€‚è¿™ä¸¤ä¸ªå‡½æ•°å…è®¸è¿›ç¨‹èŽ·å–ä¸Žå…¶å­è¿›ç¨‹ä¹‹ä¸€çš„çŠ¶æ€ä¿¡æ¯ã€‚å„ç§é€‰
+é¡¹å…è®¸èŽ·å–å·²ç»ç»ˆæ­¢æˆ–åœæ­¢çš„å­è¿›ç¨‹çŠ¶æ€ä¿¡æ¯ã€‚å¦‚æžœå­˜åœ¨ä¸¤ä¸ªæˆ–ä¸¤ä¸ªä»¥ä¸Šå­è¿›ç¨‹çš„çŠ¶æ€ä¿¡æ¯ï¼Œåˆ™æŠ¥å‘Šçš„
+é¡ºåºæ˜¯ä¸æŒ‡å®šçš„ã€‚
 */
 
 /*
@@ -14,14 +14,14 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
-// µÈ´ý½ø³ÌÖÕÖ¹ÏµÍ³µ÷ÓÃº¯Êý¡£
-// ¸ÃÏÂÃæºê½á¹¹¶ÔÓ¦ÓÚº¯Êý£ºpid_t waitpid(pid_t pid, int * wait_stat, int options)
+// ç­‰å¾…è¿›ç¨‹ç»ˆæ­¢ç³»ç»Ÿè°ƒç”¨å‡½æ•°ã€‚
+// è¯¥ä¸‹é¢å®ç»“æž„å¯¹åº”äºŽå‡½æ•°ï¼špid_t waitpid(pid_t pid, int * wait_stat, int options)
 //
-// ²ÎÊý£ºpid - µÈ´ý±»ÖÕÖ¹½ø³ÌµÄ½ø³Ì id£¬»òÕßÊÇÓÃÓÚÖ¸¶¨ÌØÊâÇé¿öµÄÆäËüÌØ¶¨ÊýÖµ£»
-// wait_stat - ÓÃÓÚ´æ·Å×´Ì¬ÐÅÏ¢£»options - WNOHANG »ò WUNTRACED »òÊÇ 0¡£
+// å‚æ•°ï¼špid - ç­‰å¾…è¢«ç»ˆæ­¢è¿›ç¨‹çš„è¿›ç¨‹ idï¼Œæˆ–è€…æ˜¯ç”¨äºŽæŒ‡å®šç‰¹æ®Šæƒ…å†µçš„å…¶å®ƒç‰¹å®šæ•°å€¼ï¼›
+// wait_stat - ç”¨äºŽå­˜æ”¾çŠ¶æ€ä¿¡æ¯ï¼›options - WNOHANG æˆ– WUNTRACED æˆ–æ˜¯ 0ã€‚
 _syscall3(pid_t,waitpid,pid_t,pid,int *,wait_stat,int,options)
 
-// wait()ÏµÍ³µ÷ÓÃ¡£Ö±½Óµ÷ÓÃ waitpid()º¯Êý¡£
+// wait()ç³»ç»Ÿè°ƒç”¨ã€‚ç›´æŽ¥è°ƒç”¨ waitpid()å‡½æ•°ã€‚
 pid_t wait(int * wait_stat)
 {
 	return waitpid(-1,wait_stat,0);

@@ -1,9 +1,9 @@
 /*
-¸ÃÍ·ÎÄ¼þÓÃÓÚÉæ¼°´¦ÀíÊ±¼äµÄº¯Êý¡£ÔÚ MINIX ÖÐÓÐÒ»¶Î¶ÔÊ±¼äµÄÃèÊöºÜÓÐÈ¤£º
-Ê±¼äµÄ´¦Àí½ÏÎª¸´ÔÓ£¬±ÈÈçÊ²Ã´ÊÇ GMT £¨¸ñÁÖÍþÖÎ±ê×¼Ê±¼ä£©¡¢±¾µØÊ±¼ä»òÆäËüÊ±¼äµÈ¡£
-¾¡¹ÜÖ÷½Ì Ussher(1581-1656 Äê ) Ôø¾­¼ÆËã¹ý£¬¸ù¾ÝÊ¥¾­£¬
-ÊÀ½ç¿ªÊ¼Ö®ÈÕÊÇ¹«ÔªÇ° 4004 Äê 10 ÔÂ 12 ÈÕÉÏÎç 9 µã£¬µ«ÔÚ UNIX ÊÀ½çÀï£¬
-Ê±¼äÊÇ´ÓGMT 1970 Äê 1 ÔÂ 1 ÈÕÎçÒ¹¿ªÊ¼µÄ£¬ÔÚÕâÖ®Ç°£¬ËùÓÐ¾ùÊÇ¿ÕÎÞµÄºÍ ( ÎÞÐ§µÄ ) ¡£
+è¯¥å¤´æ–‡ä»¶ç”¨äºŽæ¶‰åŠå¤„ç†æ—¶é—´çš„å‡½æ•°ã€‚åœ¨ MINIX ä¸­æœ‰ä¸€æ®µå¯¹æ—¶é—´çš„æè¿°å¾ˆæœ‰è¶£ï¼š
+æ—¶é—´çš„å¤„ç†è¾ƒä¸ºå¤æ‚ï¼Œæ¯”å¦‚ä»€ä¹ˆæ˜¯ GMT ï¼ˆæ ¼æž—å¨æ²»æ ‡å‡†æ—¶é—´ï¼‰ã€æœ¬åœ°æ—¶é—´æˆ–å…¶å®ƒæ—¶é—´ç­‰ã€‚
+å°½ç®¡ä¸»æ•™ Ussher(1581-1656 å¹´ ) æ›¾ç»è®¡ç®—è¿‡ï¼Œæ ¹æ®åœ£ç»ï¼Œ
+ä¸–ç•Œå¼€å§‹ä¹‹æ—¥æ˜¯å…¬å…ƒå‰ 4004 å¹´ 10 æœˆ 12 æ—¥ä¸Šåˆ 9 ç‚¹ï¼Œä½†åœ¨ UNIX ä¸–ç•Œé‡Œï¼Œ
+æ—¶é—´æ˜¯ä»ŽGMT 1970 å¹´ 1 æœˆ 1 æ—¥åˆå¤œå¼€å§‹çš„ï¼Œåœ¨è¿™ä¹‹å‰ï¼Œæ‰€æœ‰å‡æ˜¯ç©ºæ— çš„å’Œ ( æ— æ•ˆçš„ ) ã€‚
 */
 
 
@@ -12,7 +12,7 @@
 
 #ifndef _TIME_T
 #define _TIME_T
-typedef long time_t;	// ´Ó GMT 1970 Äê 1 ÔÂ 1 ÈÕ¿ªÊ¼µÄÒÔÃë¼ÆÊýµÄÊ±¼ä£¨ÈÕÀúÊ±¼ä£©¡£
+typedef long time_t;	// ä»Ž GMT 1970 å¹´ 1 æœˆ 1 æ—¥å¼€å§‹çš„ä»¥ç§’è®¡æ•°çš„æ—¶é—´ï¼ˆæ—¥åŽ†æ—¶é—´ï¼‰ã€‚
 #endif
 
 #ifndef _SIZE_T
@@ -20,23 +20,23 @@ typedef long time_t;	// ´Ó GMT 1970 Äê 1 ÔÂ 1 ÈÕ¿ªÊ¼µÄÒÔÃë¼ÆÊýµÄÊ±¼ä£¨ÈÕÀúÊ±¼ä£©
 typedef unsigned int size_t;
 #endif
 
-#define CLOCKS_PER_SEC 100	// ÏµÍ³Ê±ÖÓµÎ´ðÆµÂÊ£¬100HZ¡£
+#define CLOCKS_PER_SEC 100	// ç³»ç»Ÿæ—¶é’Ÿæ»´ç­”é¢‘çŽ‡ï¼Œ100HZã€‚
 
-typedef long clock_t;		// ´Ó½ø³Ì¿ªÊ¼ÏµÍ³¾­¹ýµÄÊ±ÖÓµÎ´ðÊý¡£
+typedef long clock_t;		// ä»Žè¿›ç¨‹å¼€å§‹ç³»ç»Ÿç»è¿‡çš„æ—¶é’Ÿæ»´ç­”æ•°ã€‚
 
 struct tm {
-	int tm_sec; // ÃëÊý [0£¬59]¡£
-	int tm_min; // ·ÖÖÓÊý [ 0£¬59]¡£
-	int tm_hour; // Ð¡Ê±Êý [0£¬59]¡£
-	int tm_mday; // 1 ¸öÔÂµÄÌìÊý [0£¬31]¡£
-	int tm_mon; // 1 ÄêÖÐÔÂ·Ý [0£¬11]¡£
-	int tm_year; // ´Ó 1900 Äê¿ªÊ¼µÄÄêÊý¡£
-	int tm_wday; // 1 ÐÇÆÚÖÐµÄÄ³Ìì [0£¬6]£¨ÐÇÆÚÌì =0£©¡£
-	int tm_yday; // 1 ÄêÖÐµÄÄ³Ìì [0£¬365]¡£
-	int tm_isdst; // ÏÄÁîÊ±±êÖ¾¡£
+	int tm_sec; // ç§’æ•° [0ï¼Œ59]ã€‚
+	int tm_min; // åˆ†é’Ÿæ•° [ 0ï¼Œ59]ã€‚
+	int tm_hour; // å°æ—¶æ•° [0ï¼Œ59]ã€‚
+	int tm_mday; // 1 ä¸ªæœˆçš„å¤©æ•° [0ï¼Œ31]ã€‚
+	int tm_mon; // 1 å¹´ä¸­æœˆä»½ [0ï¼Œ11]ã€‚
+	int tm_year; // ä»Ž 1900 å¹´å¼€å§‹çš„å¹´æ•°ã€‚
+	int tm_wday; // 1 æ˜ŸæœŸä¸­çš„æŸå¤© [0ï¼Œ6]ï¼ˆæ˜ŸæœŸå¤© =0ï¼‰ã€‚
+	int tm_yday; // 1 å¹´ä¸­çš„æŸå¤© [0ï¼Œ365]ã€‚
+	int tm_isdst; // å¤ä»¤æ—¶æ ‡å¿—ã€‚
 };
 
-// ÒÔÏÂÊÇÓÐ¹ØÊ±¼ä²Ù×÷µÄº¯ÊýÔ­ÐÍ¡£
+// ä»¥ä¸‹æ˜¯æœ‰å…³æ—¶é—´æ“ä½œçš„å‡½æ•°åŽŸåž‹ã€‚
 
 clock_t clock(void);
 time_t time(time_t * tp);
